@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AiLGNS 观测站</title>
+<title>阿郎老师的 AiLGNS 观测站</title>
 <meta name="description" content="AiLGNS 动态奖励与链上状态每日观测">
 <style>
 :root{
@@ -19,7 +19,7 @@ body{background:var(--bg);color:var(--ink);
 a{color:var(--blue);text-decoration:none}
 header{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;
   padding-bottom:14px;border-bottom:2px solid var(--line);margin-bottom:16px}
-h1{font-size:24px;letter-spacing:.5px}
+h1{font-size:clamp(19px,4.6vw,25px);letter-spacing:.5px}
 h1 em{font-style:normal;color:var(--gold)}
 .meta{font-size:12.5px;color:var(--dim);text-align:right}
 .meta b{color:var(--ink);font-weight:600}
@@ -79,7 +79,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 
   <header>
     <div>
-      <h1>AiLGNS <em>观测站</em></h1>
+      <h1>阿郎老师的 AiLGNS <em>观测站</em></h1>
       <div class="meta" style="text-align:left;margin-top:4px">动态奖励 · 单价 · 各等级所得 · 链上状态</div>
     </div>
     <div class="meta">
@@ -533,9 +533,10 @@ function render(){
   $('gen').textContent = new Date(d.site.generatedAt).toLocaleString('zh-CN', {hour12:false});
   $('age').textContent = ago(d.site.generatedAt);
 
-  $('srcbadge').innerHTML = (SRC === 'live')
-    ? '<span class="chip on">数据源 <b>实时</b></span>'
-    : '<span class="chip off">数据源 <b>内置快照</b> · 直接双击打开时正常，不会自动更新</span>';
+  $('srcbadge').innerHTML =
+      (SRC === 'live')   ? '<span class="chip on">数据源 <b>实时</b></span>'
+    : (SRC === 'remote') ? '<span class="chip on">数据源 <b>实时</b>（本地打开 · 取自线上站点）</span>'
+    : '<span class="chip off">数据源 <b>内置快照</b> · 当前离线，不会自动更新</span>';
 
   var errs = d.errors || [];
   $('errcard').innerHTML = errs.length
@@ -681,12 +682,21 @@ function drawSpark(pts){
   svg.innerHTML = out;
 }
 
+var REMOTE_JSON = 'https://dixonwei.github.io/ailgns-monitor/data.json';
 function load(force){
-  var url = 'data.json' + (force ? '?t=' + Date.now() : '');
-  return fetch(url, {cache:'no-store'})
-    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(j){ DATA = j; SRC = 'live'; render(); })
-    .catch(function(){ DATA = EMBEDDED; SRC = 'snapshot'; render(); });
+  var bust = '?t=' + Date.now();
+  // 本地双击打开时，先拉线上最新数据；线上打开时先读本地同目录
+  var fromFile = (location.protocol === 'file:');
+  var urls = fromFile ? [REMOTE_JSON + bust, 'data.json' + bust]
+                     : ['data.json' + bust, REMOTE_JSON + bust];
+  function tryAt(i){
+    if (i >= urls.length) { DATA = EMBEDDED; SRC = 'snapshot'; render(); return; }
+    return fetch(urls[i], {cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(j){ DATA = j; SRC = (i === 0 && fromFile) ? 'remote' : 'live'; render(); })
+      .catch(function(){ return tryAt(i + 1); });
+  }
+  return tryAt(0);
 }
 
 $('refresh').addEventListener('click', function(){
@@ -751,7 +761,7 @@ function showBuyAlert(){
   b.style.display = 'block';
   b.innerHTML = '🟢 <b>公开买入已开放！</b> 立刻去官方 dApp 操作。探测时间 ' +
     new Date().toLocaleTimeString('zh-CN', {hour12:false});
-  document.title = '🟢 公开买入已开放 · AiLGNS 观测站';
+  document.title = '🟢 公开买入已开放 · 阿郎老师的 AiLGNS 观测站';
 }
 
 function renderLive(){
