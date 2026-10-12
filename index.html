@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AiLGNS 观测站</title>
+<meta name="description" content="AiLGNS 动态奖励与链上状态每日观测">
+<style>
+:root{
+  --bg:#0b0f17; --panel:#141b26; --panel2:#1b2431; --line:#26313f;
+  --ink:#e8eef7; --dim:#8697ab; --dim2:#5d6d80;
+  --gold:#e3b23c; --green:#38c172; --red:#e3574f; --blue:#4d9cf6; --purple:#a785f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+  padding:18px 14px 60px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:var(--blue);text-decoration:none}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;
+  padding-bottom:14px;border-bottom:2px solid var(--line);margin-bottom:16px}
+h1{font-size:24px;letter-spacing:.5px}
+h1 em{font-style:normal;color:var(--gold)}
+.meta{font-size:12.5px;color:var(--dim);text-align:right}
+.meta b{color:var(--ink);font-weight:600}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:7px 11px;font-size:12.5px;color:var(--dim)}
+.chip b{color:var(--ink);font-weight:600}
+.chip.on{border-color:rgba(56,193,114,.5)}
+.chip.off{border-color:rgba(227,87,79,.5)}
+.chip.on b{color:var(--green)} .chip.off b{color:var(--red)}
+h2{font-size:15px;color:var(--dim);font-weight:600;letter-spacing:2px;
+  margin:24px 0 10px;padding-left:9px;border-left:3px solid var(--gold)}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card .k{font-size:12px;color:var(--dim);margin-bottom:6px}
+.card .v{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.card .v small{font-size:12px;color:var(--dim);font-weight:400;margin-left:3px}
+.card .s{font-size:11.5px;color:var(--dim2);margin-top:4px}
+.card.hero{background:linear-gradient(160deg,#18222f,#121924);border-color:rgba(227,178,60,.35)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;
+  border:1px solid var(--line);color:var(--dim);margin-left:6px;vertical-align:middle}
+.tag.wait{color:var(--gold);border-color:rgba(227,178,60,.5)}
+.tag.done{color:var(--green);border-color:rgba(56,193,114,.5)}
+.lv{display:grid;grid-template-columns:56px 52px 1fr 1fr;gap:0;font-size:13px}
+.lv>div{padding:9px 8px;border-bottom:1px solid var(--line)}
+.lv .h{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
+.lv .n{font-weight:700;color:var(--gold)}
+.lv .m{font-weight:700}
+.lv .r{color:var(--dim);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--dim);font-weight:600;font-size:11.5px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+tbody tr:hover{background:var(--panel2)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.spark{width:100%;height:150px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.note{font-size:12px;color:var(--dim2);line-height:1.6}
+.err{background:rgba(227,87,79,.12);border:1px solid rgba(227,87,79,.4);
+  border-radius:10px;padding:12px;font-size:12.5px;color:#f0a9a4;margin-bottom:14px}
+button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+  border-radius:9px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+button:hover{border-color:var(--gold);color:var(--gold)}
+button:disabled{opacity:.5;cursor:default}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
+.warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
+  border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>AiLGNS <em>观测站</em></h1>
+      <div class="meta" style="text-align:left;margin-top:4px">动态奖励 · 单价 · 各等级所得 · 链上状态</div>
+    </div>
+    <div class="meta">
+      数据抓取 <b id="gen">—</b><br>
+      <span id="age" style="color:var(--dim2)"></span>
+      <button id="refresh" style="margin-left:8px">刷新</button>
+    </div>
+  </header>
+
+  <div id="buyalert" class="err" style="display:none;background:rgba(56,193,114,.15);border-color:rgba(56,193,114,.6);color:#b6f0cd"></div>
+
+  <div id="errcard"></div>
+
+  <div class="bar" id="srcbadge"></div>
+  <div class="bar" id="chips"></div>
+
+  <h2>链上实时 · 每 30 秒自动刷新</h2>
+  <div class="grid g4" id="live"></div>
+
+  <h2>最新一期 · 动态奖励</h2>
+  <div class="grid g4" id="hero"></div>
+
+  <h2>当天单价 · 每份权重发多少</h2>
+  <div class="grid g3" id="unit"></div>
+
+  <h2>各等级拿到多少 · AiLGNS / 人 / 天</h2>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="lv" id="lvtable"></div>
+  </div>
+  <p class="note" style="margin-top:8px">
+    共识按等级发，同一级每人一样；网络和增长按各自团队当天新增算，所以同等级内部差距很大。
+    「合计」栏显示的是该等级当天的<b>最低到最高</b>，中位数更能代表一般人。
+  </p>
+
+  <h2>走势 · 中位数（AiLGNS / 人 / 天）</h2>
+  <div class="card">
+    <svg class="spark" id="spark" viewBox="0 0 900 150" preserveAspectRatio="none"></svg>
+    <div class="legend">
+      <span><i style="background:var(--gold)"></i>P1 中位数</span>
+      <span><i style="background:var(--blue)"></i>P2 中位数</span>
+      <span><i style="background:var(--purple)"></i>P3 中位数</span>
+      <span><i style="background:var(--green)"></i>发放合计</span>
+    </div>
+  </div>
+
+  <h2>历史 · 每天发放</h2>
+  <div class="card" style="padding:6px 10px">
+    <div class="scroll"><table id="hist"></table></div>
+  </div>
+
+  <h2>链上协议状态</h2>
+  <div class="grid g3" id="proto"></div>
+
+  <footer>
+    <div class="warn">
+      <b>免责声明</b>：本页为个人观测工具，<b>非官方</b>，不连接钱包、不发起任何交易、不索取私钥或助记词。
+      动态奖励名单与单价数据整理自第三方站点 <a href="https://ailgns.ai/data/rewards" target="_blank" rel="noopener">ailgns.ai</a> 公布的官方名单解析结果（算法官方未公布，随时可能调整）；
+      链上状态直接读取 Anubis 公共 RPC，可在 <a href="https://browser.anubispace.org" target="_blank" rel="noopener">区块浏览器</a> 核对。
+      全部内容不构成任何投资建议，加密资产波动剧烈，可能损失全部本金。
+    </div>
+  </footer>
+
+</div>
+
+<script>
+/* 内置快照：没有服务器时（双击打开）使用这份数据 */
+var EMBEDDED = {
+  "site": {
+    "name": "AiLGNS 观测站",
+    "generatedAt": "2026-10-12T16:56:53.952Z",
+    "generator": "ailgns-monitor/collect.mjs"
+  },
+  "chain": {
+    "block": 16294569,
+    "blockTime": "2026-10-12T16:56:54.650Z",
+    "gasPriceGwei": 12,
+    "rpc": "https://rpc.anubispace.org",
+    "explorer": "https://browser.anubispace.org/block/16294569",
+    "chainId": 6714
+  },
+  "protocol": {
+    "day": 16,
+    "powerDAI": 112660754,
+    "powerMultiplier": 2.5,
+    "dailyPayRatio": 0.2795,
+    "priceDAI": 712.8856,
+    "poolPriceDAI": 713.9446,
+    "poolAiLGNS": 16156.57,
+    "poolDAI": 11534893.34,
+    "reserveDAI": 55283788.73,
+    "totalSupply": 209999237,
+    "devWallet": 14415096,
+    "buyOpen": false,
+    "buyFee": "100%",
+    "sellFee": "3%",
+    "depositedToday": 1999999.99,
+    "depositCap": 2000000,
+    "queueToday": 4999999.98,
+    "released": 151772.33,
+    "emissionVault": 163471924.29,
+    "insuranceVault": 10678467
+  },
+  "rewards": {
+    "unitPriceHistory": [
+      {
+        "date": "10月11日",
+        "growth": 0.00001543,
+        "network": 0.0000485,
+        "p1": 0.0313,
+        "p2": 0.2221,
+        "p3": 1.9245
+      },
+      {
+        "date": "10月10日",
+        "growth": 0.0000162,
+        "network": 0.00004863,
+        "p1": 0.0422,
+        "p2": 0.2299,
+        "p3": 1.9927
+      },
+      {
+        "date": "10月9日",
+        "growth": 0.00002076,
+        "network": 0.0000717,
+        "p1": 0.0435,
+        "p2": 0.3229,
+        "p3": 1.7491
+      },
+      {
+        "date": "10月8日",
+        "growth": 0.00001844,
+        "network": 0.0001092,
+        "p1": 0.0656,
+        "p2": 0.3862,
+        "p3": 2.0921
+      },
+      {
+        "date": "10月7日",
+        "growth": 0.00001867,
+        "network": 0.0001392,
+        "p1": 0.1015,
+        "p2": 0.6091,
+        "p3": 2.6395
+      },
+      {
+        "date": "10月6日",
+        "growth": 0.000003897,
+        "network": 0.00001944,
+        "p1": 0.0546,
+        "p2": 0.3971,
+        "p3": 1.2905
+      },
+      {
+        "date": "10月5日",
+        "growth": 0.000004236,
+        "network": 0.00002735,
+        "p1": 0.0744,
+        "p2": 0.649,
+        "p3": 1.4061
+      }
+    ],
+    "levels": [
+      {
+        "level": "P1",
+        "count": 52,
+        "consensusMin": 0,
+        "consensusMax": 0.0313,
+        "consensusEach": 0,
+        "networkMin": 0,
+        "networkMax": 1.6072,
+        "growthMin": 0,
+        "growthMax": 0.4907,
+        "totalMin": 0,
+        "totalMax": 2.1293,
+        "median": 0.0926
+      },
+      {
+        "level": "P2",
+        "count": 8,
+        "consensusMin": 0.2221,
+        "consensusMax": null,
+        "consensusEach": 0.2221,
+        "networkMin": 0.0825,
+        "networkMax": 1.2829,
+        "growthMin": 0.0026,
+        "growthMax": 0.3854,
+        "totalMin": 0.6738,
+        "totalMax": 1.6883,
+        "median": 0.8025
+      },
+      {
+        "level": "P3",
+        "count": 1,
+        "consensusMin": 1.9245,
+        "consensusMax": null,
+        "consensusEach": 1.9245,
+        "networkMin": 0.5561,
+        "networkMax": null,
+        "growthMin": 0.0093,
+        "growthMax": null,
+        "totalMin": 2.4898,
+        "totalMax": null,
+        "median": null
+      }
+    ],
+    "history": [
+      {
+        "date": "10月11日",
+        "status": "待确认",
+        "total": 29.404,
+        "growth": 7.745,
+        "network": 16.5175,
+        "consensus": 5.1415,
+        "budget": 10237.5,
+        "addresses": 481,
+        "p1Median": 0.0926,
+        "p2Median": 0.8025,
+        "p3Median": 2.4898
+      },
+      {
+        "date": "10月10日",
+        "status": "已确认",
+        "total": 33.5559,
+        "growth": 7.9684,
+        "network": 20.1535,
+        "consensus": 5.434,
+        "budget": 10237.5,
+        "addresses": 405,
+        "p1Median": 0.234,
+        "p2Median": 0.816,
+        "p3Median": 2.7784
+      },
+      {
+        "date": "10月9日",
+        "status": "已确认",
+        "total": 29.7624,
+        "growth": 7.02,
+        "network": 17.9424,
+        "consensus": 4.8,
+        "budget": 9843.75,
+        "addresses": 506,
+        "p1Median": 0.1415,
+        "p2Median": 0.7316,
+        "p3Median": 2.1986
+      },
+      {
+        "date": "10月8日",
+        "status": "已确认",
+        "total": 34.698,
+        "growth": 7.97,
+        "network": 21,
+        "consensus": 5.728,
+        "budget": 9056.25,
+        "addresses": 502,
+        "p1Median": 0.2536,
+        "p2Median": 0.7567,
+        "p3Median": 2.5516
+      },
+      {
+        "date": "10月7日",
+        "status": "已确认",
+        "total": 45.4623,
+        "growth": 10.9502,
+        "network": 27.2026,
+        "consensus": 7.3095,
+        "budget": 8268.75,
+        "addresses": 740,
+        "p1Median": 0.5795,
+        "p2Median": 3.8038,
+        "p3Median": 4.197
+      },
+      {
+        "date": "10月6日",
+        "status": "已确认",
+        "total": 20.5634,
+        "growth": 3.7534,
+        "network": 13.2362,
+        "consensus": 3.5738,
+        "budget": 7481.25,
+        "addresses": 1621,
+        "p1Median": 0.2413,
+        "p2Median": 1.7224,
+        "p3Median": 2.4777
+      },
+      {
+        "date": "10月5日",
+        "status": "已确认",
+        "total": 22.3318,
+        "growth": 4.0164,
+        "network": 14.4215,
+        "consensus": 3.8938,
+        "budget": 7481.25,
+        "addresses": 1467,
+        "p1Median": 0.467,
+        "p2Median": 1.3585,
+        "p3Median": 2.8923
+      },
+      {
+        "date": "10月4日",
+        "status": "已确认",
+        "total": 22.0879,
+        "growth": 3.993,
+        "network": 15.4327,
+        "consensus": 2.6621,
+        "budget": 9168.08,
+        "addresses": 1037,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "10月3日",
+        "status": "已确认",
+        "total": 62.0575,
+        "growth": 10.9113,
+        "network": 43.6216,
+        "consensus": 7.5247,
+        "budget": 9843.75,
+        "addresses": 1769,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "10月2日",
+        "status": "已确认",
+        "total": 12.0452,
+        "growth": 2.1044,
+        "network": 8.4783,
+        "consensus": 1.4625,
+        "budget": 9056.25,
+        "addresses": 237,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "10月1日",
+        "status": "已确认",
+        "total": 16.2038,
+        "growth": 3.3347,
+        "network": 11.8884,
+        "consensus": 0.9808,
+        "budget": 9056.25,
+        "addresses": 423,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "9月30日",
+        "status": "已确认",
+        "total": 45.9546,
+        "growth": 8.3163,
+        "network": 34.7698,
+        "consensus": 2.8685,
+        "budget": 9056.25,
+        "addresses": 516,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "9月29日",
+        "status": "已确认",
+        "total": 10.6163,
+        "growth": 10.6163,
+        "network": 0,
+        "consensus": 0,
+        "budget": 9056.25,
+        "addresses": 366,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      },
+      {
+        "date": "9月28日",
+        "status": "已确认",
+        "total": 0,
+        "growth": 0,
+        "network": 0,
+        "consensus": 0,
+        "budget": 15750,
+        "addresses": 0,
+        "p1Median": null,
+        "p2Median": null,
+        "p3Median": null
+      }
+    ],
+    "latest": {
+      "dateLabel": "10月11日",
+      "day": 14,
+      "status": "待确认",
+      "publishAt": "10月12日 02:58",
+      "claimAt": "10月13日 02:58",
+      "total": 29.404,
+      "growth": 7.745,
+      "network": 16.5175,
+      "consensus": 5.1415,
+      "budget": 10237.5,
+      "ratio": 0.29,
+      "addresses": 481
+    },
+    "unitPrice": {
+      "growth": 0.00001543,
+      "growthDelta": -4.7,
+      "network": 0.0000485,
+      "networkDelta": -0.3,
+      "consensus": {
+        "P1": 0.0313,
+        "P2": 0.2221,
+        "P3": 1.9245
+      }
+    }
+  },
+  "sources": {
+    "rewards": "https://ailgns.ai/data/rewards",
+    "helix": "https://ailgns.ai/data/helix"
+  },
+  "errors": [],
+  "elapsedMs": 1775
+};
+var SRC = "snapshot";
+var DATA = null;
+
+function $(id){ return document.getElementById(id); }
+function fmt(n, d){
+  if(n === null || n === undefined || isNaN(n)) return '—';
+  d = (d === undefined) ? 2 : d;
+  return Number(n).toLocaleString('zh-CN', {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+function ago(iso){
+  var t = new Date(iso).getTime();
+  if(isNaN(t)) return '';
+  var m = Math.floor((Date.now() - t)/60000);
+  if(m < 1) return '刚刚';
+  if(m < 60) return m + ' 分钟前';
+  var h = Math.floor(m/60);
+  if(h < 24) return h + ' 小时前';
+  return Math.floor(h/24) + ' 天前';
+}
+function card(k, v, unit, sub, cls){
+  return '<div class="card ' + (cls||'') + '"><div class="k">' + k + '</div>' +
+         '<div class="v">' + v + (unit ? '<small>' + unit + '</small>' : '') + '</div>' +
+         (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>';
+}
+
+function render(){
+  var d = DATA;
+  if(!d){ return; }
+  $('gen').textContent = new Date(d.site.generatedAt).toLocaleString('zh-CN', {hour12:false});
+  $('age').textContent = ago(d.site.generatedAt);
+
+  $('srcbadge').innerHTML = (SRC === 'live')
+    ? '<span class="chip on">数据源 <b>实时</b></span>'
+    : '<span class="chip off">数据源 <b>内置快照</b> · 直接双击打开时正常，不会自动更新</span>';
+
+  var errs = d.errors || [];
+  $('errcard').innerHTML = errs.length
+    ? '<div class="err"><b>部分数据抓取失败</b>（已尽量沿用上一次快照）：<br>' + errs.map(function(e){return '· ' + e;}).join('<br>') + '</div>'
+    : '';
+
+  var p = d.protocol || {}, ch = d.chain || {}, r = d.rewards || {}, L = r.latest || {}, up = r.unitPrice || {};
+
+  // 状态条
+  var chips = [];
+  chips.push('<span class="chip">链上区块 <b>#' + (ch.block ? Number(ch.block).toLocaleString('en-US') : '—') + '</b></span>');
+  chips.push('<span class="chip">协议第 <b>' + (p.day || '—') + '</b> 天</span>');
+  chips.push('<span class="chip">全网有效算力 <b>' + fmt(p.powerDAI, 0) + '</b> DAI</span>');
+  chips.push('<span class="chip ' + (p.buyOpen ? 'on' : 'off') + '">公开买入 <b>' + (p.buyOpen === null ? '—' : (p.buyOpen ? '已开放' : '未开放')) + '</b></span>');
+  if(p.depositCap){
+    var used = p.depositedToday >= p.depositCap * 0.999;
+    chips.push('<span class="chip ' + (used ? 'off' : 'on') + '">今日存入 <b>' + fmt(p.depositedToday, 0) + '</b> / ' + fmt(p.depositCap, 0) + ' DAI</span>');
+  }
+  $('chips').innerHTML = chips.join('');
+
+  // 最新一期
+  var stTag = L.status === '待确认'
+      ? '<span class="tag wait">待确认</span>'
+      : (L.status === '已确认' ? '<span class="tag done">已确认</span>' : '');
+  var rate = (L.total != null && L.budget) ? (L.total / L.budget * 100) : null;
+  var hero = '';
+  hero += '<div class="card hero"><div class="k">数据日期</div><div class="v">' + (L.dateLabel || '—') +
+          stTag + '</div><div class="s">第 ' + (L.day || '—') + ' 天 · ' +
+          (L.claimAt ? L.claimAt + ' 后可领取' : '') + '</div></div>';
+  hero += card('发放合计', fmt(L.total, 4), 'AiLGNS',
+          L.budget ? '占预算 ' + fmt(rate, 2) + '%（预算 ' + fmt(L.budget, 2) + '）' : '');
+  hero += card('领到的人数', fmt(L.addresses, 0), '个地址',
+          L.growth != null ? '增长 ' + fmt(L.growth, 4) + ' · 网络 ' + fmt(L.network, 4) + ' · 共识 ' + fmt(L.consensus, 4) : '');
+  var gap = (L.budget && L.total != null) ? (L.budget - L.total) : null;
+  hero += card('未发出的预算', fmt(gap, 2), 'AiLGNS', '预算只是上限，实际按名单发放');
+  $('hero').innerHTML = hero;
+
+  // 单价
+  var cs = up.consensus || {};
+  var unit = '';
+  unit += card('增长 · 每 1 DAI 权重', fmt(up.growth, 8), 'AiLGNS',
+          up.growthDelta != null ? '比前一天 ' + (up.growthDelta > 0 ? '+' : '') + up.growthDelta + '%' : '');
+  unit += card('网络 · 每 1 点权重', fmt(up.network, 8), 'AiLGNS',
+          up.networkDelta != null ? '比前一天 ' + (up.networkDelta > 0 ? '+' : '') + up.networkDelta + '%' : '');
+  unit += card('共识 · 每个地址一份', 'P1 ' + fmt(cs.P1, 4), '',
+          'P2 ' + fmt(cs.P2, 4) + '　P3 ' + fmt(cs.P3, 4) + '（AiLGNS）');
+  $('unit').innerHTML = unit;
+
+  // 等级表
+  var lv = r.levels || [];
+  var byLv = {};
+  lv.forEach(function(x){ byLv[x.level] = x; });
+  var keys = ['P1','P2','P3','P4','P5','P6','P7'];
+  var rows = '<div class="h">等级</div><div class="h">人数</div><div class="h">当天所得（最低 – 最高）</div><div class="h">中位数</div>';
+  keys.forEach(function(k){
+    var x = byLv[k];
+    if(x){
+      var lo = (x.totalMin != null) ? fmt(x.totalMin, 4) : '—';
+      var hi = (x.totalMax != null) ? fmt(x.totalMax, 4) : lo;
+      var rng = (x.totalMax != null && x.totalMax !== x.totalMin) ? (lo + ' – ' + hi) : lo;
+      var med = (x.median != null) ? fmt(x.median, 4) : ((x.totalMax == null) ? lo : '—');
+      rows += '<div class="n">' + k + '</div><div>' + x.count + '</div>' +
+              '<div class="r">' + rng + '</div>' +
+              '<div class="m" style="color:var(--gold)">' + med + '</div>';
+    } else {
+      rows += '<div class="n" style="color:var(--dim2)">' + k + '</div><div style="color:var(--dim2)">0</div>' +
+              '<div class="r">未达到</div><div class="m" style="color:var(--dim2)">—</div>';
+    }
+  });
+  $('lvtable').innerHTML = rows;
+
+  // 趋势图
+  var uh = (r.unitPriceHistory || []).slice().reverse();   // 旧 -> 新
+  var hist = (r.history || []).slice().reverse();
+  var hByDate = {};
+  hist.forEach(function(h){ hByDate[h.date] = h; });
+  var pts = uh.map(function(u){
+    var h = hByDate[u.date] || {};
+    return { date: u.date, p1: h.p1Median, p2: h.p2Median, p3: h.p3Median, total: h.total };
+  });
+  drawSpark(pts);
+
+  // 历史表
+  var t = '<thead><tr><th>日期</th><th>状态</th><th>发放</th><th>增长</th><th>网络</th><th>共识</th><th>预算</th><th>地址数</th><th>P1中位</th><th>P2中位</th><th>P3中位</th></tr></thead><tbody>';
+  (r.history || []).forEach(function(h){
+    t += '<tr><td>' + h.date + '</td>' +
+         '<td style="color:' + (h.status === '待确认' ? 'var(--gold)' : 'var(--green)') + '">' + h.status + '</td>' +
+         '<td>' + fmt(h.total, 4) + '</td><td>' + fmt(h.growth, 4) + '</td><td>' + fmt(h.network, 4) + '</td>' +
+         '<td>' + fmt(h.consensus, 4) + '</td><td>' + fmt(h.budget, 2) + '</td><td>' + fmt(h.addresses, 0) + '</td>' +
+         '<td>' + fmt(h.p1Median, 4) + '</td><td>' + fmt(h.p2Median, 4) + '</td><td>' + fmt(h.p3Median, 4) + '</td></tr>';
+  });
+  t += '</tbody>';
+  $('hist').innerHTML = t;
+
+  // 协议状态
+  var pr = '';
+  pr += card('协议价格（TWAP）', fmt(p.priceDAI, 4), 'DAI', '按此价结算排放');
+  pr += card('每日兑付上限', fmt(p.dailyPayRatio, 4), '%', '按剩余算力计（年化 102%）');
+  pr += card('协议储备', fmt(p.reserveDAI, 2), 'DAI', '存 DAI 换算力的资金转入这里');
+  pr += card('AiLGNS/DAI 池', fmt(p.poolAiLGNS, 2), 'AiLGNS', '池内 DAI ' + fmt(p.poolDAI, 2));
+  pr += card('已释放 AiLGNS', fmt(p.released, 2), 'AiLGNS', '从排放金库发出');
+  pr += card('排放金库余额', fmt(p.emissionVault, 2), 'AiLGNS', '保险金库 ' + fmt(p.insuranceVault, 2));
+  $('proto').innerHTML = pr;
+}
+
+function drawSpark(pts){
+  var svg = $('spark');
+  var W = 900, H = 150, PL = 8, PR = 8, PT = 12, PB = 20;
+  if(!pts.length){ svg.innerHTML = '<text x="450" y="80" fill="#5d6d80" font-size="14" text-anchor="middle">暂无数据</text>'; return; }
+  var series = [
+    {key:'p1', color:'#e3b23c'},
+    {key:'p2', color:'#4d9cf6'},
+    {key:'p3', color:'#a785f0'},
+    {key:'total', color:'#38c172'}
+  ];
+  var all = [];
+  series.forEach(function(s){ pts.forEach(function(p){ if(p[s.key] != null) all.push(p[s.key]); }); });
+  if(!all.length){ return; }
+  var max = Math.max.apply(null, all) * 1.12;
+  var n = pts.length;
+  var x = function(i){ return PL + (W - PL - PR) * (n === 1 ? 0.5 : i/(n-1)); };
+  var y = function(v){ return H - PB - (H - PT - PB) * (v/max); };
+  var out = '';
+  for(var g = 0; g <= 3; g++){
+    var gy = PT + (H - PT - PB) * g/3;
+    out += '<line x1="' + PL + '" y1="' + gy + '" x2="' + (W-PR) + '" y2="' + gy + '" stroke="#26313f" stroke-width="1"/>';
+  }
+  series.forEach(function(s){
+    var d = '', started = false;
+    pts.forEach(function(p, i){
+      if(p[s.key] == null) { started = false; return; }
+      d += (started ? ' L' : ' M') + x(i).toFixed(1) + ' ' + y(p[s.key]).toFixed(1);
+      started = true;
+    });
+    if(d) out += '<path d="' + d.trim() + '" fill="none" stroke="' + s.color + '" stroke-width="2.2" stroke-linejoin="round"/>';
+    pts.forEach(function(p, i){
+      if(p[s.key] != null) out += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p[s.key]).toFixed(1) + '" r="2.6" fill="' + s.color + '"/>';
+    });
+  });
+  out += '<text x="' + PL + '" y="' + (H-4) + '" fill="#5d6d80" font-size="11">' + pts[0].date + '</text>';
+  out += '<text x="' + (W-PR) + '" y="' + (H-4) + '" fill="#5d6d80" font-size="11" text-anchor="end">' + pts[n-1].date + '</text>';
+  out += '<text x="' + PL + '" y="' + (PT-2) + '" fill="#5d6d80" font-size="11">峰值 ' + max.toFixed(2) + '</text>';
+  svg.innerHTML = out;
+}
+
+function load(force){
+  var url = 'data.json' + (force ? '?t=' + Date.now() : '');
+  return fetch(url, {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(j){ DATA = j; SRC = 'live'; render(); })
+    .catch(function(){ DATA = EMBEDDED; SRC = 'snapshot'; render(); });
+}
+
+$('refresh').addEventListener('click', function(){
+  var b = this; b.disabled = true; b.textContent = '刷新中…';
+  fetch('api/refresh', {method:'POST'})
+    .catch(function(){ return null; })
+    .then(function(){ return load(true); })
+    .then(function(){ b.disabled = false; b.textContent = '刷新'; setTimeout(function(){ b.textContent='刷新'; }, 10); });
+});
+
+/* ================= 链上实时模块 ================= */
+var RPC_URL = 'https://rpc.anubispace.org';
+var C = {
+  AiLGNS:  '0x256edb652db43e721ec6a12b6b51b6967d3bb8cb',
+  DAI:     '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14',
+  POOL:    '0x0a1cce65d995c6c5100e6f5ba3c388ef34cecaf0',
+  RESERVE: '0x27cb55ee75e777ff972b74b6e68782d12bd4ec46'
+};
+var PROBE = '0x9999999999999999999999999999999999999999';
+var LIVE = { ok:false, block:null, blockTime:null, buyState:'unknown', reserveDAI:null,
+             pf:null, pd:null, lastCheck:null, err:null, prevBuy:null };
+function pad32(a){ return a.toLowerCase().replace('0x','').padStart(64,'0'); }
+function u18(v){ var s = BigInt(v).toString().padStart(19,'0'); return s.slice(0,-18) + '.' + s.slice(-18).slice(0,6); }
+
+function rpc(method, params){
+  return fetch(RPC_URL, { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ jsonrpc:'2.0', id: Math.floor(Math.random()*1e6), method: method, params: params }) })
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(j){ if(j.error) throw new Error(j.error.message || 'rpc error'); return j.result; });
+}
+
+function readLive(){
+  return rpc('eth_blockNumber', []).then(function(bh){
+    return rpc('eth_getBlockByNumber', [bh, false]).then(function(blk){
+      LIVE.block = parseInt(bh, 16);
+      LIVE.blockTime = new Date(parseInt(blk.timestamp,16)*1000);
+      return rpc('eth_call', [{ from: C.POOL, to: C.AiLGNS, data: '0xa9059cbb' + pad32(PROBE) + pad32('0x1') }, 'latest'])
+        .then(function(){ LIVE.buyState = 'open'; })
+        .catch(function(e){ LIVE.buyState = /buy disabled/i.test(e.message) ? 'closed' : 'unknown'; });
+    });
+  }).then(function(){
+    return rpc('eth_call', [{ to: C.POOL, data:'0x0902f1ac' }, 'latest']).then(function(res){
+      LIVE.pf = BigInt('0x'+res.slice(2,66)); LIVE.pd = BigInt('0x'+res.slice(66,130));
+    }).catch(function(){});
+  }).then(function(){
+    return rpc('eth_call', [{ to: C.DAI, data:'0x70a08231' + pad32(C.RESERVE) }, 'latest']).then(function(bal){
+      LIVE.reserveDAI = BigInt(bal);
+    }).catch(function(){});
+  }).then(function(){
+    LIVE.ok = true; LIVE.err = null; LIVE.lastCheck = new Date();
+    if (LIVE.prevBuy === 'closed' && LIVE.buyState === 'open') showBuyAlert();
+    LIVE.prevBuy = LIVE.buyState;
+    renderLive();
+  }).catch(function(e){
+    LIVE.ok = false; LIVE.err = e.message; LIVE.lastCheck = new Date(); renderLive();
+  });
+}
+
+function showBuyAlert(){
+  var b = document.getElementById('buyalert');
+  if(!b) return;
+  b.style.display = 'block';
+  b.innerHTML = '🟢 <b>公开买入已开放！</b> 立刻去官方 dApp 操作。探测时间 ' +
+    new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  document.title = '🟢 公开买入已开放 · AiLGNS 观测站';
+}
+
+function renderLive(){
+  var e = document.getElementById('live'); if(!e) return;
+  if(!LIVE.ok && !LIVE.block){
+    e.innerHTML = '<div class="card"><div class="k">链上连接</div><div class="v" style="color:var(--red)">失败</div><div class="s">' +
+      (LIVE.err || '') + '</div></div>';
+    return;
+  }
+  var buyCard;
+  if (LIVE.buyState === 'open') {
+    buyCard = '<div class="card" style="border-color:rgba(56,193,114,.8);background:rgba(56,193,114,.12)">' +
+      '<div class="k">公开买入（实时探测）</div><div class="v" style="color:var(--green)">已开放</div>' +
+      '<div class="s">可以买了 —— 立刻行动</div></div>';
+  } else if (LIVE.buyState === 'closed') {
+    buyCard = '<div class="card" style="border-color:rgba(227,87,79,.6)">' +
+      '<div class="k">公开买入（实时探测）</div><div class="v" style="color:var(--red)">未开放</div>' +
+      '<div class="s">合约拒绝：AiLGNS: buy disabled</div></div>';
+  } else {
+    buyCard = '<div class="card"><div class="k">公开买入（实时探测）</div><div class="v">?</div>' +
+      '<div class="s">探测异常，稍后重试</div></div>';
+  }
+  var price = (LIVE.pf && LIVE.pd && LIVE.pf > 0n) ? (Number(LIVE.pd * 10000n / LIVE.pf) / 10000) : null;
+  e.innerHTML = buyCard +
+    '<div class="card"><div class="k">当前区块</div><div class="v">#' + (LIVE.block ? LIVE.block.toLocaleString('en-US') : '—') + '</div>' +
+      '<div class="s">' + (LIVE.blockTime ? LIVE.blockTime.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) : '') + '</div></div>' +
+    '<div class="card"><div class="k">AiLGNS/DAI 池现价</div><div class="v">' + (price ? fmt(price,2) : '—') + '<small>DAI</small></div>' +
+      '<div class="s">池内 ' + (LIVE.pf ? u18(LIVE.pf) : '—') + ' AiLGNS</div></div>' +
+    '<div class="card"><div class="k">协议储备</div><div class="v">' + (LIVE.reserveDAI ? fmt(Number(LIVE.reserveDAI)/1e18, 2) : '—') + '<small>DAI</small></div>' +
+      '<div class="s">链上实时余额</div></div>';
+  var t = document.getElementById('livetime');
+  if (t) t.textContent = LIVE.lastCheck ? LIVE.lastCheck.toLocaleTimeString('zh-CN',{hour12:false}) : '—';
+}
+
+readLive();
+setInterval(readLive, 30000);
+
+load(false);
+setInterval(function(){ load(true); }, 30 * 60 * 1000);
+setInterval(function(){ if(DATA) $('age').textContent = ago(DATA.site.generatedAt); }, 60 * 1000);
+</script>
+</body>
+</html>
