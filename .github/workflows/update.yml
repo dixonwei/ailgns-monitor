@@ -1,0 +1,39 @@
+name: update-data
+
+on:
+  schedule:
+    # 每 30 分钟一次（用 :07 和 :37，避开整点拥堵）
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 抓取数据
+        run: node collect.mjs
+
+      - name: 提交 data.json
+        run: |
+          git config user.name  "ailgns-monitor-bot"
+          git config user.email "ailgns-monitor-bot@users.noreply.github.com"
+          git add data.json
+          if git diff --quiet --cached; then
+            echo "没有变化，跳过提交"
+          else
+            git commit -m "data: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
