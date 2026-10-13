@@ -69,6 +69,29 @@ button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
   border-radius:9px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
 button:hover{border-color:var(--gold);color:var(--gold)}
 button:disabled{opacity:.5;cursor:default}
+
+  .twrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .twrow input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--line);
+    border-radius:9px;padding:9px 12px;color:var(--ink);font-size:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .twrow input:focus{outline:none;border-color:var(--gold)}
+  .twrow select{background:var(--bg);border:1px solid var(--line);border-radius:9px;
+    padding:9px 10px;color:var(--ink);font-size:13px;font-family:inherit}
+  .br{display:grid;grid-template-columns:auto 1fr 74px 1fr;gap:0;font-size:13px;align-items:center}
+  .br>div{padding:8px;border-bottom:1px solid var(--line)}
+  .br .bk{font-family:ui-monospace,monospace;font-size:12px;color:var(--dim)}
+  .br .bv{text-align:right;font-weight:700}
+  .br.pick{background:rgba(227,178,60,.07)}
+  .bar{height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;margin-top:5px}
+  .bar i{display:block;height:100%;background:var(--green);border-radius:3px}
+  .bar i.low{background:var(--red)}
+  .bar i.mid{background:var(--gold)}
+  .pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
+  .pill.ok{color:var(--green);border-color:rgba(56,193,114,.5)}
+  .pill.no{color:var(--red);border-color:rgba(227,87,79,.5)}
+  .lvp{display:grid;grid-template-columns:56px 1fr 1fr 1fr;gap:0;font-size:12.5px}
+  .lvp>div{padding:7px 8px;border-bottom:1px solid var(--line)}
+  .lvp .hh{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
 footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 .warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
   border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
@@ -98,6 +121,23 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 
   <h2>链上实时 · 每 30 秒自动刷新</h2>
   <div class="grid g4" id="live"></div>
+
+  <h2>团队树查询 · 输入钱包看下级结构</h2>
+  <div class="card">
+    <div class="twrow">
+      <input id="twAddr" placeholder="粘贴钱包地址 0x…（不连钱包，只读）" spellcheck="false">
+      <select id="twDepth">
+        <option value="1">展开 1 层</option>
+        <option value="2" selected>展开 2 层</option>
+        <option value="3">展开 3 层</option>
+      </select>
+      <button id="twGo">查询</button>
+    </div>
+    <div id="twMsg" class="note" style="margin-top:9px">
+      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线的下级人数和算力合计。
+    </div>
+  </div>
+  <div id="twOut"></div>
 
   <h2>最新一期 · 动态奖励</h2>
   <div class="grid g4" id="hero"></div>
@@ -795,6 +835,301 @@ function renderLive(){
   var t = document.getElementById('livetime');
   if (t) t.textContent = LIVE.lastCheck ? LIVE.lastCheck.toLocaleTimeString('zh-CN',{hour12:false}) : '—';
 }
+
+/* ================= 团队树查询 ================= */
+var TWC = {
+  COMM:   '0xc9f9a8a2dBf8188AD6610e0239105CAbE67c4993',
+  POWER:  '0x9E68F61E2615cc1D2C4a2D0026bFc1EBFdf68C1b',
+  ORIGIN: '0x0000000000000000000000000000000000000001',
+  S_MEMBERS:   '0x08ae4b0c',
+  S_REFERRALS: '0xc01b35a1',
+  S_REFERRER:  '0xd21cacdf',
+  S_PWR_REG:   '0x4f343040',
+  S_PWR_LEFT:  '0x6cf2fa36',
+  MAX_DIRECT: 30,
+  MAX_SUB:    15,
+  MAX_ADDR:   400,
+  PLV: [
+    {lv:'P1', ve:1000,  region:50000,   t:'5 万'},
+    {lv:'P2', ve:3000,  region:150000,  t:'15 万'},
+    {lv:'P3', ve:5000,  region:500000,  t:'50 万'},
+    {lv:'P4', ve:8000,  region:1500000, t:'150 万'},
+    {lv:'P5', ve:10000, region:4000000, t:'400 万'},
+    {lv:'P6', ve:15000, region:null,    t:'每区 1 名 P5'},
+    {lv:'P7', ve:20000, region:null,    t:'每区 1 名 P6'}
+  ]
+};
+function twPad(a){ return a.toLowerCase().replace('0x','').padStart(64,'0'); }
+function twBig(hh){ return Number(BigInt('0x' + String(hh).slice(-64))); }
+function twDai(hh){ return Number(BigInt('0x' + String(hh).slice(-64))) / 1e18; }
+function twOkAddr(a){ return /^0x[0-9a-fA-F]{40}$/.test(a); }
+function twShort(a){ return a.slice(0,10) + '…' + a.slice(-6); }
+function twFmt(n, d){ if(n===null||n===undefined||isNaN(n)) return '—';
+  return Number(n).toLocaleString('zh-CN',{minimumFractionDigits:d===undefined?2:d,maximumFractionDigits:d===undefined?2:d}); }
+
+function twCall(to, data){ return rpc('eth_call', [{to:to, data:data}, 'latest']); }
+/* 批量 eth_call：一次 HTTP 请求查多个，速度快很多 */
+function twBatch(calls){
+  if (!calls.length) return Promise.resolve([]);
+  var out = [];
+  function chunk(slice, base){
+    if (!slice.length) return Promise.resolve();
+    var payload = slice.map(function(c,i){ return { jsonrpc:'2.0', id:i, method:'eth_call', params:[c, 'latest'] }; });
+    return fetch(RPC_URL, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) })
+      .then(function(r){ return r.json(); })
+      .then(function(arr){
+        var tmp = new Array(slice.length);
+        (Array.isArray(arr) ? arr : [arr]).forEach(function(x){ if (x && typeof x.id === 'number') tmp[x.id] = x.result || null; });
+        tmp.forEach(function(v){ out.push(v); });
+        return chunk(slice.slice(60), base + 60);
+      })
+      .catch(function(){ slice.forEach(function(){ out.push(null); }); });
+  }
+  return chunk(calls, 0).then(function(){ return out; });
+}
+
+/* 直推列表 */
+function twReferred(a){
+  return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x0') + twPad('0x1'))
+    .then(function(res){
+      var w = res.slice(2).match(/.{1,64}/g);
+      var total = twBig(w[0]);
+      if (!total) return {total:0, list:[], trunc:false};
+      var n = Math.min(total, TWC.MAX_SUB);
+      return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x0') + twPad('0x'+n.toString(16)))
+        .then(function(r2){
+          var w2 = r2.slice(2).match(/.{1,64}/g);
+          var off = twBig(w2[1]) / 32;
+          var len = twBig(w2[off]);
+          var list = [];
+          for (var i=0;i<len && i<n;i++) list.push('0x' + w2[off+1+i].slice(24));
+          return {total: total, list: list, trunc: total > n};
+        });
+    })
+    .catch(function(){ return {total:0, list:[], trunc:false}; });
+}
+/* 算力 */
+function twPower(a){
+  return Promise.all([
+    twCall(TWC.POWER, TWC.S_PWR_REG + twPad(a)).catch(function(){ return null; }),
+    twCall(TWC.POWER, TWC.S_PWR_LEFT + twPad(a)).catch(function(){ return null; })
+  ]).then(function(r){
+    return { reg: r[0] ? twDai(r[0]) : 0, left: r[1] ? twDai(r[1]) : 0 };
+  });
+}
+/* 逐层展开 */
+function twWalk(roots, depth, seen, info, budget){
+  if (depth <= 0 || !roots.length || budget.n <= 0) return Promise.resolve();
+  var batch = roots.slice(0, budget.n);
+  budget.n -= batch.length;
+  return Promise.all(batch.map(function(a){
+    return twReferred(a).then(function(r){ info[a.toLowerCase()] = r; });
+  })).then(function(){
+    var next = [];
+    batch.forEach(function(a){
+      var r = info[a.toLowerCase()];
+      (r.list||[]).forEach(function(c){
+        var k = c.toLowerCase();
+        if (seen[k]) return;
+        seen[k] = 1; next.push(k);
+      });
+    });
+    return twWalk(next, depth-1, seen, info, budget);
+  });
+}
+
+var TWRES = null;
+
+function twQuery(){
+  var raw = (document.getElementById('twAddr').value || '').trim();
+  var depth = Number(document.getElementById('twDepth').value) || 2;
+  var msg = document.getElementById('twMsg');
+  var out = document.getElementById('twOut');
+  if (!twOkAddr(raw)) { msg.innerHTML = '<span style="color:var(--red)">请填一个完整的钱包地址（0x 开头，共 42 位）</span>'; return; }
+  var addr = raw.toLowerCase();
+  var T0 = Date.now();
+  msg.textContent = '查询中…';
+  out.innerHTML = '';
+
+  var seen = {}; seen[addr] = 1;
+  var info = {};
+  var budget = { n: TWC.MAX_ADDR };
+
+  twCall(TWC.COMM, TWC.S_MEMBERS + twPad(addr))
+    .then(function(m){
+      var level = twBig(m.slice(2,66));
+      var referrer = '0x' + m.slice(90,130);
+      return Promise.all([ twPower(addr), twReferred(addr) ]).then(function(r){
+        return { level: level, referrer: referrer, power: r[0], ref: r[1] };
+      });
+    })
+    .then(function(base){
+      if (!base.level) {
+        msg.innerHTML = '<span style="color:var(--red)">这个地址不在关系树成员名单里</span>（合约返回 level = 0）';
+        return null;
+      }
+      var branches = base.ref.list.slice(0, TWC.MAX_DIRECT);
+      msg.textContent = '已找到 ' + branches.length + ' 条直推线，正在展开下级…';
+      branches.forEach(function(b){ seen[b.toLowerCase()] = 1; });
+      return twWalk(branches, depth, seen, info, budget).then(function(){
+        return { base: base, branches: branches };
+      });
+    })
+    .then(function(r){
+      if (!r) return;
+      var branches = r.branches;
+      if (!branches.length) {
+        msg.innerHTML = '这个地址在关系树里，但<b>没有任何直推</b>（第 ' + r.base.level + ' 层）。';
+        twRenderBase(r.base, []);
+        return;
+      }
+      var plan = branches.map(function(b){
+        var node = info[b.toLowerCase()] || {total:0, list:[]};
+        var kids = [];
+        (node.list||[]).forEach(function(c){
+          var cn = info[c.toLowerCase()] || {total:0, list:[]};
+          kids.push({addr:c, sub:(cn.list||[])});
+        });
+        var flat = [b];
+        kids.forEach(function(x){ flat.push(x.addr); (x.sub||[]).forEach(function(y){ flat.push(y); }); });
+        var uniq = {}; flat.forEach(function(a){ uniq[a.toLowerCase()] = a; });
+        return { addr:b, node:node, kids:kids, addrs:Object.keys(uniq) };
+      });
+      var allAddrs = [];
+      plan.forEach(function(p){ p.addrs.forEach(function(a){ if (allAddrs.indexOf(a) < 0) allAddrs.push(a); }); });
+      var calls = [];
+      allAddrs.forEach(function(a){
+        calls.push({ to:TWC.POWER, data:TWC.S_PWR_REG + twPad(a) });
+        calls.push({ to:TWC.POWER, data:TWC.S_PWR_LEFT + twPad(a) });
+      });
+      msg.textContent = '正在批量查算力（' + allAddrs.length + ' 个地址）…';
+      return twBatch(calls).then(function(res){
+        var pmap = {};
+        allAddrs.forEach(function(a, i){
+          pmap[a.toLowerCase()] = {
+            reg:  res[i*2]   ? twDai(res[i*2])   : 0,
+            left: res[i*2+1] ? twDai(res[i*2+1]) : 0 };
+        });
+        return plan.map(function(p){
+          var own = pmap[p.addr.toLowerCase()] || {reg:0,left:0};
+          var sum = 0;
+          p.addrs.forEach(function(a){ var pp = pmap[a.toLowerCase()]; if (pp) sum += pp.left; });
+          return { addr:p.addr, total:p.node.total, own:own, kids:p.kids,
+                   subCount: p.addrs.length - 1, sum: sum, trunc: p.node.trunc };
+        });
+      }).then(function(list){
+        TWRES = { base: r.base, branches: list, depth: depth };
+        msg.innerHTML = '展开完成：' + list.length + ' 条线，共统计 ' + (Object.keys(info).length + 1) +
+          ' 个地址' + (list.some(function(x){return x.trunc;}) ? '（部分线的下级过多，已按上限取样）' : '') + '　用时 ' + ((Date.now()-T0)/1000).toFixed(1) + ' 秒。';
+        twRenderBase(r.base, list);
+      });
+    })
+    .catch(function(e){
+      msg.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
+    });
+}
+
+function twRenderBase(base, list){
+  var out = document.getElementById('twOut');
+  var html = '';
+  html += '<div class="grid g4" style="margin-top:10px">' +
+    card('关系树层级', '第 ' + base.level + ' 层', '', '根成员为第 1 层') +
+    card('自己的有效算力', twFmt(base.power.left, 2), 'DAI', '登记算力 ' + twFmt(base.power.reg, 2)) +
+    card('直推条数', base.ref.total, '条', list.length + ' 条已展开') +
+    card('推荐人', twShort(base.referrer), '', '<a href="#" onclick="document.getElementById(\'twAddr\').value=\'' + base.referrer + '\';twQuery();return false;">查它的上级</a>') +
+    '</div>';
+  out.innerHTML = html + (list.length ? '' : '');
+  if (list.length) twRenderBranches();
+}
+
+function twRenderBranches(){
+  if (!TWRES) return;
+  var list = TWRES.branches.slice();
+  list.sort(function(a,b){ return b.sum - a.sum; });
+  TWRES.sorted = list;
+  var max = Math.max.apply(null, list.map(function(x){ return x.sum; })) || 1;
+  var rows = '<div class="br"><div class="hh" style="font-size:11.5px;color:var(--dim)">选用</div>' +
+    '<div class="hh" style="font-size:11.5px;color:var(--dim)">支线地址</div>' +
+    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">下级人数</div>' +
+    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">算力合计（DAI）</div></div>';
+  list.forEach(function(x, i){
+    var pct = Math.round(x.sum / max * 100);
+    var cls = pct < 34 ? 'low' : (pct < 67 ? 'mid' : '');
+    rows += '<div class="br' + (i < 3 ? ' pick' : '') + '">' +
+      '<div><input type="checkbox" class="twpick" data-addr="' + x.addr + '"' + (i < 3 ? ' checked' : '') + '></div>' +
+      '<div class="bk">' + x.addr + '<div class="bar"><i class="' + cls + '" style="width:' + pct + '%"></i></div></div>' +
+      '<div class="bv">' + x.subCount + (x.trunc ? '+' : '') + '</div>' +
+      '<div class="bv">' + twFmt(x.sum, 2) + '</div></div>';
+  });
+  var out = document.getElementById('twOut');
+  out.innerHTML += '<div class="card" style="padding:0;overflow:hidden;margin-top:10px">' + rows + '</div>' +
+    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「算力合计」= 该线自己的算力 + 下面 ' +
+    TWRES.depth + ' 层内所有下级的算力。改勾选后按「重新判定」。</p>' +
+    '<div style="margin-top:8px"><button id="twJudge">重新判定 P 等级</button></div>' +
+    '<div id="twJudgeOut"></div>';
+  document.getElementById('twJudge').addEventListener('click', twJudge);
+  twJudge();
+}
+
+function twJudge(){
+  var out = document.getElementById('twJudgeOut');
+  if (!out || !TWRES) return;
+  var picked = [];
+  document.querySelectorAll('.twpick').forEach(function(cb){ if (cb.checked) picked.push(cb.getAttribute('data-addr')); });
+  if (picked.length < 3) {
+    out.innerHTML = '<div class="warn" style="margin-top:10px">晋级 P1 以上需要 <b>3 个独立区域</b>，请至少勾选 3 条线（现在勾了 ' + picked.length + ' 条）。</div>';
+    return;
+  }
+  var byAddr = {}; TWRES.sorted.forEach(function(x){ byAddr[x.addr.toLowerCase()] = x; });
+  var sel = picked.map(function(a){ return byAddr[a.toLowerCase()]; }).filter(Boolean);
+  sel.sort(function(a,b){ return a.sum - b.sum; });
+  var weakest = sel[0];
+
+  var rows = '<div class="lvp"><div class="hh">等级</div><div class="hh">单区门槛</div><div class="hh">三区是否达标</div><div class="hh">还差多少</div></div>';
+  var reached = '—';
+  TWRES.PLV = TWC.PLV;
+  TWC.PLV.forEach(function(p){
+    if (p.region === null) {
+      rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + '</div>' +
+              '<div class="note">需每区有 1 名有效 ' + (p.lv==='P6'?'P5':'P6') + '（链上无法判断）</div><div class="note">—</div>';
+      return;
+    }
+    var okAll = sel.every(function(x){ return x.sum >= p.region; });
+    var below = sel.filter(function(x){ return x.sum < p.region; });
+    if (okAll) reached = p.lv;
+    rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + ' DAI</div>' +
+      '<div>' + (okAll ? '<span class="pill ok">达标</span>' : '<span class="pill no">' + below.length + ' 个区不够</span>') + '</div>' +
+      '<div>' + (okAll ? '—' : twFmt(p.region - below[0].sum, 2)) + '</div>';
+  });
+
+  var next = null;
+  for (var i=0;i<TWC.PLV.length;i++){
+    if (TWC.PLV[i].region === null) break;
+    var all = sel.every(function(x){ return x.sum >= TWC.PLV[i].region; });
+    if (!all) { next = TWC.PLV[i]; break; }
+  }
+
+  var advice = '';
+  if (!next) {
+    advice = '你选的三条线都已过 P5 的单区门槛。P6/P7 还要求「每区至少 1 名有效 P' + '5/6」，这一条链上判断不了，需要官方后台确认。';
+  } else if (reached === '—') {
+    advice = '目前三条线都还没达到 P1 的单区门槛（5 万 DAI）。<b>最弱的是 ' + twShort(weakest.addr) +
+      '（' + twFmt(weakest.sum,2) + ' DAI）</b>，把新增算力优先放到这条线的下面，能最快把三条线拉齐。';
+  } else {
+    advice = '你当前能对应到 <b>' + reached + '</b>。要往 <b>' + next.lv + '</b> 走，还差 <b>' +
+      twFmt(next.region - weakest.sum, 2) + ' DAI</b> 算力（补齐最弱的区）。<br>' +
+      '<b>建议把新增算力优先放到最弱的这条线：' + weakest.addr + '</b>（当前 ' + twFmt(weakest.sum,2) + ' DAI）。';
+  }
+
+  out.innerHTML = '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定</div>' +
+    rows + '</div>' +
+    '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
+    '<p class="note" style="margin-top:8px">⚠️ 官方从来没有定义过「区域」是什么。这里用「你勾选的 3 条直推线」近似代替，' +
+    '另外 P1–P7 还要求达到对应的 veAiLGNS 价值门槛（1,000–20,000 DAI），链上这一项需要你自己填，本站不自动判断。</p>';
+}
+
+document.getElementById('twGo').addEventListener('click', twQuery);
+document.getElementById('twAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') twQuery(); });
 
 readLive();
 setInterval(readLive, 30000);
