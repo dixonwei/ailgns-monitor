@@ -117,6 +117,19 @@ button:disabled{opacity:.5;cursor:default}
   .fc .big{color:var(--gold)}
   .flowstep{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;line-height:1.9}
   .flowstep b{color:var(--gold)}
+
+  .who{border-bottom:1px solid var(--line)}
+  .who:last-child{border-bottom:none}
+  .who>summary{padding:11px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+  .who>summary::-webkit-details-marker{display:none}
+  .who>summary:before{content:"▸ ";color:var(--dim);transition:transform .15s}
+  .who[open]>summary:before{content:"▾ "}
+  .who>summary b{color:var(--gold)}
+  .who .lst{padding:2px 14px 14px 14px;display:flex;flex-wrap:wrap;gap:6px}
+  .who .lst a{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--blue);
+    background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 8px;text-decoration:none;white-space:nowrap}
+  .who .lst a i{font-style:normal;color:var(--dim);margin-left:6px}
+  .who .lst a:hover{border-color:var(--gold);color:var(--gold)}
 footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 .warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
   border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
@@ -161,16 +174,16 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   <h2>P 等级门槛 · 换算成「要投多少钱」</h2>
   <div class="card">
     <div class="warn" style="margin-bottom:14px;font-size:13px">
-      <b>最容易搞错的一点 👇</b><br>
-      规则里写的「每区 ≥ 50,000 <b>DAI</b>」，这个 50,000 是 <b>算力（Power）</b>，<b>不是你掏的钱</b>。<br>
-      官方 DApp 写明：<b>存 1 DAI = 2.5 算力</b>。<br>
-      所以 —— <span class="bigno">算力 ÷ 2.5 = 你要掏的钱</span>
+      <b>最关键的一点 👇</b><br>
+      规则里写的「每区 ≥ 50,000 <b>DAI</b>」，指的是<b>该区真实累计投入的 DAI（本金）</b>，<b>不是你换算出来的算力</b>。<br>
+      （存 1 DAI = 2.5 算力，但<b>考核看本金，不看算力</b>）<br>
+      所以 —— <span class="bigno">每区投 5 万，三个区 15 万</span>
     </div>
     <div class="scroll">
       <table class="ptab" id="pTab">
         <thead><tr>
-          <th>等级</th><th>每区门槛<br>（算力）</th><th>每区要投<br>（DAI）</th>
-          <th>三个区合计<br>（DAI）</th><th>另外还要锁<br>veAiLGNS</th>
+          <th>等级</th><th>每区门槛<br>（真实投入 DAI）</th><th>三个区合计<br>（真实投入 DAI）</th>
+          <th>折算成算力<br>（只作参考）</th><th>另外还要锁<br>veAiLGNS</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -192,7 +205,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
         <option value="3">我想上 P4</option>
         <option value="4">我想上 P5</option>
       </select>
-      <input id="pcHave" placeholder="我某个区现在的算力是多少 DAI（可不填）" spellcheck="false">
+      <input id="pcHave" placeholder="我某个区现在投入了多少 DAI（可不填）" spellcheck="false">
       <button id="pcGo">算一下</button>
     </div>
     <div id="pcOut" style="margin-top:12px"></div>
@@ -226,6 +239,12 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   <h2>各等级拿到多少 · AiLGNS / 人 / 天</h2>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="lv" id="lvtable"></div>
+  </div>
+  <div class="card" style="margin-top:10px;padding:0;overflow:hidden">
+    <div style="padding:12px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line)">
+      每个等级有哪些钱包 <span class="note" style="font-weight:400">（点等级展开完整名单）</span>
+    </div>
+    <div id="whoList"></div>
   </div>
   <p class="note" style="margin-top:8px">
     共识按等级发，同一级每人一样；网络和增长按各自团队当天新增算，所以同等级内部差距很大。
@@ -735,6 +754,24 @@ function render(){
   });
   $('lvtable').innerHTML = rows;
 
+  // 每个等级有哪些钱包
+  var who = d.who || {};
+  var wlEl = document.getElementById('whoList');
+  if (wlEl) {
+    var wOut = '';
+    ['P7','P6','P5','P4','P3','P2','P1'].forEach(function(lv){
+      var list = who[lv] || [];
+      if (!list.length) return;
+      wOut += '<details class="who"' + (lv==='P1' ? ' open' : '') + '><summary><span><b>' + lv + '</b>　' + list.length + ' 个钱包</span>' +
+        '<span class="note">点开看地址</span></summary><div class="lst">' +
+        list.map(function(x){
+          return '<a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener" title="' + x.a + '">' +
+                 x.a.slice(0,10) + '…' + x.a.slice(-6) + (x.t != null ? '<i>' + fmt(x.t,4) + '</i>' : '') + '</a>';
+        }).join('') + '</div></details>';
+    });
+    wlEl.innerHTML = wOut || '<div style="padding:14px" class="note">暂无数据</div>';
+  }
+
   // 趋势图
   var uh = (r.unitPriceHistory || []).slice().reverse();   // 旧 -> 新
   var hist = (r.history || []).slice().reverse();
@@ -937,13 +974,12 @@ function pcFmt(n){ if(n===null||n===undefined||isNaN(n)) return '—';
 
 function pcTable(){
   var t = document.getElementById('pTab'); if(!t) return;
-  var html = '<thead><tr><th>等级</th><th>每区门槛<br>（算力）</th><th>每区要投<br>（DAI）</th><th>三个区合计<br>（DAI）</th><th>另外还要锁<br>veAiLGNS</th></tr></thead><tbody>';
+  var html = '<thead><tr><th>等级</th><th>每区门槛<br>（真实投入 DAI）</th><th>三个区合计<br>（真实投入 DAI）</th><th>折算成算力<br>（只作参考）</th><th>另外还要锁<br>veAiLGNS</th></tr></thead><tbody>';
   PCL.forEach(function(x){
-    var per = x.region / PCM;
     html += '<tr><td><b>' + x.lv + '</b></td>' +
-      '<td>' + pcFmt(x.region) + '</td>' +
-      '<td class="big">' + pcFmt(per) + '</td>' +
-      '<td class="big">' + pcFmt(per*3) + '</td>' +
+      '<td class="big">' + pcFmt(x.region) + '</td>' +
+      '<td class="big">' + pcFmt(x.region*3) + '</td>' +
+      '<td class="gray">' + pcFmt(x.region*PCM) + '</td>' +
       '<td class="gray">' + pcFmt(x.ve) + '</td></tr>';
   });
   html += '<tr><td class="gray">P6</td><td class="gray">每区 1 名有效 P5</td><td class="gray">—</td><td class="gray">—</td><td class="gray">15,000</td></tr>';
@@ -957,24 +993,23 @@ function pcCalc(){
   var x = PCL[idx] || PCL[0];
   var raw = String((document.getElementById('pcHave')||{}).value || '').replace(/[, ]/g,'');
   var have = raw === '' ? null : Number(raw);
-  var per = x.region / PCM;
   var s = '';
   s += '<div style="font-size:15px;margin-bottom:8px">要上 <b style="color:var(--gold)">' + x.lv + '</b>，你需要：</div>';
-  s += '<div class="step"><div class="no">1</div><div class="t">每个区都要有 <b>' + pcFmt(x.region) + ' 算力</b><br><span class="note">这是算力，不是钱</span></div></div>';
-  s += '<div class="step"><div class="no">2</div><div class="t">每个区要投 <b>' + pcFmt(per) + ' DAI</b><br><span class="note">' + pcFmt(x.region) + ' ÷ 2.5 = ' + pcFmt(per) + ' DAI</span></div></div>';
-  s += '<div class="step"><div class="no">3</div><div class="t">三个区合计要投 <b>' + pcFmt(per*3) + ' DAI</b><br><span class="note">' + pcFmt(per) + ' × 3 = ' + pcFmt(per*3) + ' DAI</span></div></div>';
+  s += '<div class="step"><div class="no">1</div><div class="t">每个区都要<b>真实投入 ' + pcFmt(x.region) + ' DAI</b><br><span class="note">这是你实际掏的钱，不是算力</span></div></div>';
+  s += '<div class="step"><div class="no">2</div><div class="t">三个区合计要投 <b>' + pcFmt(x.region*3) + ' DAI</b><br><span class="note">' + pcFmt(x.region) + ' × 3 = ' + pcFmt(x.region*3) + ' DAI</span></div></div>';
+  s += '<div class="step"><div class="no">3</div><div class="t">换算成算力是 <b>' + pcFmt(x.region*PCM) + ' 算力</b><br><span class="note">' + pcFmt(x.region) + ' × 2.5 = ' + pcFmt(x.region*PCM) + '（只作参考，考核看本金）</span></div></div>';
   s += '<div class="step"><div class="no">4</div><div class="t">另外还要锁 <b>价值 ' + pcFmt(x.ve) + ' DAI 的 AiLGNS</b><br><span class="note">按币价折算价值，不是 ' + pcFmt(x.ve) + ' 枚</span></div></div>';
   if (have !== null && !isNaN(have)) {
     var gap = x.region - have;
     if (gap <= 0) {
-      s += '<div class="warn" style="margin-top:10px">这个区已经有 <b>' + pcFmt(have) + ' 算力</b> → <b style="color:var(--green)">够 ' + x.lv + ' 了</b>。<br>别忘了另外两个区也要分别达标。</div>';
+      s += '<div class="warn" style="margin-top:10px">这个区已经投入 <b>' + pcFmt(have) + ' DAI</b> → <b style="color:var(--green)">够 ' + x.lv + ' 了</b>。<br>别忘了另外两个区也要分别达标。</div>';
     } else {
-      s += '<div class="warn" style="margin-top:10px">这个区现在 <b>' + pcFmt(have) + ' 算力</b>，还差 <b>' + pcFmt(gap) + ' 算力</b>。<br>' +
-           '<b style="font-size:15px">还要再投 ' + pcFmt(gap / PCM) + ' DAI</b><br>' +
-           '<span class="note">' + pcFmt(gap) + ' ÷ 2.5 = ' + pcFmt(gap/PCM) + ' DAI</span></div>';
+      s += '<div class="warn" style="margin-top:10px">这个区现在投入 <b>' + pcFmt(have) + ' DAI</b>，还差 <b>' + pcFmt(gap) + ' DAI</b>。<br>' +
+           '<b style="font-size:15px">还要再投 ' + pcFmt(gap) + ' DAI</b><br>' +
+           '<span class="note">对应再增加 ' + pcFmt(gap*PCM) + ' 算力</span></div>';
     }
   }
-  s += '<div class="warn" style="margin-top:10px">⚠️ <b>三个区必须「分别」达标</b>，不能加起来算。<br>哪个区最弱，就把算力往哪个区投。</div>';
+  s += '<div class="warn" style="margin-top:10px">⚠️ <b>三个区必须「分别」达标</b>，不能加起来算。<br>哪个区最弱，就把新资金投到哪个区。</div>';
   out.innerHTML = s;
 }
 
@@ -1232,61 +1267,49 @@ function twJudge(){
   }
   var byAddr = {}; TWRES.sorted.forEach(function(x){ byAddr[x.addr.toLowerCase()] = x; });
   var sel = picked.map(function(a){ return byAddr[a.toLowerCase()]; }).filter(Boolean);
-  sel.sort(function(a,b){ return a.sum - b.sum; });
+  sel.forEach(function(x){ x.dai = x.sum / PCM; });
+  sel.sort(function(a,b){ return a.dai - b.dai; });
   var weakest = sel[0];
-
-  var rows = '<div class="lvp"><div class="hh">等级</div><div class="hh">单区门槛</div><div class="hh">三区是否达标</div><div class="hh">还差多少</div></div>';
+  var rows = '<div class="lvp"><div class="hh">等级</div><div class="hh">单区门槛（真实投入）</div><div class="hh">三区是否达标</div><div class="hh">还差多少</div></div>';
   var reached = '—';
-  TWRES.PLV = TWC.PLV;
   TWC.PLV.forEach(function(p){
     if (p.region === null) {
       rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + '</div>' +
               '<div class="note">需每区有 1 名有效 ' + (p.lv==='P6'?'P5':'P6') + '（链上无法判断）</div><div class="note">—</div>';
       return;
     }
-    var okAll = sel.every(function(x){ return x.sum >= p.region; });
-    var below = sel.filter(function(x){ return x.sum < p.region; });
+    var okAll = sel.every(function(x){ return x.dai >= p.region; });
+    var below = sel.filter(function(x){ return x.dai < p.region; });
     if (okAll) reached = p.lv;
-    rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + '<br><span class="note" style="font-size:11px">≈ 投 ' + twFmt(p.region/2.5,0) + ' DAI</span></div>' +
+    rows += '<div><b>' + p.lv + '</b></div><div>' + pcFmt(p.region) + ' DAI</div>' +
       '<div>' + (okAll ? '<span class="pill ok">达标</span>' : '<span class="pill no">' + below.length + ' 个区不够</span>') + '</div>' +
-      '<div>' + (okAll ? '—' : twFmt(p.region - below[0].sum, 2)) + '</div>';
+      '<div>' + (okAll ? '—' : twFmt(p.region - below[0].dai, 0) + ' DAI') + '</div>';
   });
-
   var next = null;
   for (var i=0;i<TWC.PLV.length;i++){
     if (TWC.PLV[i].region === null) break;
-    var all = sel.every(function(x){ return x.sum >= TWC.PLV[i].region; });
+    var all = sel.every(function(x){ return x.dai >= TWC.PLV[i].region; });
     if (!all) { next = TWC.PLV[i]; break; }
   }
-
   var advice = '';
   if (!next) {
-    advice = '你选的三条线都已过 P5 的单区门槛。P6/P7 还要求「每区至少 1 名有效 P' + '5/6」，这一条链上判断不了，需要官方后台确认。';
+    advice = '你选的三条线都已过 P5 的单区门槛。P6/P7 还要求「每区至少 1 名有效 P5/P6」，链上判断不了，需要官方后台确认。';
   } else if (reached === '—') {
-    advice = '目前三条线都还没达到 P1 的单区门槛（<b>5 万算力</b>，约等于<b>投 2 万 DAI</b>）。<br>' +
-      '<b>最弱的是 ' + twShort(weakest.addr) + '（' + twFmt(weakest.sum,0) + ' 算力 ≈ 投了 ' + twFmt(weakest.sum/2.5,0) + ' DAI）</b>，' +
-      '把新增算力优先放到这条线的下面，能最快把三条线拉齐。<br>' +
-      '它离 5 万算力还差 <b>' + twFmt(50000-weakest.sum,0) + ' 算力</b> → 还要再投 <b>' + twFmt((50000-weakest.sum)/2.5,0) + ' DAI</b>。';
+    advice = '目前三条线都还没到 P1 的单区门槛（<b>真实投入 50,000 DAI</b>）。<br>' +
+      '<b>最弱的是 ' + twShort(weakest.addr) + '（折算真实投入约 ' + twFmt(weakest.dai,0) + ' DAI）</b>，把新资金优先投到这条线最快。<br>' +
+      '它还差 <b>' + twFmt(50000-weakest.dai,0) + ' DAI</b> 才够 P1 单区门槛。';
   } else {
-    var gapP = next.region - weakest.sum;
+    var gapP = next.region - weakest.dai;
     advice = '你当前能对应到 <b>' + reached + '</b>。要往 <b>' + next.lv + '</b> 走，最弱那个区还差 <b>' +
-      twFmt(gapP, 0) + ' 算力</b>。<br>' +
-      '<b style="font-size:15px">👉 折合还要再投 ' + twFmt(gapP/2.5, 0) + ' DAI</b>' +
-      '<span class="note">（' + twFmt(gapP,0) + ' ÷ 2.5 = ' + twFmt(gapP/2.5,0) + ' DAI）</span><br>' +
-      '<b>建议把新增算力优先放到最弱的这条线：' + weakest.addr + '</b>（当前 ' + twFmt(weakest.sum,0) + ' 算力 ≈ 投了 ' + twFmt(weakest.sum/2.5,0) + ' DAI）。';
+      twFmt(gapP, 0) + ' DAI</b> 的<b>真实投入</b>（不是算力）。<br>' +
+      '<b>建议把新资金优先投到最弱的这条线：' + weakest.addr + '</b>（折算已投入约 ' + twFmt(weakest.dai,0) + ' DAI）。';
   }
-
-  var twOff = '<div class="warn" style="margin-top:10px">' +
-    '<b>⚠️ 这里的结果只是近似，和官方很可能不一样。</b><br>' +
-    '官方从来没有公布「三个区」是怎么划的，链上也推不出来。本站只是把你勾选的 3 条直推线当作三个区来估。' +
-    '<br><b>要准的，请看官方评估：</b>' +
-    '<a href="https://ailgns.ai/team/' + TWRES.root + '" target="_blank" rel="noopener">ailgns.ai/team/' + twShort(TWRES.root) + '</a>' +
-    '</div>';
-  out.innerHTML = twOff + '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定（近似）</div>' +
-    rows + '</div>' +
+  out.innerHTML = '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。' +
+    '要准的请看官方评估：<a href="https://ailgns.ai/team/' + TWRES.root + '" target="_blank" rel="noopener">ailgns.ai/team/' + twShort(TWRES.root) + '</a></div>' +
+    '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定（近似）</div>' + rows + '</div>' +
     '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
-    '<p class="note" style="margin-top:8px">⚠️ 官方从来没有定义过「区域」是什么。这里用「你勾选的 3 条直推线」近似代替，' +
-    '另外 P1–P7 还要求达到对应的 veAiLGNS 价值门槛（1,000–20,000 DAI），链上这一项需要你自己填，本站不自动判断。</p>';
+    '<p class="note" style="margin-top:8px">说明：链上每条线的算力 ÷ 2.5 = 该线折算的真实投入 DAI。<b>考核看的是真实投入，不是算力。</b>' +
+    '另外 P1–P7 还要求达到对应的 veAiLGNS 价值门槛，链上这一项需要你自己核对。</p>';
 }
 
 document.getElementById('twGo').addEventListener('click', twQuery);

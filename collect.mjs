@@ -251,6 +251,35 @@ async function collectFlow(prev) {
   };
 }
 
+
+/* ---------- 各等级的钱包名单 ---------- */
+function parseWho(text) {
+  const start = text.indexOf('有 P 等级的地址各拿到多少');
+  if (start < 0) return null;
+  const seg = text.slice(start, start + 120000);
+  const marks = [];
+  const lvRe = /<h3[^>]*>\s*(P[1-7])\s*<\/h3>/g;
+  let m;
+  while ((m = lvRe.exec(seg)) !== null) marks.push({ lv: m[1], i: m.index });
+  if (!marks.length) return null;
+  const out = {};
+  marks.forEach((L, k) => {
+    const j = k + 1 < marks.length ? marks[k + 1].i : seg.length;
+    const body = seg.slice(L.i, j);
+    const items = body.split('<li').slice(1);
+    const list = [];
+    items.forEach((li) => {
+      const a = li.match(/title="(0x[0-9a-fA-F]{40})"/);
+      if (!a) return;
+      const plain = li.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+      const amt = plain.match(/\u5408\u8ba1\s*([\d.]+)/);
+      list.push({ a: a[1], t: amt ? Number(amt[1]) : null });
+    });
+    if (list.length) out[L.lv] = list;
+  });
+  return Object.keys(out).length ? out : null;
+}
+
 /* ---------- 主流程 ---------- */
 async function main() {
   const started = new Date();
@@ -264,6 +293,7 @@ async function main() {
   try {
     const rt = await getText(SRC_REWARDS);
     data.rewards = parseRewards(flatten(rt));
+    try { data.who = parseWho(rt); } catch (e) { note('who: ' + e.message); }
   } catch (e) { note('rewards: ' + e.message); }
 
   try {
@@ -289,6 +319,7 @@ async function main() {
         if (prev.protocol) { data.protocol = prev.protocol; note('protocol 解析为空，沿用上一次快照'); }
       }
       if (!data.flow && prev.flow) { data.flow = prev.flow; note('flow 抓取失败，沿用上一次快照'); }
+      if (!data.who && prev.who) { data.who = prev.who; note('who 抓取失败，沿用上一次快照'); }
     } catch (e) { note('读取旧快照失败: ' + e.message); }
   }
 
