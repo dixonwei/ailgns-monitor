@@ -242,7 +242,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   </div>
   <div class="card" style="margin-top:10px;padding:0;overflow:hidden">
     <div style="padding:12px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line)">
-      每个等级有哪些钱包 <span class="note" style="font-weight:400">（点等级展开完整名单）</span>
+      每个等级有哪些钱包 <span class="note" id="whoMeta" style="font-weight:400"></span>
     </div>
     <div id="whoList"></div>
   </div>
@@ -756,6 +756,9 @@ function render(){
 
   // 每个等级有哪些钱包
   var who = d.who || {};
+  var ll2 = d.levelList || {};
+  var wm = document.getElementById('whoMeta');
+  if (wm && ll2.total) wm.innerHTML = '（全网第 ' + ll2.day + ' 天 · 共 <b style="color:var(--gold)">' + ll2.total + '</b> 个 · 点等级展开名单）';
   var wlEl = document.getElementById('whoList');
   if (wlEl) {
     var wOut = '';

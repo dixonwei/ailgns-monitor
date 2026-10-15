@@ -280,6 +280,39 @@ function parseWho(text) {
   return Object.keys(out).length ? out : null;
 }
 
+
+/* ---------- 全网 P 等级名单（当天，来自团队页） ---------- */
+const SRC_LEVELS = 'https://ailgns.ai/team/0x159ec1f43d18ff1f275156a4a8b0e53503503c1b';
+
+function parseLevelList(text) {
+  const m = text.match(/\u7b2c (\d+) \u5929\u8bc4\u4e0a\u7b49\u7ea7\u7684 ([\d,]+) \u4e2a\u5730\u5740/);
+  const i0 = text.indexOf('\u8bc4\u4e0a\u7b49\u7ea7\u7684');
+  if (i0 < 0) return null;
+  const seg = text.slice(i0);
+  const marks = [];
+  const re = /<p[^>]*>\s*(P[1-7])\s*\u00b7\s*([\d,]+)\s*\u4e2a\s*<\/p>/g;
+  let mm;
+  while ((mm = re.exec(seg)) !== null) {
+    marks.push({ lv: mm[1], n: Number(mm[2].replace(/,/g, '')), i: mm.index });
+  }
+  if (!marks.length) return null;
+  const out = {};
+  marks.forEach((L, k) => {
+    const j0 = k + 1 < marks.length ? marks[k + 1].i : seg.length;
+    const body = seg.slice(L.i, j0);
+    const list = [];
+    const re2 = /title="(0x[0-9a-fA-F]{40})"/g;
+    let m2;
+    while ((m2 = re2.exec(body)) !== null) {
+      const a = m2[1].toLowerCase();
+      if (list.indexOf(a) < 0) list.push(a);
+      if (list.length >= L.n) break;
+    }
+    if (list.length) out[L.lv] = list.map((a) => ({ a: a, t: null }));
+  });
+  return { day: m ? Number(m[1]) : null, total: m ? Number(m[2].replace(/,/g, '')) : null, list: out };
+}
+
 /* ---------- 主流程 ---------- */
 async function main() {
   const started = new Date();
@@ -298,12 +331,22 @@ async function main() {
       if (data.who && data.rewards) {
         const LV = ['P1','P2','P3','P4','P5','P6','P7'];
         LV.forEach((lv) => {
-          const c = (data.rewards.levels.find((x) => x.level === lv) || {}).count || 0;
+          const src = (data.levelList && data.levelList.list) ? data.levelList.list : data.who;
+          const c = (src[lv] || []).length;
           const w = (data.who[lv] || []).length;
-          if (c !== w) note('who 与等级表人数不一致 ' + lv + '：等级表 ' + c + '，名单 ' + w);
+          if (c !== w) note('who 与等级名单不一致 ' + lv + '：名单 ' + c + '，who ' + w);
         });
       }
     } catch (e) { note('who: ' + e.message); }
+
+  try {
+    const lt = await getText(SRC_LEVELS);
+    const ll = parseLevelList(lt);   // 用原始 HTML（地址在 title 属性里）
+    if (ll && ll.total) {
+      data.levelList = ll;
+      if (ll.list && Object.keys(ll.list).length) data.who = ll.list;
+    }
+  } catch (e) { note('levelList: ' + e.message); }
   } catch (e) { note('rewards: ' + e.message); }
 
   try {
