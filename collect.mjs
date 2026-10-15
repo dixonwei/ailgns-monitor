@@ -190,6 +190,67 @@ function parseProtocol(text) {
   return p;
 }
 
+
+/* ---------- 资金流水：用 DAI 买算力 ---------- */
+const DAI_TOKEN   = '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14';
+const POWERLEDGER = '0x9e68f61e2615cc1d2c4a2d0026bfc1ebfdf68c1b';
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+const FLOW_START = 15042314;   // 2026-09-28 13:00 UTC+8 官方算力参与开放
+
+const hx = (n) => '0x' + n.toString(16);
+const p64 = (a) => '0x' + a.toLowerCase().replace('0x', '').padStart(64, '0');
+
+async function rpcGet(method, params) {
+  const r = await fetch(RPC, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: (Date.now() % 1e6), method, params }),
+  });
+  const j = await r.json();
+  if (j.error) throw new Error(method + ': ' + j.error.message);
+  return j.result;
+}
+
+async function scanInflow(fromBlock, toBlock, label) {
+  let total = 0n, count = 0;
+  for (let s = fromBlock; s <= toBlock; s += 4999) {
+    const logs = await rpcGet('eth_getLogs', [{
+      address: DAI_TOKEN, topics: [TRANSFER_TOPIC, null, p64(POWERLEDGER)],
+      fromBlock: hx(s), toBlock: hx(Math.min(s + 4998, toBlock)),
+    }]);
+    if (Array.isArray(logs)) logs.forEach((l) => { total += BigInt(l.data); count++; });
+    if (s % 100000 === 0 && label) console.log('    ' + label + ' ' + s);
+  }
+  return { total, count };
+}
+
+async function collectFlow(prev) {
+  const head = parseInt(await rpcGet('eth_blockNumber', []), 16);
+  const p = prev || {};
+  let scannedTo = Number(p.scannedToBlock || 0);
+  if (scannedTo < FLOW_START - 1) scannedTo = FLOW_START - 1;
+  if (scannedTo > head) scannedTo = head - 1;
+  let totalWei = BigInt(p.totalWei || '0'), txCount = Number(p.txCount || 0);
+
+  if (scannedTo < head) {
+    const r = await scanInflow(scannedTo + 1, head, '增量');
+    totalWei += r.total; txCount += r.count;
+    scannedTo = head;
+  }
+  // 最近 24 小时
+  const day = await scanInflow(Math.max(FLOW_START, head - 86400), head, null);
+
+  const d = (v) => Number(v / 1000000000000n) / 1e6;
+  return {
+    scannedToBlock: scannedTo,
+    totalWei: totalWei.toString(),
+    txCount: txCount,
+    totalDai: d(totalWei),
+    totalFrom: '2026-09-28 13:00 (UTC+8) 官方算力参与开放',
+    last24hDai: d(day.total),
+    last24hTx: day.count,
+  };
+}
+
 /* ---------- 主流程 ---------- */
 async function main() {
   const started = new Date();
@@ -206,6 +267,13 @@ async function main() {
   } catch (e) { note('rewards: ' + e.message); }
 
   try {
+    let prevFlow = null;
+    if (existsSync(OUT)) { try { prevFlow = JSON.parse(readFileSync(OUT, 'utf8')).flow || null; } catch (e) {} }
+    data.flow = await collectFlow(prevFlow);
+    console.log('  买算力累计 ' + data.flow.totalDai.toFixed(0) + ' DAI / ' + data.flow.txCount + ' 笔');
+  } catch (e) { note('flow: ' + e.message); }
+
+  try {
     const ht = await getText(SRC_HELIX);
     data.protocol = parseProtocol(flatten(ht));
   } catch (e) { note('protocol: ' + e.message); }
@@ -220,6 +288,7 @@ async function main() {
       if (!data.protocol || data.protocol.day == null) {
         if (prev.protocol) { data.protocol = prev.protocol; note('protocol 解析为空，沿用上一次快照'); }
       }
+      if (!data.flow && prev.flow) { data.flow = prev.flow; note('flow 抓取失败，沿用上一次快照'); }
     } catch (e) { note('读取旧快照失败: ' + e.message); }
   }
 

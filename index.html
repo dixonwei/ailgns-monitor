@@ -108,6 +108,15 @@ button:disabled{opacity:.5;cursor:default}
     background:var(--gold);color:#101828;font-size:12px;font-weight:700}
   .step .t{flex:1;font-size:13.5px;line-height:1.5}
   .step .t b{color:var(--gold)}
+
+  .fc{display:grid;grid-template-columns:1.2fr 1fr 1.4fr;gap:0;font-size:13px;align-items:center}
+  .fc>div{padding:10px 12px;border-bottom:1px solid var(--line)}
+  .fc .fh{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
+  .fc .fv{text-align:right;font-weight:700;font-size:14px}
+  .fc .fd{color:var(--dim2);font-size:11.5px}
+  .fc .big{color:var(--gold)}
+  .flowstep{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;line-height:1.9}
+  .flowstep b{color:var(--gold)}
 footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 .warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
   border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
@@ -137,6 +146,17 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 
   <h2>链上实时 · 每 30 秒自动刷新</h2>
   <div class="grid g4" id="live"></div>
+
+  <h2>资金全景 · 钱都在哪（链上实时）</h2>
+  <div class="grid g4" id="flowSum"></div>
+  <div class="grid g3" id="flowStat" style="margin-top:10px"></div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
+    <div class="fc" id="flowList"></div>
+  </div>
+  <p class="note" style="margin-top:8px">
+    「用 DAI 买算力」的钱：先打给<b>算力账本</b>，账本<b>一分不停留</b>，立刻全额转进<b>协议储备</b>。
+    所以买算力的钱<b>全部在协议储备里</b>，账本余额永远是 0。
+  </p>
 
   <h2>P 等级门槛 · 换算成「要投多少钱」</h2>
   <div class="card">
@@ -640,6 +660,15 @@ function render(){
   $('errcard').innerHTML = errs.length
     ? '<div class="err"><b>部分数据抓取失败</b>（已尽量沿用上一次快照）：<br>' + errs.map(function(e){return '· ' + e;}).join('<br>') + '</div>'
     : '';
+
+  var fl2 = d.flow || {};
+  var fstat = document.getElementById('flowStat');
+  if (fstat && fl2.totalDai) {
+    fstat.innerHTML =
+      card('用 DAI 买算力 · 累计', fmt(fl2.totalDai/1e4, 2), '万 DAI', fmt(fl2.txCount,0) + ' 笔 · 自 ' + (fl2.totalFrom||'') ) +
+      card('最近 24 小时', fmt(fl2.last24hDai/1e4, 2), '万 DAI', fmt(fl2.last24hTx,0) + ' 笔（每日上限 200 万）') +
+      card('这些钱在哪', '协议储备', '', '账本只是中转，收到就全额转走');
+  }
 
   var p = d.protocol || {}, ch = d.chain || {}, r = d.rewards || {}, L = r.latest || {}, up = r.unitPrice || {};
 
@@ -1262,6 +1291,61 @@ function twJudge(){
 
 document.getElementById('twGo').addEventListener('click', twQuery);
 document.getElementById('twAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') twQuery(); });
+
+/* ================= 资金全景 ================= */
+var DAI_TOKEN = '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14';
+var FLC = [
+  ['协议储备',        '0x27Cb55eE75E777fF972B74B6E68782D12Bd4ec46', '所有钱最终都进这里（含买算力的钱）'],
+  ['AiLGNS/DAI 主池', '0x0a1Cce65d995C6C5100e6F5bA3c388Ef34CEcaf0', '储备拿钱建的主池流动性'],
+  ['涡轮 Turbine',    '0xe884a336550a4482ca6a17a3f93aa30ed4ed9bad', '激活排放收到的 DAI'],
+  ['手续费归集',      '0x7088e192b9b7f41A07bB3f79378e13454D8a80D5', '卖出费里的 1%'],
+  ['算力账本',        '0x9E68F61E2615cc1D2C4a2D0026bFc1EBFdf68C1b', '中转站，收到就转走 → 余额永远是 0']
+];
+function flDai(hh){
+  if (typeof hh !== 'string' || hh.length < 66) return null;
+  return Number(BigInt('0x' + hh.slice(2, 66)) / 1000000000000n) / 1e6;
+}
+function readFlow(){
+  var calls = FLC.map(function(x){
+    return { to: DAI_TOKEN, data: '0x70a08231' + x[1].toLowerCase().replace('0x','').padStart(64,'0') };
+  });
+  return twBatch(calls).then(function(res){
+    var rows = [], total = 0;
+    FLC.forEach(function(x, i){
+      var v = flDai(res[i]); if (v === null) v = 0;
+      rows.push({ name:x[0], addr:x[1], note:x[2], dai:v });
+      total += v;
+    });
+    renderFlow(rows, total);
+  }).catch(function(e){
+    var el = document.getElementById('flowList');
+    if (el) el.innerHTML = '<div style="padding:12px" class="note">读取失败：' + e.message + '</div>';
+  });
+}
+function renderFlow(rows, total){
+  var sum = document.getElementById('flowSum');
+  if (sum){
+    var big = rows.filter(function(r){ return r.dai >= 1e6; });
+    sum.innerHTML =
+      card('协议储备', fmt(rows[0].dai/1e6, 2), '百万 DAI', '买算力的钱全在这') +
+      card('AiLGNS/DAI 主池', fmt(rows[1].dai/1e6, 2), '百万 DAI', '储备建的主池') +
+      card('百万以上共', big.length, '处', big.map(function(r){ return r.name; }).join(' · ')) +
+      card('DAI 合计', fmt(total/1e6, 2), '百万 DAI', '以上 5 个合约合计');
+  }
+  var list = document.getElementById('flowList');
+  if (!list) return;
+  var out = '<div class="fh">位置</div><div class="fh" style="text-align:right">DAI 余额</div><div class="fh">说明 / 地址</div>';
+  rows.forEach(function(r){
+    var isBig = r.dai >= 1e6;
+    out += '<div><b>' + r.name + '</b></div>' +
+           '<div class="fv' + (isBig ? ' big' : '') + '">' + fmt(r.dai, isBig ? 0 : 2) + '</div>' +
+           '<div class="fd">' + r.note + '<br><span style="font-family:ui-monospace,monospace;font-size:11px">' + r.addr + '</span></div>';
+  });
+  out += '<div><b>合计</b></div><div class="fv big">' + fmt(total, 0) + '</div><div class="fd">以上 5 个合约</div>';
+  list.innerHTML = out;
+}
+readFlow();
+setInterval(readFlow, 60000);
 
 readLive();
 setInterval(readLive, 30000);
