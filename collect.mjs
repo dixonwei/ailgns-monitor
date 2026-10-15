@@ -256,7 +256,7 @@ async function collectFlow(prev) {
 function parseWho(text) {
   const start = text.indexOf('有 P 等级的地址各拿到多少');
   if (start < 0) return null;
-  const seg = text.slice(start, start + 120000);
+  const seg = text.slice(start);   // 名单段落很长（可达 30 万字符），不能截断
   const marks = [];
   const lvRe = /<h3[^>]*>\s*(P[1-7])\s*<\/h3>/g;
   let m;
@@ -293,7 +293,17 @@ async function main() {
   try {
     const rt = await getText(SRC_REWARDS);
     data.rewards = parseRewards(flatten(rt));
-    try { data.who = parseWho(rt); } catch (e) { note('who: ' + e.message); }
+    try {
+      data.who = parseWho(rt);
+      if (data.who && data.rewards) {
+        const LV = ['P1','P2','P3','P4','P5','P6','P7'];
+        LV.forEach((lv) => {
+          const c = (data.rewards.levels.find((x) => x.level === lv) || {}).count || 0;
+          const w = (data.who[lv] || []).length;
+          if (c !== w) note('who 与等级表人数不一致 ' + lv + '：等级表 ' + c + '，名单 ' + w);
+        });
+      }
+    } catch (e) { note('who: ' + e.message); }
   } catch (e) { note('rewards: ' + e.message); }
 
   try {
