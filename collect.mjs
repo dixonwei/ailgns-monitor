@@ -313,12 +313,52 @@ function parseLevelList(text) {
   return { day: m ? Number(m[1]) : null, total: m ? Number(m[2].replace(/,/g, '')) : null, list: out };
 }
 
+
+/* ---------- 上等级地址的收益明细 ---------- */
+function parseWhoDetail(text) {
+  const key = '有 P 等级的地址各拿到多少';
+  const start = text.indexOf(key);
+  if (start < 0) return null;
+  const seg = text.slice(start);
+  const marks = [];
+  const lvRe = /<h3[^>]*>\s*(P[1-7])\s*<\/h3>/g;
+  let m;
+  while ((m = lvRe.exec(seg)) !== null) marks.push({ lv: m[1], i: m.index });
+  if (!marks.length) return null;
+  const out = {};
+  marks.forEach((L, k) => {
+    const j = k + 1 < marks.length ? marks[k + 1].i : seg.length;
+    const body = seg.slice(L.i, j);
+    const items = body.split('<li').slice(1);
+    const list = [];
+    items.forEach((li) => {
+      const a = li.match(/title="(0x[0-9a-fA-F]{40})"/);
+      if (!a) return;
+      const plain = li.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+      const num = (re) => { const x = plain.match(re); return x ? Number(x[1]) : null; };
+      const t = num(/\u5408\u8ba1\s*([\d.]+)/);
+      if (t === null) return;
+      list.push({ a: a[1].toLowerCase(), t: t,
+                  c: num(/\u5171\u8bc6\s*([\d.]+)/),
+                  n: num(/\u7f51\u7edc\s*([\d.]+)/),
+                  g: num(/\u589e\u957f\s*([\d.]+)/) });
+    });
+    if (list.length) out[L.lv] = list;
+  });
+  const dm = text.match(/(\d+\u6708\d+\u65e5)\u6709 P \u7b49\u7ea7/);
+  const sum = {};
+  Object.keys(out).forEach((lv) => {
+    sum[lv] = out[lv].reduce((a, b) => a + (b.t || 0), 0);
+  });
+  return { date: dm ? dm[1] : null, list: out, sum: sum };
+}
+
 /* ---------- 主流程 ---------- */
 async function main() {
   const started = new Date();
   const data = {
     site: { name: 'AiLGNS 观测站', generatedAt: started.toISOString(), generator: 'ailgns-monitor/collect.mjs' },
-    chain: null, protocol: null, rewards: null, sources: { rewards: SRC_REWARDS, helix: SRC_HELIX }, errors: [],
+    chain: null, protocol: null, rewards: null, errors: [],
   };
 
   try { data.chain = await chain(); } catch (e) { note('chain: ' + e.message); }
@@ -338,6 +378,7 @@ async function main() {
         });
       }
     } catch (e) { note('who: ' + e.message); }
+    try { data.whoDetail = parseWhoDetail(rt); } catch (e) { note('whoDetail: ' + e.message); }
 
   try {
     const lt = await getText(SRC_LEVELS);
@@ -373,6 +414,7 @@ async function main() {
       }
       if (!data.flow && prev.flow) { data.flow = prev.flow; note('flow 抓取失败，沿用上一次快照'); }
       if (!data.who && prev.who) { data.who = prev.who; note('who 抓取失败，沿用上一次快照'); }
+      if (!data.whoDetail && prev.whoDetail) { data.whoDetail = prev.whoDetail; note('whoDetail 抓取失败，沿用上一次快照'); }
     } catch (e) { note('读取旧快照失败: ' + e.message); }
   }
 

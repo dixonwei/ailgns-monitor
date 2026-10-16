@@ -130,6 +130,18 @@ button:disabled{opacity:.5;cursor:default}
     background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 8px;text-decoration:none;white-space:nowrap}
   .who .lst a i{font-style:normal;color:var(--dim);margin-left:6px}
   .who .lst a:hover{border-color:var(--gold);color:var(--gold)}
+
+  .wtab{width:100%;border-collapse:collapse;font-size:12.5px}
+  .wtab th,.wtab td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .wtab th{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2);position:sticky;top:0}
+  .wtab th:first-child,.wtab td:first-child{text-align:left}
+  .wtab td.addr{font-family:ui-monospace,monospace;font-size:11.5px}
+  .wtab td.addr a{color:var(--blue)}
+  .wtab td.addr a:hover{color:var(--gold)}
+  .wtab .lv{color:var(--gold);font-weight:700}
+  .wtab .tot{font-weight:700}
+  .wtab tr.sum{background:rgba(227,178,60,.10)}
+  .wtab tr.sum td{font-weight:700;border-top:2px solid var(--gold)}
 footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 .warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
   border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
@@ -223,9 +235,8 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       <button id="twGo">查询</button>
     </div>
     <div id="twMsg" class="note" style="margin-top:9px">
-      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线的下级人数和算力合计。<br>
-      <b style="color:var(--gold)">⚠️ 想知道官方认定的 P 等级和三个区，请用官方评估页：</b>
-      <span id="twOffLink"><a href="https://ailgns.ai/team/" target="_blank" rel="noopener">ailgns.ai/team/&lt;你的地址&gt;</a></span>
+      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线的下级人数和算力合计。
+      <b style="color:var(--gold)">⚠️ 官方认定的 P 等级和「三个区」以官方 dApp 显示为准。</b>
     </div>
   </div>
   <div id="twOut"></div>
@@ -246,6 +257,13 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
     </div>
     <div id="whoList"></div>
   </div>
+  <h2>上等级钱包 · 收益明细（每个人分了多少）</h2>
+  <div class="grid g3" id="wdSum"></div>
+  <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
+    <div class="scroll" style="max-height:520px;overflow-y:auto"><table class="wtab" id="wdTab"></table></div>
+  </div>
+  <p class="note" id="wdNote" style="margin-top:8px"></p>
+
   <p class="note" style="margin-top:8px">
     共识按等级发，同一级每人一样；网络和增长按各自团队当天新增算，所以同等级内部差距很大。
     「合计」栏显示的是该等级当天的<b>最低到最高</b>，中位数更能代表一般人。
@@ -273,7 +291,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   <footer>
     <div class="warn">
       <b>免责声明</b>：本页为个人观测工具，<b>非官方</b>，不连接钱包、不发起任何交易、不索取私钥或助记词。
-      动态奖励名单与单价数据整理自第三方站点 <a href="https://ailgns.ai/data/rewards" target="_blank" rel="noopener">ailgns.ai</a> 公布的官方名单解析结果（算法官方未公布，随时可能调整）；
+      动态奖励名单、单价、P 等级名单每天从公开渠道自动抓取汇总（算法官方尚未公布，随时可能调整）；
       链上状态直接读取 Anubis 公共 RPC，可在 <a href="https://browser.anubispace.org" target="_blank" rel="noopener">区块浏览器</a> 核对。
       全部内容不构成任何投资建议，加密资产波动剧烈，可能损失全部本金。
     </div>
@@ -632,10 +650,6 @@ var EMBEDDED = {
       }
     }
   },
-  "sources": {
-    "rewards": "https://ailgns.ai/data/rewards",
-    "helix": "https://ailgns.ai/data/helix"
-  },
   "errors": [],
   "elapsedMs": 1775
 };
@@ -753,6 +767,39 @@ function render(){
     }
   });
   $('lvtable').innerHTML = rows;
+
+  // 上等级钱包的收益明细
+  var wd = d.whoDetail || {};
+  if (wd.date && wd.list) {
+    var LVS = ['P1','P2','P3','P4','P5','P6','P7'];
+    var tot = 0, cnt = 0;
+    LVS.forEach(function(lv){ tot += (wd.sum && wd.sum[lv] ? wd.sum[lv] : 0); cnt += ((wd.list[lv]||[]).length); });
+    var allT = r.latest ? r.latest.total : 0;
+    var allA = r.latest ? r.latest.addresses : 0;
+    var sumEl = document.getElementById('wdSum');
+    if (sumEl) sumEl.innerHTML =
+      card('上等级地址 · 合计发放', fmt(tot,4), 'AiLGNS', wd.date + ' · 共 ' + cnt + ' 个地址') +
+      card('占当天全网发放', allT ? fmt(tot/allT*100,2) : '—', '%', '全网当天合计 ' + fmt(allT,4)) +
+      card('没上等级的地址分到', fmt(allT-tot,4), 'AiLGNS', '其余 ' + fmt(allA-cnt,0) + ' 个地址分这些');
+    var wrows = '<thead><tr><th>地址</th><th>等级</th><th>合计</th><th>共识</th><th>网络</th><th>增长</th></tr></thead><tbody>';
+    ['P3','P2','P1','P4','P5','P6','P7'].forEach(function(lv){
+      var l = wd.list[lv] || [];
+      if (!l.length) return;
+      l.forEach(function(x){
+        wrows += '<tr><td class="addr"><a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener">' + x.a + '</a></td>' +
+          '<td class="lv">' + lv + '</td>' +
+          '<td class="tot">' + fmt(x.t,4) + '</td>' +
+          '<td>' + fmt(x.c,4) + '</td><td>' + fmt(x.n,4) + '</td><td>' + fmt(x.g,4) + '</td></tr>';
+      });
+      wrows += '<tr class="sum"><td colspan="2">' + lv + ' 合计（' + l.length + ' 个）</td>' +
+        '<td>' + fmt(wd.sum[lv],4) + '</td><td colspan="3"></td></tr>';
+    });
+    var wt = document.getElementById('wdTab');
+    if (wt) wt.innerHTML = wrows + '</tbody>';
+    var wn = document.getElementById('wdNote');
+    if (wn) wn.innerHTML = '数据日期 <b>' + wd.date + '</b>（动态奖励名单发布日，比 P 等级名单晚一天）。' +
+      '单位 AiLGNS。共识部分同等级每人一样，网络和增长因人而异。';
+  }
 
   // 每个等级有哪些钱包
   var who = d.who || {};
@@ -1133,8 +1180,6 @@ function twQuery(){
   var out = document.getElementById('twOut');
   if (!twOkAddr(raw)) { msg.innerHTML = '<span style="color:var(--red)">请填一个完整的钱包地址（0x 开头，共 42 位）</span>'; return; }
   var addr = raw.toLowerCase();
-  var lk = document.getElementById('twOffLink');
-  if (lk) lk.innerHTML = '<a href="https://ailgns.ai/team/' + addr + '" target="_blank" rel="noopener">ailgns.ai/team/' + twShort(addr) + '</a>';
   var T0 = Date.now();
   msg.textContent = '查询中…';
   out.innerHTML = '';
@@ -1307,8 +1352,7 @@ function twJudge(){
       twFmt(gapP, 0) + ' DAI</b> 的<b>真实投入</b>（不是算力）。<br>' +
       '<b>建议把新资金优先投到最弱的这条线：' + weakest.addr + '</b>（折算已投入约 ' + twFmt(weakest.dai,0) + ' DAI）。';
   }
-  out.innerHTML = '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。' +
-    '要准的请看官方评估：<a href="https://ailgns.ai/team/' + TWRES.root + '" target="_blank" rel="noopener">ailgns.ai/team/' + twShort(TWRES.root) + '</a></div>' +
+  out.innerHTML = '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。要准的请以官方 dApp 显示为准。</div>' +
     '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定（近似）</div>' + rows + '</div>' +
     '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
     '<p class="note" style="margin-top:8px">说明：链上每条线的算力 ÷ 2.5 = 该线折算的真实投入 DAI。<b>考核看的是真实投入，不是算力。</b>' +
