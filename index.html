@@ -162,15 +162,10 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
     </div>
   </header>
 
-  <div id="buyalert" class="err" style="display:none;background:rgba(56,193,114,.15);border-color:rgba(56,193,114,.6);color:#b6f0cd"></div>
-
   <div id="errcard"></div>
 
   <div class="bar" id="srcbadge"></div>
   <div class="bar" id="chips"></div>
-
-  <h2>链上实时 · 每 30 秒自动刷新</h2>
-  <div class="grid g4" id="live"></div>
 
   <h2>资金全景 · 钱都在哪（链上实时）</h2>
   <div class="grid g4" id="flowSum"></div>
@@ -229,17 +224,41 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       <input id="twAddr" placeholder="粘贴钱包地址 0x…（不连钱包，只读）" spellcheck="false">
       <select id="twDepth">
         <option value="1">展开 1 层</option>
-        <option value="2" selected>展开 2 层</option>
-        <option value="3">展开 3 层</option>
+        <option value="2">展开 2 层</option>
+        <option value="3" selected>展开 3 层（推荐）</option>
+        <option value="5">展开 5 层</option>
+        <option value="12">尽量全展开（慢）</option>
       </select>
       <button id="twGo">查询</button>
     </div>
     <div id="twMsg" class="note" style="margin-top:9px">
-      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线的下级人数和算力合计。
-      <b style="color:var(--gold)">⚠️ 官方认定的 P 等级和「三个区」以官方 dApp 显示为准。</b>
+      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线<b>能读到</b>的线下算力合计。
+      <b style="color:var(--gold)">⚠️ 链上关系表不完整，这个查询读不全团队、数字会偏小，只用来看结构；
+      要准确的团队业绩和等级判断，用下面的「关注钱包 · 官方口径」。</b>
     </div>
   </div>
   <div id="twOut"></div>
+
+  <h2>钱包快查 · 算力每天分多少</h2>
+  <div class="card">
+    <div class="twrow">
+      <input id="qkAddr" placeholder="粘贴钱包地址 0x…（只读链上，不连钱包、不发起交易）" spellcheck="false">
+      <button id="qkGo">查一下</button>
+    </div>
+    <div id="qkOut" class="note" style="margin-top:9px">
+      查两件事：<b>① 个人算力每天能兑付多少</b>（链上直读）；<b>② 社区（动态）奖励分了多少</b>（最近一期官方名单）。
+    </div>
+  </div>
+
+  <h2>关注钱包 · 官方口径（团队页数据）</h2>
+  <div class="card">
+    <div class="note" style="margin-bottom:10px">
+      这些地址的团队数字，按<b>官方团队页口径</b>（全量索引：累计新增 DAI、各线业绩、成员数）抓取，每 30 分钟自动更新，
+      和你在官方团队页看到的数字一致。想加地址：把钱包一行一个写进仓库根目录的 <b>watchlist.txt</b>。
+      <b style="color:var(--gold)">本站的链上直读（上面那个查询）受合约关系表限制会偏小，判定等级请用这里的官方口径。</b>
+    </div>
+    <div id="watchCard"><div class="note">加载中…</div></div>
+  </div>
 
   <h2>最新一期 · 动态奖励</h2>
   <div class="grid g4" id="hero"></div>
@@ -854,6 +873,117 @@ function render(){
   pr += card('已释放 AiLGNS', fmt(p.released, 2), 'AiLGNS', '从排放金库发出');
   pr += card('排放金库余额', fmt(p.emissionVault, 2), 'AiLGNS', '保险金库 ' + fmt(p.insuranceVault, 2));
   $('proto').innerHTML = pr;
+  renderWatch();
+}
+
+/* ================= 钱包快查 ================= */
+function qkQuery(){
+  var out = document.getElementById('qkOut');
+  var raw = (document.getElementById('qkAddr').value || '').trim();
+  if (!twOkAddr(raw)) { out.innerHTML = '<span style="color:var(--red)">请填完整地址（0x 开头，42 位）</span>'; return; }
+  var a = raw.toLowerCase();
+  var p = (DATA && DATA.protocol) || {};
+  var ratio = (p.dailyPayRatio || 0) / 100;
+  var price = p.priceDAI || 0;
+  out.innerHTML = '查询中…';
+  Promise.all([
+    twCall(TWC.POWER, TWC.S_PWR_REG + twPad(a)).catch(function(){ return null; }),
+    twCall(TWC.POWER, TWC.S_PWR_LEFT + twPad(a)).catch(function(){ return null; })
+  ]).then(function(r){
+    var reg = r[0] ? twDai(r[0]) : 0;
+    var left = r[1] ? twDai(r[1]) : 0;
+    var daiDay = left * ratio;
+    var aiDay = price ? daiDay / price : 0;
+    var wd = (DATA && DATA.whoDetail && DATA.whoDetail.list) || null;
+    var hit = null, lv = null;
+    if (wd) ['P1','P2','P3','P4','P5','P6','P7'].forEach(function(k){
+      (wd[k] || []).forEach(function(x){ if (x.a === a) { hit = x; lv = k; } });
+    });
+    var h = '<div class="grid g4" style="margin-top:4px">' +
+      card('我的登记算力', fmt(reg, 2), '算力', '存 1 DAI = 2.5 算力') +
+      card('我的剩余算力', fmt(left, 2), '算力', '按这个数每天兑付') +
+      card('个人算力 · 每天分', fmt(daiDay, 2), 'DAI', '≈ ' + fmt(aiDay, 6) + ' AiLGNS（协议价 ' + fmt(price, 2) + '）') +
+      card('当前 P 等级', lvlOf(a), '', '官方第 ' + ((DATA.levelList && DATA.levelList.day) || '—') + ' 天名单') +
+      '</div>';
+    h += '<div class="warn" style="margin-top:10px"><b>社区（动态）奖励 · ' +
+      ((DATA.whoDetail && DATA.whoDetail.date) || '最近一期') + (hit ? '（' + lv + '）' : '') + '</b><br>';
+    if (hit) {
+      h += '合计 <b>' + fmt(hit.t, 4) + ' AiLGNS</b>　=　共识 ' + fmt(hit.c, 4) + ' ＋ 网络 ' + fmt(hit.n, 4) + ' ＋ 增长 ' + fmt(hit.g, 4) +
+           '<br><span class="note">共识＝这个等级每人一份；网络/增长＝各自权重 × 当天单价</span>';
+    } else {
+      h += '这个地址<b>不在</b>最近一期「有 P 等级的地址」名单里 → 当期没有共识那一份。' +
+           '<br><span class="note">官方只公布有 P 等级地址的个人明细；没上等级的地址拿到的增长/网络通常很小，官方不公布个人明细。</span>';
+    }
+    h += '</div>';
+    h += '<p class="note" style="margin-top:8px">① 个人算力 = 剩余算力 × ' + fmt(p.dailyPayRatio, 4) + '% ÷ 协议价，每天结算、发到你自己地址。' +
+         '② 社区（动态）奖励 = 增长 ＋ 网络 ＋ 共识，取自最近一期名单（每 30 分钟更新）。</p>';
+    out.innerHTML = h;
+  }).catch(function(e){
+    out.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
+  });
+}
+document.getElementById('qkGo').addEventListener('click', qkQuery);
+document.getElementById('qkAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') qkQuery(); });
+
+/* ================= 关注钱包 · 官方口径 ================= */
+function lvlOf(a){
+  var L = (DATA && DATA.levelList && DATA.levelList.list) || null;
+  if (!L) return '—';
+  var found = '未上等级';
+  ['P7','P6','P5','P4','P3','P2','P1'].forEach(function(k){
+    if (found !== '未上等级') return;
+    (L[k] || []).forEach(function(x){ if (x.a === a) found = k; });
+  });
+  return found;
+}
+
+function renderWatch(){
+  var el = document.getElementById('watchCard');
+  if (!el) return;
+  var w = (DATA && DATA.watch) || null;
+  var keys = w ? Object.keys(w) : [];
+  if (!keys.length) {
+    el.innerHTML = '<div class="note">还没有数据。把要盯的钱包地址（0x 开头 42 位）一行一个写进仓库根目录的 ' +
+      '<b>watchlist.txt</b>，等下一次自动更新（每 30 分钟）就会显示在这里。</div>';
+    return;
+  }
+  var html = '';
+  keys.forEach(function(a){
+    var x = w[a];
+    if (!x) return;
+    html += '<div style="border-top:1px solid var(--line);padding:12px 0 4px">' +
+      '<div style="font-family:ui-monospace,monospace;font-size:12.5px;word-break:break-all">' + a + '</div>' +
+      '<div class="grid g4" style="margin-top:8px">' +
+        card('团队累计新增', fmt((x.cumDAI||0)/10000, 2), '万 DAI', (x.members||0) + ' 个成员有算力') +
+        card('团队生效算力', fmt((x.powerEff||0)/10000, 2), '万', '登记算力 ' + fmt((x.powerReg||0)/10000, 2) + ' 万') +
+        card('当天新增业绩', fmt(x.dayDAI||0, 0), 'DAI', '共 ' + (x.linesTotal||0) + ' 条线，当天 ' + (x.linesWithToday||0) + ' 条有人存入') +
+        card('当前 P 等级', lvlOf(a), '', '官方第 ' + ((DATA.levelList && DATA.levelList.day) || '—') + ' 天名单') +
+      '</div>';
+    if (x.lines && x.lines.length) {
+      html += '<div class="br" style="margin-top:8px">' +
+        '<div class="hh">线</div><div class="hh">累计新增</div>' +
+        '<div class="hh" style="text-align:right">有算力</div><div class="hh" style="text-align:right">当天</div></div>';
+      x.lines.forEach(function(L, i){
+        html += '<div class="br">' +
+          '<div class="bv" style="text-align:left">' + (i+1) + (L.addr ? ' · ' + L.addr : '') + '</div>' +
+          '<div class="bv" style="text-align:left">' + fmt(L.cumDAI, 0) + ' DAI</div>' +
+          '<div class="bv">' + fmt(L.members, 0) + ' 人</div>' +
+          '<div class="bv">' + fmt(L.today, 0) + '</div></div>';
+      });
+      var need = 50000;
+      var weak = null;
+      x.lines.forEach(function(L){ if (weak === null || L.cumDAI < weak.cumDAI) weak = L; });
+      if (weak) {
+        html += '<p class="note" style="margin-top:8px">按官方的线业绩看：最弱的线是 <b>' +
+          fmt(weak.cumDAI, 0) + ' DAI</b>，到 P1 单区门槛（50,000 DAI）还差 <b>' +
+          fmt(Math.max(0, need - weak.cumDAI), 0) + ' DAI</b>。</p>';
+      }
+    }
+    html += '</div>';
+  });
+  html += '<p class="note" style="margin-top:10px">数据时间：' +
+    new Date(DATA.site.generatedAt).toLocaleString('zh-CN', {hour12:false}) + '　（每 30 分钟自动更新）</p>';
+  el.innerHTML = html;
 }
 
 function drawSpark(pts){
@@ -929,9 +1059,6 @@ var C = {
   POOL:    '0x0a1cce65d995c6c5100e6f5ba3c388ef34cecaf0',
   RESERVE: '0x27cb55ee75e777ff972b74b6e68782d12bd4ec46'
 };
-var PROBE = '0x9999999999999999999999999999999999999999';
-var LIVE = { ok:false, block:null, blockTime:null, buyState:'unknown', reserveDAI:null,
-             pf:null, pd:null, lastCheck:null, err:null, prevBuy:null };
 function pad32(a){ return a.toLowerCase().replace('0x','').padStart(64,'0'); }
 function u18(v){ var s = BigInt(v).toString().padStart(19,'0'); return s.slice(0,-18) + '.' + s.slice(-18).slice(0,6); }
 
@@ -942,73 +1069,6 @@ function rpc(method, params){
     .then(function(j){ if(j.error) throw new Error(j.error.message || 'rpc error'); return j.result; });
 }
 
-function readLive(){
-  return rpc('eth_blockNumber', []).then(function(bh){
-    return rpc('eth_getBlockByNumber', [bh, false]).then(function(blk){
-      LIVE.block = parseInt(bh, 16);
-      LIVE.blockTime = new Date(parseInt(blk.timestamp,16)*1000);
-      return rpc('eth_call', [{ from: C.POOL, to: C.AiLGNS, data: '0xa9059cbb' + pad32(PROBE) + pad32('0x1') }, 'latest'])
-        .then(function(){ LIVE.buyState = 'open'; })
-        .catch(function(e){ LIVE.buyState = /buy disabled/i.test(e.message) ? 'closed' : 'unknown'; });
-    });
-  }).then(function(){
-    return rpc('eth_call', [{ to: C.POOL, data:'0x0902f1ac' }, 'latest']).then(function(res){
-      LIVE.pf = BigInt('0x'+res.slice(2,66)); LIVE.pd = BigInt('0x'+res.slice(66,130));
-    }).catch(function(){});
-  }).then(function(){
-    return rpc('eth_call', [{ to: C.DAI, data:'0x70a08231' + pad32(C.RESERVE) }, 'latest']).then(function(bal){
-      LIVE.reserveDAI = BigInt(bal);
-    }).catch(function(){});
-  }).then(function(){
-    LIVE.ok = true; LIVE.err = null; LIVE.lastCheck = new Date();
-    if (LIVE.prevBuy === 'closed' && LIVE.buyState === 'open') showBuyAlert();
-    LIVE.prevBuy = LIVE.buyState;
-    renderLive();
-  }).catch(function(e){
-    LIVE.ok = false; LIVE.err = e.message; LIVE.lastCheck = new Date(); renderLive();
-  });
-}
-
-function showBuyAlert(){
-  var b = document.getElementById('buyalert');
-  if(!b) return;
-  b.style.display = 'block';
-  b.innerHTML = '🟢 <b>公开买入已开放！</b> 立刻去官方 dApp 操作。探测时间 ' +
-    new Date().toLocaleTimeString('zh-CN', {hour12:false});
-  document.title = '🟢 公开买入已开放 · 阿郎老师的 AiLGNS 观测站';
-}
-
-function renderLive(){
-  var e = document.getElementById('live'); if(!e) return;
-  if(!LIVE.ok && !LIVE.block){
-    e.innerHTML = '<div class="card"><div class="k">链上连接</div><div class="v" style="color:var(--red)">失败</div><div class="s">' +
-      (LIVE.err || '') + '</div></div>';
-    return;
-  }
-  var buyCard;
-  if (LIVE.buyState === 'open') {
-    buyCard = '<div class="card" style="border-color:rgba(56,193,114,.8);background:rgba(56,193,114,.12)">' +
-      '<div class="k">公开买入（实时探测）</div><div class="v" style="color:var(--green)">已开放</div>' +
-      '<div class="s">可以买了 —— 立刻行动</div></div>';
-  } else if (LIVE.buyState === 'closed') {
-    buyCard = '<div class="card" style="border-color:rgba(227,87,79,.6)">' +
-      '<div class="k">公开买入（实时探测）</div><div class="v" style="color:var(--red)">未开放</div>' +
-      '<div class="s">合约拒绝：AiLGNS: buy disabled</div></div>';
-  } else {
-    buyCard = '<div class="card"><div class="k">公开买入（实时探测）</div><div class="v">?</div>' +
-      '<div class="s">探测异常，稍后重试</div></div>';
-  }
-  var price = (LIVE.pf && LIVE.pd && LIVE.pf > 0n) ? (Number(LIVE.pd * 10000n / LIVE.pf) / 10000) : null;
-  e.innerHTML = buyCard +
-    '<div class="card"><div class="k">当前区块</div><div class="v">#' + (LIVE.block ? LIVE.block.toLocaleString('en-US') : '—') + '</div>' +
-      '<div class="s">' + (LIVE.blockTime ? LIVE.blockTime.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}) : '') + '</div></div>' +
-    '<div class="card"><div class="k">AiLGNS/DAI 池现价</div><div class="v">' + (price ? fmt(price,2) : '—') + '<small>DAI</small></div>' +
-      '<div class="s">池内 ' + (LIVE.pf ? u18(LIVE.pf) : '—') + ' AiLGNS</div></div>' +
-    '<div class="card"><div class="k">协议储备</div><div class="v">' + (LIVE.reserveDAI ? fmt(Number(LIVE.reserveDAI)/1e18, 2) : '—') + '<small>DAI</small></div>' +
-      '<div class="s">链上实时余额</div></div>';
-  var t = document.getElementById('livetime');
-  if (t) t.textContent = LIVE.lastCheck ? LIVE.lastCheck.toLocaleTimeString('zh-CN',{hour12:false}) : '—';
-}
 
 /* ================= P 等级门槛换算 ================= */
 var PCM = 2.5;
@@ -1079,9 +1139,12 @@ var TWC = {
   S_REFERRER:  '0xd21cacdf',
   S_PWR_REG:   '0x4f343040',
   S_PWR_LEFT:  '0x6cf2fa36',
-  MAX_DIRECT: 30,
-  MAX_SUB:    15,
-  MAX_ADDR:   400,
+  MAX_DIRECT: 200,
+  MAX_SUB:    60,
+  PAGE:       15,
+  MAX_ADDR:   2500,
+  BATCH:      100,
+  CONC:       20,
   PLV: [
     {lv:'P1', ve:1000,  region:50000,   t:'5 万'},
     {lv:'P2', ve:3000,  region:150000,  t:'15 万'},
@@ -1104,42 +1167,48 @@ function twCall(to, data){ return rpc('eth_call', [{to:to, data:data}, 'latest']
 /* 批量 eth_call：一次 HTTP 请求查多个，速度快很多 */
 function twBatch(calls){
   if (!calls.length) return Promise.resolve([]);
-  var out = [];
-  function chunk(slice, base){
+  var out = [], failed = 0;
+  function chunk(slice){
     if (!slice.length) return Promise.resolve();
-    var payload = slice.map(function(c,i){ return { jsonrpc:'2.0', id:i, method:'eth_call', params:[c, 'latest'] }; });
+    var part = slice.slice(0, TWC.BATCH);
+    var payload = part.map(function(c,i){ return { jsonrpc:'2.0', id:i, method:'eth_call', params:[c, 'latest'] }; });
     return fetch(RPC_URL, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) })
       .then(function(r){ return r.json(); })
       .then(function(arr){
-        var tmp = new Array(slice.length);
-        (Array.isArray(arr) ? arr : [arr]).forEach(function(x){ if (x && typeof x.id === 'number') tmp[x.id] = x.result || null; });
-        tmp.forEach(function(v){ out.push(v); });
-        return chunk(slice.slice(60), base + 60);
+        var tmp = new Array(part.length);
+        (Array.isArray(arr) ? arr : [arr]).forEach(function(x){ if (x && typeof x.id === 'number' && x.id >= 0 && x.id < part.length) tmp[x.id] = x.result || null; });
+        for (var i = 0; i < part.length; i++){ if (tmp[i] === undefined) { failed++; tmp[i] = null; } out.push(tmp[i]); }
       })
-      .catch(function(){ slice.forEach(function(){ out.push(null); }); });
+      .catch(function(){ failed += part.length; for (var i = 0; i < part.length; i++) out.push(null); })
+      .then(function(){ return chunk(slice.slice(TWC.BATCH)); });
   }
-  return chunk(calls, 0).then(function(){ return out; });
+  return chunk(calls).then(function(){ out.failed = failed; return out; });
 }
 
 /* 直推列表 */
-function twReferred(a){
-  return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x0') + twPad('0x1'))
-    .then(function(res){
-      var w = res.slice(2).match(/.{1,64}/g);
-      var total = twBig(w[0]);
-      if (!total) return {total:0, list:[], trunc:false};
-      var n = Math.min(total, TWC.MAX_SUB);
-      return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x0') + twPad('0x'+n.toString(16)))
-        .then(function(r2){
-          var w2 = r2.slice(2).match(/.{1,64}/g);
-          var off = twBig(w2[1]) / 32;
-          var len = twBig(w2[off]);
-          var list = [];
-          for (var i=0;i<len && i<n;i++) list.push('0x' + w2[off+1+i].slice(24));
-          return {total: total, list: list, trunc: total > n};
-        });
-    })
-    .catch(function(){ return {total:0, list:[], trunc:false}; });
+function twReferred(a, maxSub){
+  var want = Math.max(1, Math.min(maxSub || TWC.MAX_SUB, 200));
+  var list = [], total = 0, guard = 0;
+  function page(start){
+    if (guard++ > 40 || list.length >= want) return Promise.resolve();
+    if (start > 0 && total && start >= total) return Promise.resolve();
+    var n = Math.min(TWC.PAGE, want - list.length);
+    if (n <= 0) return Promise.resolve();
+    return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x' + start.toString(16)) + twPad('0x' + n.toString(16)))
+      .then(function(res){
+        if (typeof res !== 'string' || res.length < 130) return;
+        var w = res.slice(2).match(/.{1,64}/g);
+        total = twBig(w[0]);
+        var off = twBig(w[1]) / 32;
+        var len = twBig(w[off]);
+        for (var i = 0; i < len; i++) list.push('0x' + w[off+1+i].slice(24));
+        if (len > 0 && list.length < Math.min(total, want)) return page(start + len);
+      })
+      .catch(function(){});
+  }
+  return page(0).then(function(){
+    return { total: total, list: list, trunc: total > list.length };
+  });
 }
 /* 算力 */
 function twPower(a){
@@ -1151,24 +1220,46 @@ function twPower(a){
   });
 }
 /* 逐层展开 */
-function twWalk(roots, depth, seen, info, budget){
-  if (depth <= 0 || !roots.length || budget.n <= 0) return Promise.resolve();
-  var batch = roots.slice(0, budget.n);
-  budget.n -= batch.length;
-  return Promise.all(batch.map(function(a){
-    return twReferred(a).then(function(r){ info[a.toLowerCase()] = r; });
-  })).then(function(){
-    var next = [];
-    batch.forEach(function(a){
-      var r = info[a.toLowerCase()];
-      (r.list||[]).forEach(function(c){
-        var k = c.toLowerCase();
-        if (seen[k]) return;
-        seen[k] = 1; next.push(k);
+function twWalk(roots, depth, seen, info, budget, stat){
+  return Promise.resolve().then(function(){
+    if (depth <= 0 || !roots.length) return;
+    if (budget.n <= 0) { stat.cut = 1; return; }
+    var queue = roots.slice(0, budget.n);
+    if (roots.length > queue.length) stat.cut = 1;
+    budget.n -= queue.length;
+    var idx = 0;
+    function step(){
+      if (idx >= queue.length) return Promise.resolve();
+      var part = queue.slice(idx, idx + TWC.CONC); idx += TWC.CONC;
+      return Promise.all(part.map(function(a){
+        return twReferred(a).then(function(r){ info[a.toLowerCase()] = r; if (r.trunc) stat.cut = 1; });
+      })).then(step);
+    }
+    return step().then(function(){
+      var next = [];
+      queue.forEach(function(a){
+        var r = info[a.toLowerCase()] || {list:[]};
+        (r.list||[]).forEach(function(c){
+          var k = c.toLowerCase();
+          if (seen[k]) return;
+          seen[k] = 1; next.push(k);
+        });
       });
+      return twWalk(next, depth-1, seen, info, budget, stat);
     });
-    return twWalk(next, depth-1, seen, info, budget);
   });
+}
+/* 从一条线往下收集所有已展开的成员（全深度） */
+function twCollect(root, info, maxDepth){
+  var seen = {}, list = [];
+  (function rec(a, d){
+    var k = a.toLowerCase();
+    if (seen[k] || d > maxDepth) return;
+    seen[k] = 1; list.push(a);
+    var node = info[k];
+    if (node && node.list) node.list.forEach(function(c){ rec(c, d + 1); });
+  })(root, 0);
+  return list;
 }
 
 var TWRES = null;
@@ -1187,6 +1278,8 @@ function twQuery(){
   var seen = {}; seen[addr] = 1;
   var info = {};
   var budget = { n: TWC.MAX_ADDR };
+  var stat = { cut: 0 };
+  var pwrFailed = 0;
 
   twCall(TWC.COMM, TWC.S_MEMBERS + twPad(addr))
     .then(function(m){
@@ -1202,9 +1295,9 @@ function twQuery(){
         return null;
       }
       var branches = base.ref.list.slice(0, TWC.MAX_DIRECT);
-      msg.textContent = '已找到 ' + branches.length + ' 条直推线，正在展开下级…';
+      msg.textContent = '已找到 ' + branches.length + ' 条直推线，正在展开全团队（上限 ' + TWC.MAX_ADDR + ' 个地址）…';
       branches.forEach(function(b){ seen[b.toLowerCase()] = 1; });
-      return twWalk(branches, depth, seen, info, budget).then(function(){
+      return twWalk(branches, depth, seen, info, budget, stat).then(function(){
         return { base: base, branches: branches };
       });
     })
@@ -1218,42 +1311,31 @@ function twQuery(){
       }
       var plan = branches.map(function(b){
         var node = info[b.toLowerCase()] || {total:0, list:[]};
-        var kids = [];
-        (node.list||[]).forEach(function(c){
-          var cn = info[c.toLowerCase()] || {total:0, list:[]};
-          kids.push({addr:c, sub:(cn.list||[])});
-        });
-        var flat = [b];
-        kids.forEach(function(x){ flat.push(x.addr); (x.sub||[]).forEach(function(y){ flat.push(y); }); });
-        var uniq = {}; flat.forEach(function(a){ uniq[a.toLowerCase()] = a; });
-        return { addr:b, node:node, kids:kids, addrs:Object.keys(uniq) };
+        return { addr:b, node:node, addrs: twCollect(b, info, depth + 1) };
       });
       var allAddrs = [];
       plan.forEach(function(p){ p.addrs.forEach(function(a){ if (allAddrs.indexOf(a) < 0) allAddrs.push(a); }); });
-      var calls = [];
-      allAddrs.forEach(function(a){
-        calls.push({ to:TWC.POWER, data:TWC.S_PWR_REG + twPad(a) });
-        calls.push({ to:TWC.POWER, data:TWC.S_PWR_LEFT + twPad(a) });
-      });
+      var calls = allAddrs.map(function(a){ return { to:TWC.POWER, data:TWC.S_PWR_REG + twPad(a) }; });
       msg.textContent = '正在批量查算力（' + allAddrs.length + ' 个地址）…';
       return twBatch(calls).then(function(res){
+        pwrFailed = res.failed || 0;
         var pmap = {};
-        allAddrs.forEach(function(a, i){
-          pmap[a.toLowerCase()] = {
-            reg:  res[i*2]   ? twDai(res[i*2])   : 0,
-            left: res[i*2+1] ? twDai(res[i*2+1]) : 0 };
-        });
+        allAddrs.forEach(function(a, i){ pmap[a.toLowerCase()] = { reg: res[i] ? twDai(res[i]) : 0 }; });
         return plan.map(function(p){
-          var own = pmap[p.addr.toLowerCase()] || {reg:0,left:0};
-          var sum = 0;
-          p.addrs.forEach(function(a){ var pp = pmap[a.toLowerCase()]; if (pp) sum += pp.reg; });
-          return { addr:p.addr, total:p.node.total, own:own, kids:p.kids,
-                   subCount: p.addrs.length - 1, sum: sum, trunc: p.node.trunc };
+          var sum = 0, cnt = 0;
+          p.addrs.forEach(function(a){
+            var pp = pmap[a.toLowerCase()];
+            if (pp && pp.reg > 0) { sum += pp.reg; cnt++; }
+          });
+          return { addr:p.addr, total:p.node.total, sum: sum, withPower: cnt,
+                   subCount: p.addrs.length - 1, trunc: p.node.trunc };
         });
       }).then(function(list){
-        TWRES = { base: r.base, branches: list, depth: depth, root: addr };
-        msg.innerHTML = '展开完成：' + list.length + ' 条线，共统计 ' + (Object.keys(info).length + 1) +
-          ' 个地址' + (list.some(function(x){return x.trunc;}) ? '（部分线的下级过多，已按上限取样）' : '') + '　用时 ' + ((Date.now()-T0)/1000).toFixed(1) + ' 秒。';
+        TWRES = { base: r.base, branches: list, depth: depth, root: addr, cut: stat.cut, failed: pwrFailed };
+        msg.innerHTML = '展开完成：' + list.length + ' 条线，共 ' + (Object.keys(info).length + 1) + ' 个地址' +
+          (stat.cut ? '（<b style="color:var(--gold)">已到展开上限，深层还有成员没算到</b>）' : '') +
+          (pwrFailed ? '（<b style="color:var(--red)">' + pwrFailed + ' 个算力没读到，已按 0 计</b>）' : '') +
+          '　用时 ' + ((Date.now()-T0)/1000).toFixed(1) + ' 秒。';
         twRenderBase(r.base, list);
       });
     })
@@ -1284,7 +1366,7 @@ function twRenderBranches(){
   var rows = '<div class="br"><div class="hh" style="font-size:11.5px;color:var(--dim)">选用</div>' +
     '<div class="hh" style="font-size:11.5px;color:var(--dim)">支线地址</div>' +
     '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">下级人数</div>' +
-    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">算力合计（DAI）</div></div>';
+    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">线下算力合计<br>≈累计投入 DAI</div></div>';
   list.forEach(function(x, i){
     var pct = Math.round(x.sum / max * 100);
     var cls = pct < 34 ? 'low' : (pct < 67 ? 'mid' : '');
@@ -1292,12 +1374,15 @@ function twRenderBranches(){
       '<div><input type="checkbox" class="twpick" data-addr="' + x.addr + '"' + (i < 3 ? ' checked' : '') + '></div>' +
       '<div class="bk">' + x.addr + '<div class="bar"><i class="' + cls + '" style="width:' + pct + '%"></i></div></div>' +
       '<div class="bv">' + x.subCount + (x.trunc ? '+' : '') + '</div>' +
-      '<div class="bv">' + twFmt(x.sum, 2) + '</div></div>';
+      '<div class="bv">' + twFmt(x.sum, 0) +
+        '<div class="note" style="font-size:11px;font-weight:400">≈ ' + twFmt(x.sum / PCM, 0) + ' DAI · ' + x.withPower + ' 人有算力</div></div></div>';
   });
   var out = document.getElementById('twOut');
   out.innerHTML += '<div class="card" style="padding:0;overflow:hidden;margin-top:10px">' + rows + '</div>' +
-    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「算力合计」= 该线自己的算力 + 下面 ' +
-    TWRES.depth + ' 层内所有下级的算力。改勾选后按「重新判定」。</p>' +
+    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「线下算力合计」= 这条线往下<b>能读到</b>的成员登记算力之和（含创世算力、含这条线本人）。' +
+    '<b style="color:var(--gold)">⚠️ 链上 referrals() 关系表不完整，深层成员读不到，所以这里的合计只是「下限」，一定比官方团队页小得多。</b>' +
+    '官方团队页的「各线业绩 · 累计」是全量口径，判断等级请以官方为准。改勾选后按「重新判定」。</p>' +
+    (TWRES.cut ? '<div class="warn" style="margin-top:8px"><b>⚠️ 这次没展开完（到上限了），下面的数字偏小、等级会判低。</b>把上面的「展开层数」调大再查一次。</div>' : '') +
     '<div style="margin-top:8px"><button id="twJudge">重新判定 P 等级</button></div>' +
     '<div id="twJudgeOut"></div>';
   document.getElementById('twJudge').addEventListener('click', twJudge);
@@ -1352,11 +1437,13 @@ function twJudge(){
       twFmt(gapP, 0) + ' DAI</b> 的<b>真实投入</b>（不是算力）。<br>' +
       '<b>建议把新资金优先投到最弱的这条线：' + weakest.addr + '</b>（折算已投入约 ' + twFmt(weakest.dai,0) + ' DAI）。';
   }
-  out.innerHTML = '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。要准的请以官方 dApp 显示为准。</div>' +
+  out.innerHTML = (TWRES.cut ? '<div class="warn" style="margin-top:10px"><b>⚠️ 本次展开不完整：</b>已到上限，线下还有成员没算进来，所以每条线业绩都偏小、判出来的等级会偏低。把「展开层数」调到更大再查。</div>' : '') +
+    '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。要准的请以官方 dApp 显示为准。</div>' +
     '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定（近似）</div>' + rows + '</div>' +
     '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
-    '<p class="note" style="margin-top:8px">说明：链上每条线的算力 ÷ 2.5 = 该线折算的真实投入 DAI。<b>考核看的是真实投入，不是算力。</b>' +
-    '另外 P1–P7 还要求达到对应的 veAiLGNS 价值门槛，链上这一项需要你自己核对。</p>';
+    '<p class="note" style="margin-top:8px">说明：本表用「线下已读到的算力 ÷ 2.5」粗略折算每区投入，' +
+    '<b>只会偏小</b>（链上关系表不全 + 算力含创世部分）。它主要帮你看<b>哪条线最弱</b>，<b>不能当精确的等级判定</b>。' +
+    '另 P1–P7 还要求达到对应的 veAiLGNS 价值门槛，链上这一项需要你自己核对。</p>';
 }
 
 document.getElementById('twGo').addEventListener('click', twQuery);
@@ -1417,8 +1504,6 @@ function renderFlow(rows, total){
 readFlow();
 setInterval(readFlow, 60000);
 
-readLive();
-setInterval(readLive, 30000);
 
 load(false);
 setInterval(function(){ load(true); }, 30 * 60 * 1000);

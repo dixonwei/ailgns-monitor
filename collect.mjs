@@ -8,6 +8,7 @@
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseAddrPage } from './addr.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, 'data.json');
@@ -313,6 +314,59 @@ function parseLevelList(text) {
   return { day: m ? Number(m[1]) : null, total: m ? Number(m[2].replace(/,/g, '')) : null, list: out };
 }
 
+/* ---------- 关注钱包：官方团队页口径 ---------- */
+const WATCH_FILE = join(__dirname, 'watchlist.txt');
+
+function loadWatchlist() {
+  const def = ['0x76601e8818f703e76b5ec7502b44a7efe8fa02e3'];
+  try {
+    if (!existsSync(WATCH_FILE)) return def;
+    const raw = readFileSync(WATCH_FILE, 'utf8');
+    const list = raw.split(/\r?\n/)
+      .map((x) => x.split('#')[0].trim())
+      .filter((x) => /^0x[0-9a-fA-F]{40}$/.test(x))
+      .map((x) => x.toLowerCase());
+    return list.length ? Array.from(new Set(list)) : def;
+  } catch (e) { return def; }
+}
+
+function parseTeam(text) {
+  const toNum = (v, isWan) => { const n = Number(String(v).replace(/,/g, '')); return isWan ? n * 10000 : n; };
+  const o = { lines: [] };
+  let m = text.match(/团队累计\s*(\d+) 个成员有算力\s*·\s*累计新增\s*([\d.,]+)\s*(万)?\s*DAI/);
+  if (m) { o.members = Number(m[1]); o.cumDAI = toNum(m[2], !!m[3]); }
+  m = text.match(/团队生效算力\s*([\d.,]+)\s*(万)?\s*·/);
+  if (m) o.powerEff = toNum(m[1], !!m[2]);
+  m = text.match(/团队登记算力\s*([\d.,]+)\s*(万)?/);
+  if (m) o.powerReg = toNum(m[1], !!m[2]);
+  m = text.match(/新增业绩\s*([\d.,]+)\s*DAI/);
+  if (m) o.dayDAI = Number(m[1].replace(/,/g, ''));
+  m = text.match(/各线业绩\s*(\d+)\s*\/\s*(\d+)\s*条线当天有人存入/);
+  if (m) { o.linesWithToday = Number(m[1]); o.linesTotal = Number(m[2]); }
+  const i = text.indexOf('各线业绩'), j = text.indexOf('收益明细');
+  if (i >= 0 && j > i) {
+    const seg = text.slice(i, j);
+    const re = /累计\s*([\d.,]+)\s*(万)?\s*DAI\s*·\s*(\d+)\s*个成员有算力/g;
+    let mm, prevEnd = 0;
+    while ((mm = re.exec(seg)) !== null) {
+      const from = prevEnd || Math.max(0, mm.index - 200);
+      const chunk = seg.slice(from, mm.index);
+      prevEnd = mm.index + mm[0].length;
+      const ad = chunk.match(/(0x[0-9a-fA-F]{4,6}…[0-9a-fA-F]{4,6})/g);
+      const td = chunk.match(/当天\s*([\d.,]+)\s*DAI/g);
+      o.lines.push({
+        addr: ad ? ad[ad.length - 1] : '',
+        cumDAI: toNum(mm[1], !!mm[2]),
+        members: Number(mm[3]),
+        today: td ? Number(String(td[td.length - 1]).replace(/[^\d.]/g, '')) : 0,
+      });
+      if (o.lines.length >= 6) break;
+    }
+  }
+  if (o.members == null && !o.lines.length) return null;
+  return o;
+}
+
 
 /* ---------- 上等级地址的收益明细 ---------- */
 function parseWhoDetail(text) {
@@ -391,6 +445,27 @@ async function main() {
   } catch (e) { note('rewards: ' + e.message); }
 
   try {
+    const list = loadWatchlist();
+    const watch = {};
+    for (const a of list) {
+      try {
+        const entry = {};
+        try {
+          const o = parseTeam(flatten(await getText('https://ailgns.ai/team/' + a)));
+          if (o) Object.assign(entry, o);
+        } catch (e) { note('watch team ' + a.slice(0, 10) + ': ' + e.message); }
+        try {
+          const mi = parseAddrPage(flatten(await getText('https://ailgns.ai/address/' + a)));
+          if (mi) entry.mine = mi;
+        } catch (e) { note('watch mine ' + a.slice(0, 10) + ': ' + e.message); }
+        if (Object.keys(entry).length) watch[a] = entry;
+      } catch (e) { note('watch ' + a.slice(0, 10) + ': ' + e.message); }
+    }
+    if (Object.keys(watch).length) data.watch = watch;
+    console.log('  关注钱包 ' + Object.keys(watch).length + ' / ' + list.length);
+  } catch (e) { note('watch: ' + e.message); }
+
+  try {
     let prevFlow = null;
     if (existsSync(OUT)) { try { prevFlow = JSON.parse(readFileSync(OUT, 'utf8')).flow || null; } catch (e) {} }
     data.flow = await collectFlow(prevFlow);
@@ -415,6 +490,7 @@ async function main() {
       if (!data.flow && prev.flow) { data.flow = prev.flow; note('flow 抓取失败，沿用上一次快照'); }
       if (!data.who && prev.who) { data.who = prev.who; note('who 抓取失败，沿用上一次快照'); }
       if (!data.whoDetail && prev.whoDetail) { data.whoDetail = prev.whoDetail; note('whoDetail 抓取失败，沿用上一次快照'); }
+      if (!data.watch && prev.watch) { data.watch = prev.watch; note('watch 抓取失败，沿用上一次快照'); }
     } catch (e) { note('读取旧快照失败: ' + e.message); }
   }
 
