@@ -1,1513 +1,323 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>阿郎老师的 AiLGNS 观测站</title>
-<meta name="description" content="AiLGNS 动态奖励与链上状态每日观测">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>AiLGNS 算力参与</title>
 <style>
-:root{
-  --bg:#0b0f17; --panel:#141b26; --panel2:#1b2431; --line:#26313f;
-  --ink:#e8eef7; --dim:#8697ab; --dim2:#5d6d80;
-  --gold:#e3b23c; --green:#38c172; --red:#e3574f; --blue:#4d9cf6; --purple:#a785f0;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
-  padding:18px 14px 60px;line-height:1.5;-webkit-text-size-adjust:100%}
-.wrap{max-width:1080px;margin:0 auto}
-a{color:var(--blue);text-decoration:none}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;
-  padding-bottom:14px;border-bottom:2px solid var(--line);margin-bottom:16px}
-h1{font-size:clamp(19px,4.6vw,25px);letter-spacing:.5px}
-h1 em{font-style:normal;color:var(--gold)}
-.meta{font-size:12.5px;color:var(--dim);text-align:right}
-.meta b{color:var(--ink);font-weight:600}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.chip{background:var(--panel);border:1px solid var(--line);border-radius:8px;
-  padding:7px 11px;font-size:12.5px;color:var(--dim)}
-.chip b{color:var(--ink);font-weight:600}
-.chip.on{border-color:rgba(56,193,114,.5)}
-.chip.off{border-color:rgba(227,87,79,.5)}
-.chip.on b{color:var(--green)} .chip.off b{color:var(--red)}
-h2{font-size:15px;color:var(--dim);font-weight:600;letter-spacing:2px;
-  margin:24px 0 10px;padding-left:9px;border-left:3px solid var(--gold)}
-.grid{display:grid;gap:10px}
-.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
-.g4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:760px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:420px){.g2,.g3,.g4{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
-.card .k{font-size:12px;color:var(--dim);margin-bottom:6px}
-.card .v{font-size:22px;font-weight:700;letter-spacing:-.5px}
-.card .v small{font-size:12px;color:var(--dim);font-weight:400;margin-left:3px}
-.card .s{font-size:11.5px;color:var(--dim2);margin-top:4px}
-.card.hero{background:linear-gradient(160deg,#18222f,#121924);border-color:rgba(227,178,60,.35)}
-.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;
-  border:1px solid var(--line);color:var(--dim);margin-left:6px;vertical-align:middle}
-.tag.wait{color:var(--gold);border-color:rgba(227,178,60,.5)}
-.tag.done{color:var(--green);border-color:rgba(56,193,114,.5)}
-.lv{display:grid;grid-template-columns:56px 52px 1fr 1fr;gap:0;font-size:13px}
-.lv>div{padding:9px 8px;border-bottom:1px solid var(--line)}
-.lv .h{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
-.lv .n{font-weight:700;color:var(--gold)}
-.lv .m{font-weight:700}
-.lv .r{color:var(--dim);font-size:12px}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th,td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--dim);font-weight:600;font-size:11.5px;text-align:right}
-th:first-child,td:first-child{text-align:left}
-tbody tr:hover{background:var(--panel2)}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.spark{width:100%;height:150px;display:block}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
-.note{font-size:12px;color:var(--dim2);line-height:1.6}
-.err{background:rgba(227,87,79,.12);border:1px solid rgba(227,87,79,.4);
-  border-radius:10px;padding:12px;font-size:12.5px;color:#f0a9a4;margin-bottom:14px}
-button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
-  border-radius:9px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
-button:hover{border-color:var(--gold);color:var(--gold)}
-button:disabled{opacity:.5;cursor:default}
-
-  .twrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .twrow input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--line);
-    border-radius:9px;padding:9px 12px;color:var(--ink);font-size:13px;
-    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  .twrow input:focus{outline:none;border-color:var(--gold)}
-  .twrow select{background:var(--bg);border:1px solid var(--line);border-radius:9px;
-    padding:9px 10px;color:var(--ink);font-size:13px;font-family:inherit}
-  .br{display:grid;grid-template-columns:auto 1fr 74px 1fr;gap:0;font-size:13px;align-items:center}
-  .br>div{padding:8px;border-bottom:1px solid var(--line)}
-  .br .bk{font-family:ui-monospace,monospace;font-size:12px;color:var(--dim)}
-  .br .bv{text-align:right;font-weight:700}
-  .br.pick{background:rgba(227,178,60,.07)}
-  .bar{height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;margin-top:5px}
-  .bar i{display:block;height:100%;background:var(--green);border-radius:3px}
-  .bar i.low{background:var(--red)}
-  .bar i.mid{background:var(--gold)}
-  .pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
-  .pill.ok{color:var(--green);border-color:rgba(56,193,114,.5)}
-  .pill.no{color:var(--red);border-color:rgba(227,87,79,.5)}
-  .lvp{display:grid;grid-template-columns:56px 1fr 1fr 1fr;gap:0;font-size:12.5px}
-  .lvp>div{padding:7px 8px;border-bottom:1px solid var(--line)}
-  .lvp .hh{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
-
-  .ptab{width:100%;border-collapse:collapse;font-size:13px}
-  .ptab th,.ptab td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  .ptab th{color:var(--dim);font-size:11.5px;font-weight:600}
-  .ptab th:first-child,.ptab td:first-child{text-align:left}
-  .ptab td.big{font-weight:700;color:var(--gold);font-size:14px}
-  .ptab tr.now{background:rgba(227,178,60,.08)}
-  .ptab .gray{color:var(--dim2)}
-  .bigno{font-size:26px;font-weight:700;color:var(--gold);letter-spacing:-.5px}
-  .arrow{color:var(--dim2);padding:0 6px}
-  .step{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line)}
-  .step:last-child{border-bottom:none}
-  .step .no{flex:0 0 22px;height:22px;line-height:22px;text-align:center;border-radius:50%;
-    background:var(--gold);color:#101828;font-size:12px;font-weight:700}
-  .step .t{flex:1;font-size:13.5px;line-height:1.5}
-  .step .t b{color:var(--gold)}
-
-  .fc{display:grid;grid-template-columns:1.2fr 1fr 1.4fr;gap:0;font-size:13px;align-items:center}
-  .fc>div{padding:10px 12px;border-bottom:1px solid var(--line)}
-  .fc .fh{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2)}
-  .fc .fv{text-align:right;font-weight:700;font-size:14px}
-  .fc .fd{color:var(--dim2);font-size:11.5px}
-  .fc .big{color:var(--gold)}
-  .flowstep{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;line-height:1.9}
-  .flowstep b{color:var(--gold)}
-
-  .who{border-bottom:1px solid var(--line)}
-  .who:last-child{border-bottom:none}
-  .who>summary{padding:11px 14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
-  .who>summary::-webkit-details-marker{display:none}
-  .who>summary:before{content:"▸ ";color:var(--dim);transition:transform .15s}
-  .who[open]>summary:before{content:"▾ "}
-  .who>summary b{color:var(--gold)}
-  .who .lst{padding:2px 14px 14px 14px;display:flex;flex-wrap:wrap;gap:6px}
-  .who .lst a{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--blue);
-    background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 8px;text-decoration:none;white-space:nowrap}
-  .who .lst a i{font-style:normal;color:var(--dim);margin-left:6px}
-  .who .lst a:hover{border-color:var(--gold);color:var(--gold)}
-
-  .wtab{width:100%;border-collapse:collapse;font-size:12.5px}
-  .wtab th,.wtab td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-  .wtab th{color:var(--dim);font-size:11.5px;font-weight:600;background:var(--panel2);position:sticky;top:0}
-  .wtab th:first-child,.wtab td:first-child{text-align:left}
-  .wtab td.addr{font-family:ui-monospace,monospace;font-size:11.5px}
-  .wtab td.addr a{color:var(--blue)}
-  .wtab td.addr a:hover{color:var(--gold)}
-  .wtab .lv{color:var(--gold);font-weight:700}
-  .wtab .tot{font-weight:700}
-  .wtab tr.sum{background:rgba(227,178,60,.10)}
-  .wtab tr.sum td{font-weight:700;border-top:2px solid var(--gold)}
-footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
-.warn{background:rgba(227,178,60,.09);border:1px solid rgba(227,178,60,.3);
-  border-radius:10px;padding:12px 14px;font-size:12.5px;color:#e8d3a0;line-height:1.6}
+:root{--navy:#102040;--navy2:#1e315c;--gold:#c9a64a;--gold2:#f0d98c;--ink:#2a2e38;--gray:#707682;--bg:#f5f7fb;--ok:#1f9d55;--err:#c0392b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);padding-bottom:90px}
+header{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:18px 16px 22px;border-bottom:3px solid var(--gold)}
+header h1{margin:0;font-size:20px;letter-spacing:.5px}
+header .sub{margin-top:6px;font-size:12.5px;color:#c9d2e4}
+.wrap{padding:14px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(16,32,64,.06)}
+.card h2{margin:0 0 10px;font-size:15px;color:var(--navy);display:flex;align-items:center;gap:6px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13.5px;border-bottom:1px dashed #eceff5}
+.row:last-child{border-bottom:none}
+.row .k{color:var(--gray)}
+.row .v{font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums}
+button{font-family:inherit;font-size:15px;border:none;border-radius:12px;padding:14px;width:100%;font-weight:700;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1c1503;box-shadow:0 6px 18px rgba(201,166,74,.35)}
+.btn-dark{background:var(--navy);color:#fff}
+.btn-ghost{background:#fff;color:var(--navy);border:1.5px solid #d8dce3}
+button:disabled{opacity:.5}
+.amount{display:flex;align-items:center;gap:10px;margin:6px 0 12px}
+.amount input{flex:1;font-size:26px;font-weight:800;color:var(--navy);border:none;border-bottom:2px solid var(--gold);padding:8px 4px;outline:none;background:transparent;text-align:center;font-family:inherit}
+.amount .unit{font-size:15px;color:var(--gray);font-weight:700}
+.quick{display:flex;gap:8px;margin-bottom:12px}
+.quick button{padding:10px;font-size:13.5px;background:#f1f3f7;color:var(--navy);border:1px solid #e2e6ee}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+.b-ok{background:#e6f7ee;color:var(--ok)}
+.b-err{background:#fdecea;color:var(--err)}
+.b-wait{background:#fff7e6;color:#b7791f}
+#log{font-size:12px;color:var(--gray);line-height:1.7;max-height:150px;overflow-y:auto;word-break:break-all}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tab{flex:1;text-align:center;padding:11px 6px;border-radius:12px;background:#fff;border:1.5px solid #e3e7ee;color:var(--navy);font-weight:800;text-decoration:none;font-size:13.5px}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tip{font-size:12px;color:var(--gray);line-height:1.65;background:#fff;border-radius:12px;padding:12px;border-left:3px solid var(--gold)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;padding:12px 14px 16px;box-shadow:0 -3px 14px rgba(16,32,64,.08)}
+.warn{background:#fff7e6;border:1px solid #ffe0a3;color:#8a6100;font-size:12.5px;padding:10px;border-radius:10px;margin-bottom:10px;line-height:1.6}
+.sw{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;padding:6px 0}
+.sw input{width:44px;height:24px}
 </style>
 </head>
 <body>
+<header>
+  <h1>AiLGNS 算力参与</h1>
+  <div class="sub">Anubis Chain · PowerLedger · 每日额度有限</div>
+</header>
+
 <div class="wrap">
-
-  <header>
-    <div>
-      <h1>阿郎老师的 AiLGNS <em>观测站</em></h1>
-      <div class="meta" style="text-align:left;margin-top:4px">动态奖励 · 单价 · 各等级所得 · 链上状态</div>
-    </div>
-    <div class="meta">
-      数据抓取 <b id="gen">—</b><br>
-      <span id="age" style="color:var(--dim2)"></span>
-      <button id="refresh" style="margin-left:8px">刷新</button>
-    </div>
-  </header>
-
-  <div id="errcard"></div>
-
-  <div class="bar" id="srcbadge"></div>
-  <div class="bar" id="chips"></div>
-
-  <h2>资金全景 · 钱都在哪（链上实时）</h2>
-  <div class="grid g4" id="flowSum"></div>
-  <div class="grid g3" id="flowStat" style="margin-top:10px"></div>
-  <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
-    <div class="fc" id="flowList"></div>
+  <div class="tabs">
+    <a class="tab active" href="./index.html">💵 DAI 参与</a>
+    <a class="tab" href="./lgns.html">🔥 LGNS 销毁参与</a>
   </div>
-  <p class="note" style="margin-top:8px">
-    「用 DAI 买算力」的钱：先打给<b>算力账本</b>，账本<b>一分不停留</b>，立刻全额转进<b>协议储备</b>。
-    所以买算力的钱<b>全部在协议储备里</b>，账本余额永远是 0。
-  </p>
+  <div class="warn" id="envWarn" style="display:none">
+    ⚠️ 没检测到钱包。请复制本页链接，到 <b>MetaMask / OKX / TokenPocket</b> 的「内置浏览器」里打开。
+  </div>
 
-  <h2>P 等级门槛 · 换算成「要投多少钱」</h2>
   <div class="card">
-    <div class="warn" style="margin-bottom:14px;font-size:13px">
-      <b>最关键的一点 👇</b><br>
-      规则里写的「每区 ≥ 50,000 <b>DAI</b>」，指的是<b>该区真实累计投入的 DAI（本金）</b>，<b>不是你换算出来的算力</b>。<br>
-      （存 1 DAI = 2.5 算力，但<b>考核看本金，不看算力</b>）<br>
-      所以 —— <span class="bigno">每区投 5 万，三个区 15 万</span>
-    </div>
-    <div class="scroll">
-      <table class="ptab" id="pTab">
-        <thead><tr>
-          <th>等级</th><th>每区门槛<br>（真实投入 DAI）</th><th>三个区合计<br>（真实投入 DAI）</th>
-          <th>折算成算力<br>（只作参考）</th><th>另外还要锁<br>veAiLGNS</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p class="note" style="margin-top:12px">
-      ⚠️ <b>三个区要"分别"达标</b>，不能三个区加起来算。
-      差一个区，等级就上不去。<br>
-      ⚠️ veAiLGNS 那一栏是<b>按币价折算的价值</b>，不是数量 —— 币价涨了，你要锁的枚数就变少。
-    </p>
+    <h2>① 连接钱包</h2>
+    <div class="row"><span class="k">钱包地址</span><span class="v" id="addr">未连接</span></div>
+    <div class="row"><span class="k">网络</span><span class="v" id="net">—</span></div>
+    <div class="row"><span class="k">DAI 余额</span><span class="v" id="bal">—</span></div>
+    <div class="row"><span class="k">已授权额度</span><span class="v" id="allow">—</span></div>
+    <div style="margin-top:10px"><button class="btn-dark" id="btnConnect">连接钱包 / 切换网络</button></div>
   </div>
 
-  <h2>算一算 · 我还差多少</h2>
+  
+
+  <div class="card" style="text-align:center">
+    <h2 style="justify-content:center">🔍 额度监控中</h2>
+    <div id="cd" style="font-size:30px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums">--:--:--</div>
+    <div id="monState" style="font-size:12.5px;color:#1f9d55;font-weight:700;margin-top:6px">正在自动检测额度…一有额度立刻提示并抢</div>
+    <div style="font-size:11.5px;color:#9aa3b2;margin-top:4px">距每日额度重置（0 点）还有</div>
+  </div>
+
   <div class="card">
-    <div class="twrow">
-      <select id="pcLv">
-        <option value="0">我想上 P1</option>
-        <option value="1">我想上 P2</option>
-        <option value="2">我想上 P3</option>
-        <option value="3">我想上 P4</option>
-        <option value="4">我想上 P5</option>
-      </select>
-      <input id="pcHave" placeholder="我某个区现在投入了多少 DAI（可不填）" spellcheck="false">
-      <button id="pcGo">算一下</button>
+    <h2>② 输入金额 <span id="capBadge" class="badge b-wait">检查中…</span></h2>
+    <div class="amount">
+      <input id="amt" type="number" inputmode="decimal" value="100">
+      <span class="unit">DAI</span>
     </div>
-    <div id="pcOut" style="margin-top:12px"></div>
+    <div class="quick">
+      <button data-v="100">100</button>
+      <button data-v="500">500</button>
+      <button data-v="1000">1000</button>
+      <button data-v="max">全部</button>
+    </div>
+    <div class="sw">
+      <span>额度开放时自动抢（自动重试）</span>
+      <input type="checkbox" id="auto" checked>
+    </div>
+    <div style="font-size:12px;color:#707682;margin-top:4px" id="capInfo">正在读取今日额度状态…</div>
   </div>
 
-  <h2>团队树查询 · 输入钱包看下级结构</h2>
   <div class="card">
-    <div class="twrow">
-      <input id="twAddr" placeholder="粘贴钱包地址 0x…（不连钱包，只读）" spellcheck="false">
-      <select id="twDepth">
-        <option value="1">展开 1 层</option>
-        <option value="2">展开 2 层</option>
-        <option value="3" selected>展开 3 层（推荐）</option>
-        <option value="5">展开 5 层</option>
-        <option value="12">尽量全展开（慢）</option>
-      </select>
-      <button id="twGo">查询</button>
-    </div>
-    <div id="twMsg" class="note" style="margin-top:9px">
-      查这个地址在关系树里的层级、推荐人、自己的算力，以及每条直推线<b>能读到</b>的线下算力合计。
-      <b style="color:var(--gold)">⚠️ 链上关系表不完整，这个查询读不全团队、数字会偏小，只用来看结构；
-      要准确的团队业绩和等级判断，用下面的「关注钱包 · 官方口径」。</b>
-    </div>
+    <h2>③ 执行</h2>
+    <button class="btn-ghost" id="btnApprove" style="margin-bottom:10px">授权 DAI（首次需要，一次性）</button>
+    <button class="btn-primary" id="btnGo">立即参与</button>
+    <div id="log" style="margin-top:10px"></div>
   </div>
-  <div id="twOut"></div>
 
-  <h2>钱包快查 · 算力每天分多少</h2>
   <div class="card">
-    <div class="twrow">
-      <input id="qkAddr" placeholder="粘贴钱包地址 0x…（只读链上，不连钱包、不发起交易）" spellcheck="false">
-      <button id="qkGo">查一下</button>
-    </div>
-    <div id="qkOut" class="note" style="margin-top:9px">
-      查两件事：<b>① 个人算力每天能兑付多少</b>（链上直读）；<b>② 社区（动态）奖励分了多少</b>（最近一期官方名单）。
-    </div>
+    <button class="btn-ghost" id="btnCopy">📋 复制本页链接，发给同学</button>
   </div>
 
-  <h2>关注钱包 · 官方口径（团队页数据）</h2>
-  <div class="card">
-    <div class="note" style="margin-bottom:10px">
-      这些地址的团队数字，按<b>官方团队页口径</b>（全量索引：累计新增 DAI、各线业绩、成员数）抓取，每 30 分钟自动更新，
-      和你在官方团队页看到的数字一致。想加地址：把钱包一行一个写进仓库根目录的 <b>watchlist.txt</b>。
-      <b style="color:var(--gold)">本站的链上直读（上面那个查询）受合约关系表限制会偏小，判定等级请用这里的官方口径。</b>
-    </div>
-    <div id="watchCard"><div class="note">加载中…</div></div>
+  <div class="tip" style="border-left-color:#c0392b">
+    <b>风险提示：</b>本页面仅为链上操作辅助工具，不构成任何投资建议。加密资产波动极大，链上交易不可撤销，请自行判断、自担风险。
   </div>
 
-  <h2>最新一期 · 动态奖励</h2>
-  <div class="grid g4" id="hero"></div>
-
-  <h2>当天单价 · 每份权重发多少</h2>
-  <div class="grid g3" id="unit"></div>
-
-  <h2>各等级拿到多少 · AiLGNS / 人 / 天</h2>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div class="lv" id="lvtable"></div>
+  <div class="tip">
+    <b>怎么用：</b><br>
+    1. 用手机钱包 App（MetaMask / OKX / TokenPocket）的「浏览器」打开本页<br>
+    2. 点「连接钱包」→ 自动添加 Anubis 网络<br>
+    3. 先点「授权 DAI」（只需一次），再点「立即参与」<br>
+    4. 额度满时不用守着：打开「自动抢」，页面每分钟检测，一开就自动弹钱包确认<br><br>
+    <b>参与合约：</b>0x9E68F61E…68C1b（PowerLedger）<br>
+    <b>说明：</b>每日额度按北京时间 00:00 重置，额度有限、先到先得。
   </div>
-  <div class="card" style="margin-top:10px;padding:0;overflow:hidden">
-    <div style="padding:12px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line)">
-      每个等级有哪些钱包 <span class="note" id="whoMeta" style="font-weight:400"></span>
-    </div>
-    <div id="whoList"></div>
-  </div>
-  <h2>上等级钱包 · 收益明细（每个人分了多少）</h2>
-  <div class="grid g3" id="wdSum"></div>
-  <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
-    <div class="scroll" style="max-height:520px;overflow-y:auto"><table class="wtab" id="wdTab"></table></div>
-  </div>
-  <p class="note" id="wdNote" style="margin-top:8px"></p>
-
-  <p class="note" style="margin-top:8px">
-    共识按等级发，同一级每人一样；网络和增长按各自团队当天新增算，所以同等级内部差距很大。
-    「合计」栏显示的是该等级当天的<b>最低到最高</b>，中位数更能代表一般人。
-  </p>
-
-  <h2>走势 · 中位数（AiLGNS / 人 / 天）</h2>
-  <div class="card">
-    <svg class="spark" id="spark" viewBox="0 0 900 150" preserveAspectRatio="none"></svg>
-    <div class="legend">
-      <span><i style="background:var(--gold)"></i>P1 中位数</span>
-      <span><i style="background:var(--blue)"></i>P2 中位数</span>
-      <span><i style="background:var(--purple)"></i>P3 中位数</span>
-      <span><i style="background:var(--green)"></i>发放合计</span>
-    </div>
-  </div>
-
-  <h2>历史 · 每天发放</h2>
-  <div class="card" style="padding:6px 10px">
-    <div class="scroll"><table id="hist"></table></div>
-  </div>
-
-  <h2>链上协议状态</h2>
-  <div class="grid g3" id="proto"></div>
-
-  <footer>
-    <div class="warn">
-      <b>免责声明</b>：本页为个人观测工具，<b>非官方</b>，不连接钱包、不发起任何交易、不索取私钥或助记词。
-      动态奖励名单、单价、P 等级名单每天从公开渠道自动抓取汇总（算法官方尚未公布，随时可能调整）；
-      链上状态直接读取 Anubis 公共 RPC，可在 <a href="https://browser.anubispace.org" target="_blank" rel="noopener">区块浏览器</a> 核对。
-      全部内容不构成任何投资建议，加密资产波动剧烈，可能损失全部本金。
-    </div>
-  </footer>
-
 </div>
 
+<div class="bar"><button class="btn-primary" id="btnGo2">立即参与</button></div>
+
 <script>
-/* 内置快照：没有服务器时（双击打开）使用这份数据 */
-var EMBEDDED = {
-  "site": {
-    "name": "AiLGNS 观测站",
-    "generatedAt": "2026-10-12T16:56:53.952Z",
-    "generator": "ailgns-monitor/collect.mjs"
-  },
-  "chain": {
-    "block": 16294569,
-    "blockTime": "2026-10-12T16:56:54.650Z",
-    "gasPriceGwei": 12,
-    "rpc": "https://rpc.anubispace.org",
-    "explorer": "https://browser.anubispace.org/block/16294569",
-    "chainId": 6714
-  },
-  "protocol": {
-    "day": 16,
-    "powerDAI": 112660754,
-    "powerMultiplier": 2.5,
-    "dailyPayRatio": 0.2795,
-    "priceDAI": 712.8856,
-    "poolPriceDAI": 713.9446,
-    "poolAiLGNS": 16156.57,
-    "poolDAI": 11534893.34,
-    "reserveDAI": 55283788.73,
-    "totalSupply": 209999237,
-    "devWallet": 14415096,
-    "buyOpen": false,
-    "buyFee": "100%",
-    "sellFee": "3%",
-    "depositedToday": 1999999.99,
-    "depositCap": 2000000,
-    "queueToday": 4999999.98,
-    "released": 151772.33,
-    "emissionVault": 163471924.29,
-    "insuranceVault": 10678467
-  },
-  "rewards": {
-    "unitPriceHistory": [
-      {
-        "date": "10月11日",
-        "growth": 0.00001543,
-        "network": 0.0000485,
-        "p1": 0.0313,
-        "p2": 0.2221,
-        "p3": 1.9245
-      },
-      {
-        "date": "10月10日",
-        "growth": 0.0000162,
-        "network": 0.00004863,
-        "p1": 0.0422,
-        "p2": 0.2299,
-        "p3": 1.9927
-      },
-      {
-        "date": "10月9日",
-        "growth": 0.00002076,
-        "network": 0.0000717,
-        "p1": 0.0435,
-        "p2": 0.3229,
-        "p3": 1.7491
-      },
-      {
-        "date": "10月8日",
-        "growth": 0.00001844,
-        "network": 0.0001092,
-        "p1": 0.0656,
-        "p2": 0.3862,
-        "p3": 2.0921
-      },
-      {
-        "date": "10月7日",
-        "growth": 0.00001867,
-        "network": 0.0001392,
-        "p1": 0.1015,
-        "p2": 0.6091,
-        "p3": 2.6395
-      },
-      {
-        "date": "10月6日",
-        "growth": 0.000003897,
-        "network": 0.00001944,
-        "p1": 0.0546,
-        "p2": 0.3971,
-        "p3": 1.2905
-      },
-      {
-        "date": "10月5日",
-        "growth": 0.000004236,
-        "network": 0.00002735,
-        "p1": 0.0744,
-        "p2": 0.649,
-        "p3": 1.4061
-      }
-    ],
-    "levels": [
-      {
-        "level": "P1",
-        "count": 52,
-        "consensusMin": 0,
-        "consensusMax": 0.0313,
-        "consensusEach": 0,
-        "networkMin": 0,
-        "networkMax": 1.6072,
-        "growthMin": 0,
-        "growthMax": 0.4907,
-        "totalMin": 0,
-        "totalMax": 2.1293,
-        "median": 0.0926
-      },
-      {
-        "level": "P2",
-        "count": 8,
-        "consensusMin": 0.2221,
-        "consensusMax": null,
-        "consensusEach": 0.2221,
-        "networkMin": 0.0825,
-        "networkMax": 1.2829,
-        "growthMin": 0.0026,
-        "growthMax": 0.3854,
-        "totalMin": 0.6738,
-        "totalMax": 1.6883,
-        "median": 0.8025
-      },
-      {
-        "level": "P3",
-        "count": 1,
-        "consensusMin": 1.9245,
-        "consensusMax": null,
-        "consensusEach": 1.9245,
-        "networkMin": 0.5561,
-        "networkMax": null,
-        "growthMin": 0.0093,
-        "growthMax": null,
-        "totalMin": 2.4898,
-        "totalMax": null,
-        "median": null
-      }
-    ],
-    "history": [
-      {
-        "date": "10月11日",
-        "status": "待确认",
-        "total": 29.404,
-        "growth": 7.745,
-        "network": 16.5175,
-        "consensus": 5.1415,
-        "budget": 10237.5,
-        "addresses": 481,
-        "p1Median": 0.0926,
-        "p2Median": 0.8025,
-        "p3Median": 2.4898
-      },
-      {
-        "date": "10月10日",
-        "status": "已确认",
-        "total": 33.5559,
-        "growth": 7.9684,
-        "network": 20.1535,
-        "consensus": 5.434,
-        "budget": 10237.5,
-        "addresses": 405,
-        "p1Median": 0.234,
-        "p2Median": 0.816,
-        "p3Median": 2.7784
-      },
-      {
-        "date": "10月9日",
-        "status": "已确认",
-        "total": 29.7624,
-        "growth": 7.02,
-        "network": 17.9424,
-        "consensus": 4.8,
-        "budget": 9843.75,
-        "addresses": 506,
-        "p1Median": 0.1415,
-        "p2Median": 0.7316,
-        "p3Median": 2.1986
-      },
-      {
-        "date": "10月8日",
-        "status": "已确认",
-        "total": 34.698,
-        "growth": 7.97,
-        "network": 21,
-        "consensus": 5.728,
-        "budget": 9056.25,
-        "addresses": 502,
-        "p1Median": 0.2536,
-        "p2Median": 0.7567,
-        "p3Median": 2.5516
-      },
-      {
-        "date": "10月7日",
-        "status": "已确认",
-        "total": 45.4623,
-        "growth": 10.9502,
-        "network": 27.2026,
-        "consensus": 7.3095,
-        "budget": 8268.75,
-        "addresses": 740,
-        "p1Median": 0.5795,
-        "p2Median": 3.8038,
-        "p3Median": 4.197
-      },
-      {
-        "date": "10月6日",
-        "status": "已确认",
-        "total": 20.5634,
-        "growth": 3.7534,
-        "network": 13.2362,
-        "consensus": 3.5738,
-        "budget": 7481.25,
-        "addresses": 1621,
-        "p1Median": 0.2413,
-        "p2Median": 1.7224,
-        "p3Median": 2.4777
-      },
-      {
-        "date": "10月5日",
-        "status": "已确认",
-        "total": 22.3318,
-        "growth": 4.0164,
-        "network": 14.4215,
-        "consensus": 3.8938,
-        "budget": 7481.25,
-        "addresses": 1467,
-        "p1Median": 0.467,
-        "p2Median": 1.3585,
-        "p3Median": 2.8923
-      },
-      {
-        "date": "10月4日",
-        "status": "已确认",
-        "total": 22.0879,
-        "growth": 3.993,
-        "network": 15.4327,
-        "consensus": 2.6621,
-        "budget": 9168.08,
-        "addresses": 1037,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "10月3日",
-        "status": "已确认",
-        "total": 62.0575,
-        "growth": 10.9113,
-        "network": 43.6216,
-        "consensus": 7.5247,
-        "budget": 9843.75,
-        "addresses": 1769,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "10月2日",
-        "status": "已确认",
-        "total": 12.0452,
-        "growth": 2.1044,
-        "network": 8.4783,
-        "consensus": 1.4625,
-        "budget": 9056.25,
-        "addresses": 237,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "10月1日",
-        "status": "已确认",
-        "total": 16.2038,
-        "growth": 3.3347,
-        "network": 11.8884,
-        "consensus": 0.9808,
-        "budget": 9056.25,
-        "addresses": 423,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "9月30日",
-        "status": "已确认",
-        "total": 45.9546,
-        "growth": 8.3163,
-        "network": 34.7698,
-        "consensus": 2.8685,
-        "budget": 9056.25,
-        "addresses": 516,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "9月29日",
-        "status": "已确认",
-        "total": 10.6163,
-        "growth": 10.6163,
-        "network": 0,
-        "consensus": 0,
-        "budget": 9056.25,
-        "addresses": 366,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      },
-      {
-        "date": "9月28日",
-        "status": "已确认",
-        "total": 0,
-        "growth": 0,
-        "network": 0,
-        "consensus": 0,
-        "budget": 15750,
-        "addresses": 0,
-        "p1Median": null,
-        "p2Median": null,
-        "p3Median": null
-      }
-    ],
-    "latest": {
-      "dateLabel": "10月11日",
-      "day": 14,
-      "status": "待确认",
-      "publishAt": "10月12日 02:58",
-      "claimAt": "10月13日 02:58",
-      "total": 29.404,
-      "growth": 7.745,
-      "network": 16.5175,
-      "consensus": 5.1415,
-      "budget": 10237.5,
-      "ratio": 0.29,
-      "addresses": 481
-    },
-    "unitPrice": {
-      "growth": 0.00001543,
-      "growthDelta": -4.7,
-      "network": 0.0000485,
-      "networkDelta": -0.3,
-      "consensus": {
-        "P1": 0.0313,
-        "P2": 0.2221,
-        "P3": 1.9245
-      }
-    }
-  },
-  "errors": [],
-  "elapsedMs": 1775
+const CFG = {
+  chainId: 6714,
+  chainIdHex: '0x1a3a',
+  rpc: 'https://rpc.anubispace.org',
+  explorer: 'https://browser.anubispace.org',
+  dai: '0x83fd06F0846d9D90B3016bF670Efe2E0B11cDe14',
+  ledger: '0x9E68F61E2615cc1D2C4a2D0026bFc1EBFdf68C1b',
+  selBalance: '0x70a08231',
+  selAllowance: '0xdd62ed3e',
+  selApprove: '0x095ea7b3',
+  selParticipate: '0x845c9306',
+  maxUint: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+  // ---- LGNS 销毁算力（2026-10-26 12:00 SGT 开放）----
+  lgns: '0x4D1D808a081FdAc440703b3765FC61f8028C06B8',
+  gate: '0xb975fd9b03ff440d6a43a52a7f072154cb520a4b',
+  clock: '0x6c5352e15a8327c3f44898fe220100edc2989c58',
+  selLgnsCap: '0x5fad1fe4',
+  selLgnsQueued: '0x7d5cba0e',
+  selLgnsRate: '0x3498100a',
+  selMaxLgns: '0x7300b78e',
+  selMinStake: '0xec5ffac2',
+  selStakeOf: '0x42623360',
+  selBurnEpoch: '0x99e02c2d',
+  selEpoch: '0x76671808'
 };
-var SRC = "snapshot";
-var DATA = null;
+const $ = id => document.getElementById(id);
+let account = null;
+const log = m => { const d = new Date().toLocaleTimeString('zh-CN'); $('log').innerHTML = '[' + d + '] ' + m + '<br>' + $('log').innerHTML; };
+const pad = a => a.toLowerCase().replace('0x','').padStart(64,'0');
+const hexAmt = v => BigInt(Math.round(v * 1e18)).toString(16).padStart(64, '0');
+const fmt = v => (Number(BigInt(v)) / 1e18).toLocaleString('en-US', { maximumFractionDigits: 2 });
 
-function $(id){ return document.getElementById(id); }
-function fmt(n, d){
-  if(n === null || n === undefined || isNaN(n)) return '—';
-  d = (d === undefined) ? 2 : d;
-  return Number(n).toLocaleString('zh-CN', {minimumFractionDigits:d, maximumFractionDigits:d});
+async function rpcCall(to, data, from) {
+  const p = { to, data };
+  if (from) p.from = from;
+  const r = await fetch(CFG.rpc, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method: 'eth_call', params: [p, 'latest'] }) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message || 'call failed');
+  return j.result;
 }
-function ago(iso){
-  var t = new Date(iso).getTime();
-  if(isNaN(t)) return '';
-  var m = Math.floor((Date.now() - t)/60000);
-  if(m < 1) return '刚刚';
-  if(m < 60) return m + ' 分钟前';
-  var h = Math.floor(m/60);
-  if(h < 24) return h + ' 小时前';
-  return Math.floor(h/24) + ' 天前';
-}
-function card(k, v, unit, sub, cls){
-  return '<div class="card ' + (cls||'') + '"><div class="k">' + k + '</div>' +
-         '<div class="v">' + v + (unit ? '<small>' + unit + '</small>' : '') + '</div>' +
-         (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>';
-}
-
-function render(){
-  var d = DATA;
-  if(!d){ return; }
-  $('gen').textContent = new Date(d.site.generatedAt).toLocaleString('zh-CN', {hour12:false});
-  $('age').textContent = ago(d.site.generatedAt);
-
-  $('srcbadge').innerHTML =
-      (SRC === 'live')   ? '<span class="chip on">数据源 <b>实时</b></span>'
-    : (SRC === 'remote') ? '<span class="chip on">数据源 <b>实时</b>（本地打开 · 取自线上站点）</span>'
-    : '<span class="chip off">数据源 <b>内置快照</b> · 当前离线，不会自动更新</span>';
-
-  var errs = d.errors || [];
-  $('errcard').innerHTML = errs.length
-    ? '<div class="err"><b>部分数据抓取失败</b>（已尽量沿用上一次快照）：<br>' + errs.map(function(e){return '· ' + e;}).join('<br>') + '</div>'
-    : '';
-
-  var fl2 = d.flow || {};
-  var fstat = document.getElementById('flowStat');
-  if (fstat && fl2.totalDai) {
-    fstat.innerHTML =
-      card('用 DAI 买算力 · 累计', fmt(fl2.totalDai/1e4, 2), '万 DAI', fmt(fl2.txCount,0) + ' 笔 · 自 ' + (fl2.totalFrom||'') ) +
-      card('最近 24 小时', fmt(fl2.last24hDai/1e4, 2), '万 DAI', fmt(fl2.last24hTx,0) + ' 笔（每日上限 200 万）') +
-      card('这些钱在哪', '协议储备', '', '账本只是中转，收到就全额转走');
+async function ensureChain() {
+  const eth = window.ethereum; if (!eth) throw new Error('未检测到钱包');
+  try {
+    await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CFG.chainIdHex }] });
+  } catch (e) {
+    if (e && (e.code === 4902 || /Unrecognized chain/i.test(e.message || ''))) {
+      await eth.request({ method: 'wallet_addEthereumChain', params: [{
+        chainId: CFG.chainIdHex, chainName: 'Anubis Chain',
+        nativeCurrency: { name: 'Dai Stablecoin', symbol: 'DAI', decimals: 18 },
+        rpcUrls: [CFG.rpc], blockExplorerUrls: [CFG.explorer]
+      }] });
+    } else throw e;
   }
-
-  var p = d.protocol || {}, ch = d.chain || {}, r = d.rewards || {}, L = r.latest || {}, up = r.unitPrice || {};
-
-  // 状态条
-  var chips = [];
-  chips.push('<span class="chip">链上区块 <b>#' + (ch.block ? Number(ch.block).toLocaleString('en-US') : '—') + '</b></span>');
-  chips.push('<span class="chip">协议第 <b>' + (p.day || '—') + '</b> 天</span>');
-  chips.push('<span class="chip">全网有效算力 <b>' + fmt(p.powerDAI, 0) + '</b> DAI</span>');
-  chips.push('<span class="chip ' + (p.buyOpen ? 'on' : 'off') + '">公开买入 <b>' + (p.buyOpen === null ? '—' : (p.buyOpen ? '已开放' : '未开放')) + '</b></span>');
-  if(p.depositCap){
-    var used = p.depositedToday >= p.depositCap * 0.999;
-    chips.push('<span class="chip ' + (used ? 'off' : 'on') + '">今日存入 <b>' + fmt(p.depositedToday, 0) + '</b> / ' + fmt(p.depositCap, 0) + ' DAI</span>');
-  }
-  $('chips').innerHTML = chips.join('');
-
-  // 最新一期
-  var stTag = L.status === '待确认'
-      ? '<span class="tag wait">待确认</span>'
-      : (L.status === '已确认' ? '<span class="tag done">已确认</span>' : '');
-  var rate = (L.total != null && L.budget) ? (L.total / L.budget * 100) : null;
-  var hero = '';
-  hero += '<div class="card hero"><div class="k">数据日期</div><div class="v">' + (L.dateLabel || '—') +
-          stTag + '</div><div class="s">第 ' + (L.day || '—') + ' 天 · ' +
-          (L.claimAt ? L.claimAt + ' 后可领取' : '') + '</div></div>';
-  hero += card('发放合计', fmt(L.total, 4), 'AiLGNS',
-          L.budget ? '占预算 ' + fmt(rate, 2) + '%（预算 ' + fmt(L.budget, 2) + '）' : '');
-  hero += card('领到的人数', fmt(L.addresses, 0), '个地址',
-          L.growth != null ? '增长 ' + fmt(L.growth, 4) + ' · 网络 ' + fmt(L.network, 4) + ' · 共识 ' + fmt(L.consensus, 4) : '');
-  var gap = (L.budget && L.total != null) ? (L.budget - L.total) : null;
-  hero += card('未发出的预算', fmt(gap, 2), 'AiLGNS', '预算只是上限，实际按名单发放');
-  $('hero').innerHTML = hero;
-
-  // 单价
-  var cs = up.consensus || {};
-  var unit = '';
-  unit += card('增长 · 每 1 DAI 权重', fmt(up.growth, 8), 'AiLGNS',
-          up.growthDelta != null ? '比前一天 ' + (up.growthDelta > 0 ? '+' : '') + up.growthDelta + '%' : '');
-  unit += card('网络 · 每 1 点权重', fmt(up.network, 8), 'AiLGNS',
-          up.networkDelta != null ? '比前一天 ' + (up.networkDelta > 0 ? '+' : '') + up.networkDelta + '%' : '');
-  unit += card('共识 · 每个地址一份', 'P1 ' + fmt(cs.P1, 4), '',
-          'P2 ' + fmt(cs.P2, 4) + '　P3 ' + fmt(cs.P3, 4) + '（AiLGNS）');
-  $('unit').innerHTML = unit;
-
-  // 等级表
-  var lv = r.levels || [];
-  var byLv = {};
-  lv.forEach(function(x){ byLv[x.level] = x; });
-  var keys = ['P1','P2','P3','P4','P5','P6','P7'];
-  var rows = '<div class="h">等级</div><div class="h">人数</div><div class="h">当天所得（最低 – 最高）</div><div class="h">中位数</div>';
-  keys.forEach(function(k){
-    var x = byLv[k];
-    if(x){
-      var lo = (x.totalMin != null) ? fmt(x.totalMin, 4) : '—';
-      var hi = (x.totalMax != null) ? fmt(x.totalMax, 4) : lo;
-      var rng = (x.totalMax != null && x.totalMax !== x.totalMin) ? (lo + ' – ' + hi) : lo;
-      var med = (x.median != null) ? fmt(x.median, 4) : ((x.totalMax == null) ? lo : '—');
-      rows += '<div class="n">' + k + '</div><div>' + x.count + '</div>' +
-              '<div class="r">' + rng + '</div>' +
-              '<div class="m" style="color:var(--gold)">' + med + '</div>';
+}
+async function connect() {
+  const eth = window.ethereum;
+  if (!eth) { $('envWarn').style.display = 'block'; return; }
+  try {
+    const accs = await eth.request({ method: 'eth_requestAccounts' });
+    account = accs[0];
+    $('addr').textContent = account.slice(0,6) + '…' + account.slice(-4);
+    await ensureChain();
+    const cid = await eth.request({ method: 'eth_chainId' });
+    $('net').textContent = parseInt(cid,16) === CFG.chainId ? 'Anubis (6714) ✅' : '错误网络 ' + parseInt(cid,16);
+    log('钱包已连接：' + account);
+    await refresh();
+  } catch (e) { log('❌ ' + (e.message || e)); }
+}
+async function refresh() {
+  if (!account) return;
+  try {
+    const b = await rpcCall(CFG.dai, CFG.selBalance + pad(account));
+    $('bal').textContent = fmt(b) + ' DAI';
+    const a = await rpcCall(CFG.dai, CFG.selAllowance + pad(account) + pad(CFG.ledger));
+    const av = BigInt(a);
+    $('allow').textContent = av > (1n<<200n) ? '无限 ✅' : fmt(av) + ' DAI';
+  } catch (e) {}
+  checkCap();
+}
+let capOpen = false;
+async function checkCap() {
+  const amt = parseFloat($('amt').value || '100');
+  const data = CFG.selParticipate + hexAmt(amt > 0 ? amt : 100);
+  try {
+    await rpcCall(CFG.ledger, data, account || undefined);
+    if (!capOpen) { beep(); log('🔔 额度开放！'); }
+    capOpen = true;
+    $('capBadge').className = 'badge b-ok'; $('capBadge').textContent = '可参与';
+    $('capInfo').textContent = '✅ 当前额度开放，可以立即参与';
+    if ($('auto').checked && account) {
+      const amt = parseFloat($('amt').value || '100');
+      const av = BigInt(await rpcCall(CFG.dai, CFG.selAllowance + pad(account) + pad(CFG.ledger)));
+      if (av < BigInt(Math.round(amt * 1e18))) { log('⚠️ 未授权，自动抢无法进行→先点「授权 DAI」'); return; }
+      log('⚡ 检测到额度开放，自动发起参与…'); await participate();
+    }
+  } catch (e) {
+    capOpen = false;
+    const m = String(e.message || '');
+    if (/daily DAI deposit cap/i.test(m)) {
+      $('capBadge').className = 'badge b-err'; $('capBadge').textContent = '今日已满';
+      $('capInfo').textContent = '⏳ 今日额度已满，将在北京时间 0 点重置（开着本页会自动等待）';
     } else {
-      rows += '<div class="n" style="color:var(--dim2)">' + k + '</div><div style="color:var(--dim2)">0</div>' +
-              '<div class="r">未达到</div><div class="m" style="color:var(--dim2)">—</div>';
+      $('capBadge').className = 'badge b-wait'; $('capBadge').textContent = '待检查';
+      $('capInfo').textContent = 'ℹ️ ' + m.slice(0, 80);
     }
-  });
-  $('lvtable').innerHTML = rows;
-
-  // 上等级钱包的收益明细
-  var wd = d.whoDetail || {};
-  if (wd.date && wd.list) {
-    var LVS = ['P1','P2','P3','P4','P5','P6','P7'];
-    var tot = 0, cnt = 0;
-    LVS.forEach(function(lv){ tot += (wd.sum && wd.sum[lv] ? wd.sum[lv] : 0); cnt += ((wd.list[lv]||[]).length); });
-    var allT = r.latest ? r.latest.total : 0;
-    var allA = r.latest ? r.latest.addresses : 0;
-    var sumEl = document.getElementById('wdSum');
-    if (sumEl) sumEl.innerHTML =
-      card('上等级地址 · 合计发放', fmt(tot,4), 'AiLGNS', wd.date + ' · 共 ' + cnt + ' 个地址') +
-      card('占当天全网发放', allT ? fmt(tot/allT*100,2) : '—', '%', '全网当天合计 ' + fmt(allT,4)) +
-      card('没上等级的地址分到', fmt(allT-tot,4), 'AiLGNS', '其余 ' + fmt(allA-cnt,0) + ' 个地址分这些');
-    var wrows = '<thead><tr><th>地址</th><th>等级</th><th>合计</th><th>共识</th><th>网络</th><th>增长</th></tr></thead><tbody>';
-    ['P3','P2','P1','P4','P5','P6','P7'].forEach(function(lv){
-      var l = wd.list[lv] || [];
-      if (!l.length) return;
-      l.forEach(function(x){
-        wrows += '<tr><td class="addr"><a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener">' + x.a + '</a></td>' +
-          '<td class="lv">' + lv + '</td>' +
-          '<td class="tot">' + fmt(x.t,4) + '</td>' +
-          '<td>' + fmt(x.c,4) + '</td><td>' + fmt(x.n,4) + '</td><td>' + fmt(x.g,4) + '</td></tr>';
-      });
-      wrows += '<tr class="sum"><td colspan="2">' + lv + ' 合计（' + l.length + ' 个）</td>' +
-        '<td>' + fmt(wd.sum[lv],4) + '</td><td colspan="3"></td></tr>';
-    });
-    var wt = document.getElementById('wdTab');
-    if (wt) wt.innerHTML = wrows + '</tbody>';
-    var wn = document.getElementById('wdNote');
-    if (wn) wn.innerHTML = '数据日期 <b>' + wd.date + '</b>（动态奖励名单发布日，比 P 等级名单晚一天）。' +
-      '单位 AiLGNS。共识部分同等级每人一样，网络和增长因人而异。';
   }
-
-  // 每个等级有哪些钱包
-  var who = d.who || {};
-  var ll2 = d.levelList || {};
-  var wm = document.getElementById('whoMeta');
-  if (wm && ll2.total) wm.innerHTML = '（全网第 ' + ll2.day + ' 天 · 共 <b style="color:var(--gold)">' + ll2.total + '</b> 个 · 点等级展开名单）';
-  var wlEl = document.getElementById('whoList');
-  if (wlEl) {
-    var wOut = '';
-    ['P7','P6','P5','P4','P3','P2','P1'].forEach(function(lv){
-      var list = who[lv] || [];
-      if (!list.length) return;
-      wOut += '<details class="who"' + (lv==='P1' ? ' open' : '') + '><summary><span><b>' + lv + '</b>　' + list.length + ' 个钱包</span>' +
-        '<span class="note">点开看地址</span></summary><div class="lst">' +
-        list.map(function(x){
-          return '<a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener" title="' + x.a + '">' +
-                 x.a.slice(0,10) + '…' + x.a.slice(-6) + (x.t != null ? '<i>' + fmt(x.t,4) + '</i>' : '') + '</a>';
-        }).join('') + '</div></details>';
-    });
-    wlEl.innerHTML = wOut || '<div style="padding:14px" class="note">暂无数据</div>';
+}
+async function approve() {
+  if (!account) return connect();
+  try {
+    $('btnApprove').textContent = '授权中…';
+    const tx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: account, to: CFG.dai, data: CFG.selApprove + pad(CFG.ledger) + CFG.maxUint.slice(2) }] });
+    log('授权已提交：' + tx.slice(0,18) + '…');
+    await waitTx(tx); await refresh();
+  } catch (e) { log('❌ 授权失败：' + (e.message || e)); }
+  $('btnApprove').textContent = '授权 DAI（首次需要，一次性）';
+}
+async function participate() {
+  if (!account) return connect();
+  const amt = parseFloat($('amt').value);
+  if (!(amt > 0)) { log('❌ 请输入金额'); return; }
+  try {
+    const a = BigInt(await rpcCall(CFG.dai, CFG.selAllowance + pad(account) + pad(CFG.ledger)));
+    if (a < BigInt(Math.round(amt*1e18))) { log('⚠️ 额度不足，先点「授权 DAI」'); return; }
+    $('btnGo').textContent = '等待钱包确认…';
+    const tx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from: account, to: CFG.ledger, data: CFG.selParticipate + hexAmt(amt) }] });
+    log('✅ 已提交：' + tx.slice(0,18) + '…');
+    const ok = await waitTx(tx);
+    log(ok ? '🎉 参与成功！' : '❌ 交易失败（可能额度被抢完）');
+    $('btnGo').textContent = ok ? '已成功 ✅' : '立即参与';
+    await refresh();
+  } catch (e) { log('❌ ' + (e.message || e)); $('btnGo').textContent = '立即参与'; }
+}
+async function waitTx(hash) {
+  for (let i = 0; i < 90; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    try {
+      const r = await fetch(CFG.rpc, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ jsonrpc:'2.0', id:1, method:'eth_getTransactionReceipt', params:[hash] }) });
+      const j = await r.json();
+      if (j.result) return j.result.status === '0x1';
+    } catch (e) {}
   }
-
-  // 趋势图
-  var uh = (r.unitPriceHistory || []).slice().reverse();   // 旧 -> 新
-  var hist = (r.history || []).slice().reverse();
-  var hByDate = {};
-  hist.forEach(function(h){ hByDate[h.date] = h; });
-  var pts = uh.map(function(u){
-    var h = hByDate[u.date] || {};
-    return { date: u.date, p1: h.p1Median, p2: h.p2Median, p3: h.p3Median, total: h.total };
-  });
-  drawSpark(pts);
-
-  // 历史表
-  var t = '<thead><tr><th>日期</th><th>状态</th><th>发放</th><th>增长</th><th>网络</th><th>共识</th><th>预算</th><th>地址数</th><th>P1中位</th><th>P2中位</th><th>P3中位</th></tr></thead><tbody>';
-  (r.history || []).forEach(function(h){
-    t += '<tr><td>' + h.date + '</td>' +
-         '<td style="color:' + (h.status === '待确认' ? 'var(--gold)' : 'var(--green)') + '">' + h.status + '</td>' +
-         '<td>' + fmt(h.total, 4) + '</td><td>' + fmt(h.growth, 4) + '</td><td>' + fmt(h.network, 4) + '</td>' +
-         '<td>' + fmt(h.consensus, 4) + '</td><td>' + fmt(h.budget, 2) + '</td><td>' + fmt(h.addresses, 0) + '</td>' +
-         '<td>' + fmt(h.p1Median, 4) + '</td><td>' + fmt(h.p2Median, 4) + '</td><td>' + fmt(h.p3Median, 4) + '</td></tr>';
-  });
-  t += '</tbody>';
-  $('hist').innerHTML = t;
-
-  // 协议状态
-  var pr = '';
-  pr += card('协议价格（TWAP）', fmt(p.priceDAI, 4), 'DAI', '按此价结算排放');
-  pr += card('每日兑付上限', fmt(p.dailyPayRatio, 4), '%', '按剩余算力计（年化 102%）');
-  pr += card('协议储备', fmt(p.reserveDAI, 2), 'DAI', '存 DAI 换算力的资金转入这里');
-  pr += card('AiLGNS/DAI 池', fmt(p.poolAiLGNS, 2), 'AiLGNS', '池内 DAI ' + fmt(p.poolDAI, 2));
-  pr += card('已释放 AiLGNS', fmt(p.released, 2), 'AiLGNS', '从排放金库发出');
-  pr += card('排放金库余额', fmt(p.emissionVault, 2), 'AiLGNS', '保险金库 ' + fmt(p.insuranceVault, 2));
-  $('proto').innerHTML = pr;
-  renderWatch();
+  log('⏳ 等待超时，请到浏览器查看');
+  return false;
 }
-
-/* ================= 钱包快查 ================= */
-function qkQuery(){
-  var out = document.getElementById('qkOut');
-  var raw = (document.getElementById('qkAddr').value || '').trim();
-  if (!twOkAddr(raw)) { out.innerHTML = '<span style="color:var(--red)">请填完整地址（0x 开头，42 位）</span>'; return; }
-  var a = raw.toLowerCase();
-  var p = (DATA && DATA.protocol) || {};
-  var ratio = (p.dailyPayRatio || 0) / 100;
-  var price = p.priceDAI || 0;
-  out.innerHTML = '查询中…';
-  Promise.all([
-    twCall(TWC.POWER, TWC.S_PWR_REG + twPad(a)).catch(function(){ return null; }),
-    twCall(TWC.POWER, TWC.S_PWR_LEFT + twPad(a)).catch(function(){ return null; })
-  ]).then(function(r){
-    var reg = r[0] ? twDai(r[0]) : 0;
-    var left = r[1] ? twDai(r[1]) : 0;
-    var daiDay = left * ratio;
-    var aiDay = price ? daiDay / price : 0;
-    var wd = (DATA && DATA.whoDetail && DATA.whoDetail.list) || null;
-    var hit = null, lv = null;
-    if (wd) ['P1','P2','P3','P4','P5','P6','P7'].forEach(function(k){
-      (wd[k] || []).forEach(function(x){ if (x.a === a) { hit = x; lv = k; } });
-    });
-    var h = '<div class="grid g4" style="margin-top:4px">' +
-      card('我的登记算力', fmt(reg, 2), '算力', '存 1 DAI = 2.5 算力') +
-      card('我的剩余算力', fmt(left, 2), '算力', '按这个数每天兑付') +
-      card('个人算力 · 每天分', fmt(daiDay, 2), 'DAI', '≈ ' + fmt(aiDay, 6) + ' AiLGNS（协议价 ' + fmt(price, 2) + '）') +
-      card('当前 P 等级', lvlOf(a), '', '官方第 ' + ((DATA.levelList && DATA.levelList.day) || '—') + ' 天名单') +
-      '</div>';
-    h += '<div class="warn" style="margin-top:10px"><b>社区（动态）奖励 · ' +
-      ((DATA.whoDetail && DATA.whoDetail.date) || '最近一期') + (hit ? '（' + lv + '）' : '') + '</b><br>';
-    if (hit) {
-      h += '合计 <b>' + fmt(hit.t, 4) + ' AiLGNS</b>　=　共识 ' + fmt(hit.c, 4) + ' ＋ 网络 ' + fmt(hit.n, 4) + ' ＋ 增长 ' + fmt(hit.g, 4) +
-           '<br><span class="note">共识＝这个等级每人一份；网络/增长＝各自权重 × 当天单价</span>';
-    } else {
-      h += '这个地址<b>不在</b>最近一期「有 P 等级的地址」名单里 → 当期没有共识那一份。' +
-           '<br><span class="note">官方只公布有 P 等级地址的个人明细；没上等级的地址拿到的增长/网络通常很小，官方不公布个人明细。</span>';
-    }
-    h += '</div>';
-    h += '<p class="note" style="margin-top:8px">① 个人算力 = 剩余算力 × ' + fmt(p.dailyPayRatio, 4) + '% ÷ 协议价，每天结算、发到你自己地址。' +
-         '② 社区（动态）奖励 = 增长 ＋ 网络 ＋ 共识，取自最近一期名单（每 30 分钟更新）。</p>';
-    out.innerHTML = h;
-  }).catch(function(e){
-    out.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
-  });
-}
-document.getElementById('qkGo').addEventListener('click', qkQuery);
-document.getElementById('qkAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') qkQuery(); });
-
-/* ================= 关注钱包 · 官方口径 ================= */
-function lvlOf(a){
-  var L = (DATA && DATA.levelList && DATA.levelList.list) || null;
-  if (!L) return '—';
-  var found = '未上等级';
-  ['P7','P6','P5','P4','P3','P2','P1'].forEach(function(k){
-    if (found !== '未上等级') return;
-    (L[k] || []).forEach(function(x){ if (x.a === a) found = k; });
-  });
-  return found;
-}
-
-function renderWatch(){
-  var el = document.getElementById('watchCard');
-  if (!el) return;
-  var w = (DATA && DATA.watch) || null;
-  var keys = w ? Object.keys(w) : [];
-  if (!keys.length) {
-    el.innerHTML = '<div class="note">还没有数据。把要盯的钱包地址（0x 开头 42 位）一行一个写进仓库根目录的 ' +
-      '<b>watchlist.txt</b>，等下一次自动更新（每 30 分钟）就会显示在这里。</div>';
-    return;
-  }
-  var html = '';
-  keys.forEach(function(a){
-    var x = w[a];
-    if (!x) return;
-    html += '<div style="border-top:1px solid var(--line);padding:12px 0 4px">' +
-      '<div style="font-family:ui-monospace,monospace;font-size:12.5px;word-break:break-all">' + a + '</div>' +
-      '<div class="grid g4" style="margin-top:8px">' +
-        card('团队累计新增', fmt((x.cumDAI||0)/10000, 2), '万 DAI', (x.members||0) + ' 个成员有算力') +
-        card('团队生效算力', fmt((x.powerEff||0)/10000, 2), '万', '登记算力 ' + fmt((x.powerReg||0)/10000, 2) + ' 万') +
-        card('当天新增业绩', fmt(x.dayDAI||0, 0), 'DAI', '共 ' + (x.linesTotal||0) + ' 条线，当天 ' + (x.linesWithToday||0) + ' 条有人存入') +
-        card('当前 P 等级', lvlOf(a), '', '官方第 ' + ((DATA.levelList && DATA.levelList.day) || '—') + ' 天名单') +
-      '</div>';
-    if (x.lines && x.lines.length) {
-      html += '<div class="br" style="margin-top:8px">' +
-        '<div class="hh">线</div><div class="hh">累计新增</div>' +
-        '<div class="hh" style="text-align:right">有算力</div><div class="hh" style="text-align:right">当天</div></div>';
-      x.lines.forEach(function(L, i){
-        html += '<div class="br">' +
-          '<div class="bv" style="text-align:left">' + (i+1) + (L.addr ? ' · ' + L.addr : '') + '</div>' +
-          '<div class="bv" style="text-align:left">' + fmt(L.cumDAI, 0) + ' DAI</div>' +
-          '<div class="bv">' + fmt(L.members, 0) + ' 人</div>' +
-          '<div class="bv">' + fmt(L.today, 0) + '</div></div>';
-      });
-      var need = 50000;
-      var weak = null;
-      x.lines.forEach(function(L){ if (weak === null || L.cumDAI < weak.cumDAI) weak = L; });
-      if (weak) {
-        html += '<p class="note" style="margin-top:8px">按官方的线业绩看：最弱的线是 <b>' +
-          fmt(weak.cumDAI, 0) + ' DAI</b>，到 P1 单区门槛（50,000 DAI）还差 <b>' +
-          fmt(Math.max(0, need - weak.cumDAI), 0) + ' DAI</b>。</p>';
-      }
-    }
-    html += '</div>';
-  });
-  html += '<p class="note" style="margin-top:10px">数据时间：' +
-    new Date(DATA.site.generatedAt).toLocaleString('zh-CN', {hour12:false}) + '　（每 30 分钟自动更新）</p>';
-  el.innerHTML = html;
-}
-
-function drawSpark(pts){
-  var svg = $('spark');
-  var W = 900, H = 150, PL = 8, PR = 8, PT = 12, PB = 20;
-  if(!pts.length){ svg.innerHTML = '<text x="450" y="80" fill="#5d6d80" font-size="14" text-anchor="middle">暂无数据</text>'; return; }
-  var series = [
-    {key:'p1', color:'#e3b23c'},
-    {key:'p2', color:'#4d9cf6'},
-    {key:'p3', color:'#a785f0'},
-    {key:'total', color:'#38c172'}
-  ];
-  var all = [];
-  series.forEach(function(s){ pts.forEach(function(p){ if(p[s.key] != null) all.push(p[s.key]); }); });
-  if(!all.length){ return; }
-  var max = Math.max.apply(null, all) * 1.12;
-  var n = pts.length;
-  var x = function(i){ return PL + (W - PL - PR) * (n === 1 ? 0.5 : i/(n-1)); };
-  var y = function(v){ return H - PB - (H - PT - PB) * (v/max); };
-  var out = '';
-  for(var g = 0; g <= 3; g++){
-    var gy = PT + (H - PT - PB) * g/3;
-    out += '<line x1="' + PL + '" y1="' + gy + '" x2="' + (W-PR) + '" y2="' + gy + '" stroke="#26313f" stroke-width="1"/>';
-  }
-  series.forEach(function(s){
-    var d = '', started = false;
-    pts.forEach(function(p, i){
-      if(p[s.key] == null) { started = false; return; }
-      d += (started ? ' L' : ' M') + x(i).toFixed(1) + ' ' + y(p[s.key]).toFixed(1);
-      started = true;
-    });
-    if(d) out += '<path d="' + d.trim() + '" fill="none" stroke="' + s.color + '" stroke-width="2.2" stroke-linejoin="round"/>';
-    pts.forEach(function(p, i){
-      if(p[s.key] != null) out += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p[s.key]).toFixed(1) + '" r="2.6" fill="' + s.color + '"/>';
-    });
-  });
-  out += '<text x="' + PL + '" y="' + (H-4) + '" fill="#5d6d80" font-size="11">' + pts[0].date + '</text>';
-  out += '<text x="' + (W-PR) + '" y="' + (H-4) + '" fill="#5d6d80" font-size="11" text-anchor="end">' + pts[n-1].date + '</text>';
-  out += '<text x="' + PL + '" y="' + (PT-2) + '" fill="#5d6d80" font-size="11">峰值 ' + max.toFixed(2) + '</text>';
-  svg.innerHTML = out;
-}
-
-var REMOTE_JSON = 'https://dixonwei.github.io/ailgns-monitor/data.json';
-function load(force){
-  var bust = '?t=' + Date.now();
-  // 本地双击打开时，先拉线上最新数据；线上打开时先读本地同目录
-  var fromFile = (location.protocol === 'file:');
-  var urls = fromFile ? [REMOTE_JSON + bust, 'data.json' + bust]
-                     : ['data.json' + bust, REMOTE_JSON + bust];
-  function tryAt(i){
-    if (i >= urls.length) { DATA = EMBEDDED; SRC = 'snapshot'; render(); return; }
-    return fetch(urls[i], {cache:'no-store'})
-      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(j){ DATA = j; SRC = (i === 0 && fromFile) ? 'remote' : 'live'; render(); })
-      .catch(function(){ return tryAt(i + 1); });
-  }
-  return tryAt(0);
-}
-
-$('refresh').addEventListener('click', function(){
-  var b = this; b.disabled = true; b.textContent = '刷新中…';
-  fetch('api/refresh', {method:'POST'})
-    .catch(function(){ return null; })
-    .then(function(){ return load(true); })
-    .then(function(){ b.disabled = false; b.textContent = '刷新'; setTimeout(function(){ b.textContent='刷新'; }, 10); });
+$('btnConnect').onclick = connect;
+$('btnApprove').onclick = approve;
+$('btnGo').onclick = participate;
+$('btnGo2').onclick = participate;
+document.querySelectorAll('.quick button').forEach(b => b.onclick = async () => {
+  const v = b.dataset.v;
+  if (v === 'max') { try { const bal = await rpcCall(CFG.dai, CFG.selBalance + pad(account)); $('amt').value = Math.floor(Number(BigInt(bal))/1e18*100)/100; } catch(e){} }
+  else $('amt').value = v;
+  checkCap();
 });
-
-/* ================= 链上实时模块 ================= */
-var RPC_URL = 'https://rpc.anubispace.org';
-var C = {
-  AiLGNS:  '0x256edb652db43e721ec6a12b6b51b6967d3bb8cb',
-  DAI:     '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14',
-  POOL:    '0x0a1cce65d995c6c5100e6f5ba3c388ef34cecaf0',
-  RESERVE: '0x27cb55ee75e777ff972b74b6e68782d12bd4ec46'
+$('amt').onchange = checkCap;
+let pollCount = 0;
+function beep() {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new Ctx(); const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); o.frequency.value = 880; g.gain.value = 0.25;
+    o.start(); setTimeout(() => { try { o.stop(); ctx.close(); } catch(e){} }, 500);
+  } catch (e) {}
+  if (navigator.vibrate) navigator.vibrate([200, 120, 200]);
+}
+setInterval(async () => {
+  if (!account) return;
+  pollCount++;
+  if ($('auto').checked) {
+    $('capInfo').textContent = '🔍 自动抢监控中…（已检测 ' + pollCount + ' 次）';
+    const ms = $('monState'); if (ms) ms.textContent = '正在自动检测额度…已检测 ' + pollCount + ' 次';
+    await checkCap();
+  } else if (pollCount % 50 === 0) {
+    await refresh();
+  }
+}, 1200);
+function nextResetMs() {
+  const now = Date.now(); const d = new Date(now);
+  const t = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 16, 0, 0, 0);
+  return now < t ? t : t + 86400000;
+}
+setInterval(() => {
+  const left = nextResetMs() - Date.now();
+  const s = Math.max(0, Math.floor(left / 1000));
+  const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const ss = String(s % 60).padStart(2, '0');
+  $('cd').textContent = hh + ':' + mm + ':' + ss;
+}, 1000);
+$('btnCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href); $('btnCopy').textContent = '✅ 已复制，去粘贴给同学'; }
+  catch (e) { prompt('请手动复制本页链接：', location.href); }
 };
-function pad32(a){ return a.toLowerCase().replace('0x','').padStart(64,'0'); }
-function u18(v){ var s = BigInt(v).toString().padStart(19,'0'); return s.slice(0,-18) + '.' + s.slice(-18).slice(0,6); }
-
-function rpc(method, params){
-  return fetch(RPC_URL, { method:'POST', headers:{'content-type':'application/json'},
-    body: JSON.stringify({ jsonrpc:'2.0', id: Math.floor(Math.random()*1e6), method: method, params: params }) })
-    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(j){ if(j.error) throw new Error(j.error.message || 'rpc error'); return j.result; });
-}
-
-
-/* ================= P 等级门槛换算 ================= */
-var PCM = 2.5;
-var PCL = [
-  {lv:'P1', region:50000,   ve:1000},
-  {lv:'P2', region:150000,  ve:3000},
-  {lv:'P3', region:500000,  ve:5000},
-  {lv:'P4', region:1500000, ve:8000},
-  {lv:'P5', region:4000000, ve:10000}
-];
-function pcFmt(n){ if(n===null||n===undefined||isNaN(n)) return '—';
-  return Number(n).toLocaleString('zh-CN',{maximumFractionDigits:0}); }
-
-function pcTable(){
-  var t = document.getElementById('pTab'); if(!t) return;
-  var html = '<thead><tr><th>等级</th><th>每区门槛<br>（真实投入 DAI）</th><th>三个区合计<br>（真实投入 DAI）</th><th>折算成算力<br>（只作参考）</th><th>另外还要锁<br>veAiLGNS</th></tr></thead><tbody>';
-  PCL.forEach(function(x){
-    html += '<tr><td><b>' + x.lv + '</b></td>' +
-      '<td class="big">' + pcFmt(x.region) + '</td>' +
-      '<td class="big">' + pcFmt(x.region*3) + '</td>' +
-      '<td class="gray">' + pcFmt(x.region*PCM) + '</td>' +
-      '<td class="gray">' + pcFmt(x.ve) + '</td></tr>';
-  });
-  html += '<tr><td class="gray">P6</td><td class="gray">每区 1 名有效 P5</td><td class="gray">—</td><td class="gray">—</td><td class="gray">15,000</td></tr>';
-  html += '<tr><td class="gray">P7</td><td class="gray">每区 1 名有效 P6</td><td class="gray">—</td><td class="gray">—</td><td class="gray">20,000</td></tr>';
-  t.innerHTML = html + '</tbody>';
-}
-
-function pcCalc(){
-  var out = document.getElementById('pcOut'); if(!out) return;
-  var idx = Number((document.getElementById('pcLv')||{}).value || 0);
-  var x = PCL[idx] || PCL[0];
-  var raw = String((document.getElementById('pcHave')||{}).value || '').replace(/[, ]/g,'');
-  var have = raw === '' ? null : Number(raw);
-  var s = '';
-  s += '<div style="font-size:15px;margin-bottom:8px">要上 <b style="color:var(--gold)">' + x.lv + '</b>，你需要：</div>';
-  s += '<div class="step"><div class="no">1</div><div class="t">每个区都要<b>真实投入 ' + pcFmt(x.region) + ' DAI</b><br><span class="note">这是你实际掏的钱，不是算力</span></div></div>';
-  s += '<div class="step"><div class="no">2</div><div class="t">三个区合计要投 <b>' + pcFmt(x.region*3) + ' DAI</b><br><span class="note">' + pcFmt(x.region) + ' × 3 = ' + pcFmt(x.region*3) + ' DAI</span></div></div>';
-  s += '<div class="step"><div class="no">3</div><div class="t">换算成算力是 <b>' + pcFmt(x.region*PCM) + ' 算力</b><br><span class="note">' + pcFmt(x.region) + ' × 2.5 = ' + pcFmt(x.region*PCM) + '（只作参考，考核看本金）</span></div></div>';
-  s += '<div class="step"><div class="no">4</div><div class="t">另外还要锁 <b>价值 ' + pcFmt(x.ve) + ' DAI 的 AiLGNS</b><br><span class="note">按币价折算价值，不是 ' + pcFmt(x.ve) + ' 枚</span></div></div>';
-  if (have !== null && !isNaN(have)) {
-    var gap = x.region - have;
-    if (gap <= 0) {
-      s += '<div class="warn" style="margin-top:10px">这个区已经投入 <b>' + pcFmt(have) + ' DAI</b> → <b style="color:var(--green)">够 ' + x.lv + ' 了</b>。<br>别忘了另外两个区也要分别达标。</div>';
-    } else {
-      s += '<div class="warn" style="margin-top:10px">这个区现在投入 <b>' + pcFmt(have) + ' DAI</b>，还差 <b>' + pcFmt(gap) + ' DAI</b>。<br>' +
-           '<b style="font-size:15px">还要再投 ' + pcFmt(gap) + ' DAI</b><br>' +
-           '<span class="note">对应再增加 ' + pcFmt(gap*PCM) + ' 算力</span></div>';
-    }
-  }
-  s += '<div class="warn" style="margin-top:10px">⚠️ <b>三个区必须「分别」达标</b>，不能加起来算。<br>哪个区最弱，就把新资金投到哪个区。</div>';
-  out.innerHTML = s;
-}
-
-pcTable();
-pcCalc();
-document.getElementById('pcGo').addEventListener('click', pcCalc);
-document.getElementById('pcLv').addEventListener('change', pcCalc);
-document.getElementById('pcHave').addEventListener('input', pcCalc);
-
-/* ================= 团队树查询 ================= */
-var TWC = {
-  COMM:   '0xc9f9a8a2dBf8188AD6610e0239105CAbE67c4993',
-  POWER:  '0x9E68F61E2615cc1D2C4a2D0026bFc1EBFdf68C1b',
-  ORIGIN: '0x0000000000000000000000000000000000000001',
-  S_MEMBERS:   '0x08ae4b0c',
-  S_REFERRALS: '0xc01b35a1',
-  S_REFERRER:  '0xd21cacdf',
-  S_PWR_REG:   '0x4f343040',
-  S_PWR_LEFT:  '0x6cf2fa36',
-  MAX_DIRECT: 200,
-  MAX_SUB:    60,
-  PAGE:       15,
-  MAX_ADDR:   2500,
-  BATCH:      100,
-  CONC:       20,
-  PLV: [
-    {lv:'P1', ve:1000,  region:50000,   t:'5 万'},
-    {lv:'P2', ve:3000,  region:150000,  t:'15 万'},
-    {lv:'P3', ve:5000,  region:500000,  t:'50 万'},
-    {lv:'P4', ve:8000,  region:1500000, t:'150 万'},
-    {lv:'P5', ve:10000, region:4000000, t:'400 万'},
-    {lv:'P6', ve:15000, region:null,    t:'每区 1 名 P5'},
-    {lv:'P7', ve:20000, region:null,    t:'每区 1 名 P6'}
-  ]
-};
-function twPad(a){ return a.toLowerCase().replace('0x','').padStart(64,'0'); }
-function twBig(hh){ return Number(BigInt('0x' + String(hh).slice(-64))); }
-function twDai(hh){ return Number(BigInt('0x' + String(hh).slice(-64))) / 1e18; }
-function twOkAddr(a){ return /^0x[0-9a-fA-F]{40}$/.test(a); }
-function twShort(a){ return a.slice(0,10) + '…' + a.slice(-6); }
-function twFmt(n, d){ if(n===null||n===undefined||isNaN(n)) return '—';
-  return Number(n).toLocaleString('zh-CN',{minimumFractionDigits:d===undefined?2:d,maximumFractionDigits:d===undefined?2:d}); }
-
-function twCall(to, data){ return rpc('eth_call', [{to:to, data:data}, 'latest']); }
-/* 批量 eth_call：一次 HTTP 请求查多个，速度快很多 */
-function twBatch(calls){
-  if (!calls.length) return Promise.resolve([]);
-  var out = [], failed = 0;
-  function chunk(slice){
-    if (!slice.length) return Promise.resolve();
-    var part = slice.slice(0, TWC.BATCH);
-    var payload = part.map(function(c,i){ return { jsonrpc:'2.0', id:i, method:'eth_call', params:[c, 'latest'] }; });
-    return fetch(RPC_URL, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(payload) })
-      .then(function(r){ return r.json(); })
-      .then(function(arr){
-        var tmp = new Array(part.length);
-        (Array.isArray(arr) ? arr : [arr]).forEach(function(x){ if (x && typeof x.id === 'number' && x.id >= 0 && x.id < part.length) tmp[x.id] = x.result || null; });
-        for (var i = 0; i < part.length; i++){ if (tmp[i] === undefined) { failed++; tmp[i] = null; } out.push(tmp[i]); }
-      })
-      .catch(function(){ failed += part.length; for (var i = 0; i < part.length; i++) out.push(null); })
-      .then(function(){ return chunk(slice.slice(TWC.BATCH)); });
-  }
-  return chunk(calls).then(function(){ out.failed = failed; return out; });
-}
-
-/* 直推列表 */
-function twReferred(a, maxSub){
-  var want = Math.max(1, Math.min(maxSub || TWC.MAX_SUB, 200));
-  var list = [], total = 0, guard = 0;
-  function page(start){
-    if (guard++ > 40 || list.length >= want) return Promise.resolve();
-    if (start > 0 && total && start >= total) return Promise.resolve();
-    var n = Math.min(TWC.PAGE, want - list.length);
-    if (n <= 0) return Promise.resolve();
-    return twCall(TWC.COMM, TWC.S_REFERRALS + twPad(a) + twPad('0x' + start.toString(16)) + twPad('0x' + n.toString(16)))
-      .then(function(res){
-        if (typeof res !== 'string' || res.length < 130) return;
-        var w = res.slice(2).match(/.{1,64}/g);
-        total = twBig(w[0]);
-        var off = twBig(w[1]) / 32;
-        var len = twBig(w[off]);
-        for (var i = 0; i < len; i++) list.push('0x' + w[off+1+i].slice(24));
-        if (len > 0 && list.length < Math.min(total, want)) return page(start + len);
-      })
-      .catch(function(){});
-  }
-  return page(0).then(function(){
-    return { total: total, list: list, trunc: total > list.length };
-  });
-}
-/* 算力 */
-function twPower(a){
-  return Promise.all([
-    twCall(TWC.POWER, TWC.S_PWR_REG + twPad(a)).catch(function(){ return null; }),
-    twCall(TWC.POWER, TWC.S_PWR_LEFT + twPad(a)).catch(function(){ return null; })
-  ]).then(function(r){
-    return { reg: r[0] ? twDai(r[0]) : 0, left: r[1] ? twDai(r[1]) : 0 };
-  });
-}
-/* 逐层展开 */
-function twWalk(roots, depth, seen, info, budget, stat){
-  return Promise.resolve().then(function(){
-    if (depth <= 0 || !roots.length) return;
-    if (budget.n <= 0) { stat.cut = 1; return; }
-    var queue = roots.slice(0, budget.n);
-    if (roots.length > queue.length) stat.cut = 1;
-    budget.n -= queue.length;
-    var idx = 0;
-    function step(){
-      if (idx >= queue.length) return Promise.resolve();
-      var part = queue.slice(idx, idx + TWC.CONC); idx += TWC.CONC;
-      return Promise.all(part.map(function(a){
-        return twReferred(a).then(function(r){ info[a.toLowerCase()] = r; if (r.trunc) stat.cut = 1; });
-      })).then(step);
-    }
-    return step().then(function(){
-      var next = [];
-      queue.forEach(function(a){
-        var r = info[a.toLowerCase()] || {list:[]};
-        (r.list||[]).forEach(function(c){
-          var k = c.toLowerCase();
-          if (seen[k]) return;
-          seen[k] = 1; next.push(k);
-        });
-      });
-      return twWalk(next, depth-1, seen, info, budget, stat);
-    });
-  });
-}
-/* 从一条线往下收集所有已展开的成员（全深度） */
-function twCollect(root, info, maxDepth){
-  var seen = {}, list = [];
-  (function rec(a, d){
-    var k = a.toLowerCase();
-    if (seen[k] || d > maxDepth) return;
-    seen[k] = 1; list.push(a);
-    var node = info[k];
-    if (node && node.list) node.list.forEach(function(c){ rec(c, d + 1); });
-  })(root, 0);
-  return list;
-}
-
-var TWRES = null;
-
-function twQuery(){
-  var raw = (document.getElementById('twAddr').value || '').trim();
-  var depth = Number(document.getElementById('twDepth').value) || 2;
-  var msg = document.getElementById('twMsg');
-  var out = document.getElementById('twOut');
-  if (!twOkAddr(raw)) { msg.innerHTML = '<span style="color:var(--red)">请填一个完整的钱包地址（0x 开头，共 42 位）</span>'; return; }
-  var addr = raw.toLowerCase();
-  var T0 = Date.now();
-  msg.textContent = '查询中…';
-  out.innerHTML = '';
-
-  var seen = {}; seen[addr] = 1;
-  var info = {};
-  var budget = { n: TWC.MAX_ADDR };
-  var stat = { cut: 0 };
-  var pwrFailed = 0;
-
-  twCall(TWC.COMM, TWC.S_MEMBERS + twPad(addr))
-    .then(function(m){
-      var level = twBig(m.slice(2,66));
-      var referrer = '0x' + m.slice(90,130);
-      return Promise.all([ twPower(addr), twReferred(addr) ]).then(function(r){
-        return { level: level, referrer: referrer, power: r[0], ref: r[1] };
-      });
-    })
-    .then(function(base){
-      if (!base.level) {
-        msg.innerHTML = '<span style="color:var(--red)">这个地址不在关系树成员名单里</span>（合约返回 level = 0）';
-        return null;
-      }
-      var branches = base.ref.list.slice(0, TWC.MAX_DIRECT);
-      msg.textContent = '已找到 ' + branches.length + ' 条直推线，正在展开全团队（上限 ' + TWC.MAX_ADDR + ' 个地址）…';
-      branches.forEach(function(b){ seen[b.toLowerCase()] = 1; });
-      return twWalk(branches, depth, seen, info, budget, stat).then(function(){
-        return { base: base, branches: branches };
-      });
-    })
-    .then(function(r){
-      if (!r) return;
-      var branches = r.branches;
-      if (!branches.length) {
-        msg.innerHTML = '这个地址在关系树里，但<b>没有任何直推</b>（第 ' + r.base.level + ' 层）。';
-        twRenderBase(r.base, []);
-        return;
-      }
-      var plan = branches.map(function(b){
-        var node = info[b.toLowerCase()] || {total:0, list:[]};
-        return { addr:b, node:node, addrs: twCollect(b, info, depth + 1) };
-      });
-      var allAddrs = [];
-      plan.forEach(function(p){ p.addrs.forEach(function(a){ if (allAddrs.indexOf(a) < 0) allAddrs.push(a); }); });
-      var calls = allAddrs.map(function(a){ return { to:TWC.POWER, data:TWC.S_PWR_REG + twPad(a) }; });
-      msg.textContent = '正在批量查算力（' + allAddrs.length + ' 个地址）…';
-      return twBatch(calls).then(function(res){
-        pwrFailed = res.failed || 0;
-        var pmap = {};
-        allAddrs.forEach(function(a, i){ pmap[a.toLowerCase()] = { reg: res[i] ? twDai(res[i]) : 0 }; });
-        return plan.map(function(p){
-          var sum = 0, cnt = 0;
-          p.addrs.forEach(function(a){
-            var pp = pmap[a.toLowerCase()];
-            if (pp && pp.reg > 0) { sum += pp.reg; cnt++; }
-          });
-          return { addr:p.addr, total:p.node.total, sum: sum, withPower: cnt,
-                   subCount: p.addrs.length - 1, trunc: p.node.trunc };
-        });
-      }).then(function(list){
-        TWRES = { base: r.base, branches: list, depth: depth, root: addr, cut: stat.cut, failed: pwrFailed };
-        msg.innerHTML = '展开完成：' + list.length + ' 条线，共 ' + (Object.keys(info).length + 1) + ' 个地址' +
-          (stat.cut ? '（<b style="color:var(--gold)">已到展开上限，深层还有成员没算到</b>）' : '') +
-          (pwrFailed ? '（<b style="color:var(--red)">' + pwrFailed + ' 个算力没读到，已按 0 计</b>）' : '') +
-          '　用时 ' + ((Date.now()-T0)/1000).toFixed(1) + ' 秒。';
-        twRenderBase(r.base, list);
-      });
-    })
-    .catch(function(e){
-      msg.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
-    });
-}
-
-function twRenderBase(base, list){
-  var out = document.getElementById('twOut');
-  var html = '';
-  html += '<div class="grid g4" style="margin-top:10px">' +
-    card('关系树层级', '第 ' + base.level + ' 层', '', '根成员为第 1 层') +
-    card('自己的有效算力', twFmt(base.power.left, 2), 'DAI', '登记算力 ' + twFmt(base.power.reg, 2)) +
-    card('直推条数', base.ref.total, '条', list.length + ' 条已展开') +
-    card('推荐人', twShort(base.referrer), '', '<a href="#" onclick="document.getElementById(\'twAddr\').value=\'' + base.referrer + '\';twQuery();return false;">查它的上级</a>') +
-    '</div>';
-  out.innerHTML = html + (list.length ? '' : '');
-  if (list.length) twRenderBranches();
-}
-
-function twRenderBranches(){
-  if (!TWRES) return;
-  var list = TWRES.branches.slice();
-  list.sort(function(a,b){ return b.sum - a.sum; });
-  TWRES.sorted = list;
-  var max = Math.max.apply(null, list.map(function(x){ return x.sum; })) || 1;
-  var rows = '<div class="br"><div class="hh" style="font-size:11.5px;color:var(--dim)">选用</div>' +
-    '<div class="hh" style="font-size:11.5px;color:var(--dim)">支线地址</div>' +
-    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">下级人数</div>' +
-    '<div class="hh" style="font-size:11.5px;color:var(--dim);text-align:right">线下算力合计<br>≈累计投入 DAI</div></div>';
-  list.forEach(function(x, i){
-    var pct = Math.round(x.sum / max * 100);
-    var cls = pct < 34 ? 'low' : (pct < 67 ? 'mid' : '');
-    rows += '<div class="br' + (i < 3 ? ' pick' : '') + '">' +
-      '<div><input type="checkbox" class="twpick" data-addr="' + x.addr + '"' + (i < 3 ? ' checked' : '') + '></div>' +
-      '<div class="bk">' + x.addr + '<div class="bar"><i class="' + cls + '" style="width:' + pct + '%"></i></div></div>' +
-      '<div class="bv">' + x.subCount + (x.trunc ? '+' : '') + '</div>' +
-      '<div class="bv">' + twFmt(x.sum, 0) +
-        '<div class="note" style="font-size:11px;font-weight:400">≈ ' + twFmt(x.sum / PCM, 0) + ' DAI · ' + x.withPower + ' 人有算力</div></div></div>';
-  });
-  var out = document.getElementById('twOut');
-  out.innerHTML += '<div class="card" style="padding:0;overflow:hidden;margin-top:10px">' + rows + '</div>' +
-    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「线下算力合计」= 这条线往下<b>能读到</b>的成员登记算力之和（含创世算力、含这条线本人）。' +
-    '<b style="color:var(--gold)">⚠️ 链上 referrals() 关系表不完整，深层成员读不到，所以这里的合计只是「下限」，一定比官方团队页小得多。</b>' +
-    '官方团队页的「各线业绩 · 累计」是全量口径，判断等级请以官方为准。改勾选后按「重新判定」。</p>' +
-    (TWRES.cut ? '<div class="warn" style="margin-top:8px"><b>⚠️ 这次没展开完（到上限了），下面的数字偏小、等级会判低。</b>把上面的「展开层数」调大再查一次。</div>' : '') +
-    '<div style="margin-top:8px"><button id="twJudge">重新判定 P 等级</button></div>' +
-    '<div id="twJudgeOut"></div>';
-  document.getElementById('twJudge').addEventListener('click', twJudge);
-  twJudge();
-}
-
-function twJudge(){
-  var out = document.getElementById('twJudgeOut');
-  if (!out || !TWRES) return;
-  var picked = [];
-  document.querySelectorAll('.twpick').forEach(function(cb){ if (cb.checked) picked.push(cb.getAttribute('data-addr')); });
-  if (picked.length < 3) {
-    out.innerHTML = '<div class="warn" style="margin-top:10px">晋级 P1 以上需要 <b>3 个独立区域</b>，请至少勾选 3 条线（现在勾了 ' + picked.length + ' 条）。</div>';
-    return;
-  }
-  var byAddr = {}; TWRES.sorted.forEach(function(x){ byAddr[x.addr.toLowerCase()] = x; });
-  var sel = picked.map(function(a){ return byAddr[a.toLowerCase()]; }).filter(Boolean);
-  sel.forEach(function(x){ x.dai = x.sum / PCM; });
-  sel.sort(function(a,b){ return a.dai - b.dai; });
-  var weakest = sel[0];
-  var rows = '<div class="lvp"><div class="hh">等级</div><div class="hh">单区门槛（真实投入）</div><div class="hh">三区是否达标</div><div class="hh">还差多少</div></div>';
-  var reached = '—';
-  TWC.PLV.forEach(function(p){
-    if (p.region === null) {
-      rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + '</div>' +
-              '<div class="note">需每区有 1 名有效 ' + (p.lv==='P6'?'P5':'P6') + '（链上无法判断）</div><div class="note">—</div>';
-      return;
-    }
-    var okAll = sel.every(function(x){ return x.dai >= p.region; });
-    var below = sel.filter(function(x){ return x.dai < p.region; });
-    if (okAll) reached = p.lv;
-    rows += '<div><b>' + p.lv + '</b></div><div>' + pcFmt(p.region) + ' DAI</div>' +
-      '<div>' + (okAll ? '<span class="pill ok">达标</span>' : '<span class="pill no">' + below.length + ' 个区不够</span>') + '</div>' +
-      '<div>' + (okAll ? '—' : twFmt(p.region - below[0].dai, 0) + ' DAI') + '</div>';
-  });
-  var next = null;
-  for (var i=0;i<TWC.PLV.length;i++){
-    if (TWC.PLV[i].region === null) break;
-    var all = sel.every(function(x){ return x.dai >= TWC.PLV[i].region; });
-    if (!all) { next = TWC.PLV[i]; break; }
-  }
-  var advice = '';
-  if (!next) {
-    advice = '你选的三条线都已过 P5 的单区门槛。P6/P7 还要求「每区至少 1 名有效 P5/P6」，链上判断不了，需要官方后台确认。';
-  } else if (reached === '—') {
-    advice = '目前三条线都还没到 P1 的单区门槛（<b>真实投入 50,000 DAI</b>）。<br>' +
-      '<b>最弱的是 ' + twShort(weakest.addr) + '（折算真实投入约 ' + twFmt(weakest.dai,0) + ' DAI）</b>，把新资金优先投到这条线最快。<br>' +
-      '它还差 <b>' + twFmt(50000-weakest.dai,0) + ' DAI</b> 才够 P1 单区门槛。';
-  } else {
-    var gapP = next.region - weakest.dai;
-    advice = '你当前能对应到 <b>' + reached + '</b>。要往 <b>' + next.lv + '</b> 走，最弱那个区还差 <b>' +
-      twFmt(gapP, 0) + ' DAI</b> 的<b>真实投入</b>（不是算力）。<br>' +
-      '<b>建议把新资金优先投到最弱的这条线：' + weakest.addr + '</b>（折算已投入约 ' + twFmt(weakest.dai,0) + ' DAI）。';
-  }
-  out.innerHTML = (TWRES.cut ? '<div class="warn" style="margin-top:10px"><b>⚠️ 本次展开不完整：</b>已到上限，线下还有成员没算进来，所以每条线业绩都偏小、判出来的等级会偏低。把「展开层数」调到更大再查。</div>' : '') +
-    '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分从没公布，链上推不出来，本站只是用「你勾选的 3 条直推线」近似。要准的请以官方 dApp 显示为准。</div>' +
-    '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">按你勾选的三个区判定（近似）</div>' + rows + '</div>' +
-    '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
-    '<p class="note" style="margin-top:8px">说明：本表用「线下已读到的算力 ÷ 2.5」粗略折算每区投入，' +
-    '<b>只会偏小</b>（链上关系表不全 + 算力含创世部分）。它主要帮你看<b>哪条线最弱</b>，<b>不能当精确的等级判定</b>。' +
-    '另 P1–P7 还要求达到对应的 veAiLGNS 价值门槛，链上这一项需要你自己核对。</p>';
-}
-
-document.getElementById('twGo').addEventListener('click', twQuery);
-document.getElementById('twAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') twQuery(); });
-
-/* ================= 资金全景 ================= */
-var DAI_TOKEN = '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14';
-var FLC = [
-  ['协议储备',        '0x27Cb55eE75E777fF972B74B6E68782D12Bd4ec46', '所有钱最终都进这里（含买算力的钱）'],
-  ['AiLGNS/DAI 主池', '0x0a1Cce65d995C6C5100e6F5bA3c388Ef34CEcaf0', '储备拿钱建的主池流动性'],
-  ['涡轮 Turbine',    '0xe884a336550a4482ca6a17a3f93aa30ed4ed9bad', '激活排放收到的 DAI'],
-  ['手续费归集',      '0x7088e192b9b7f41A07bB3f79378e13454D8a80D5', '卖出费里的 1%'],
-  ['算力账本',        '0x9E68F61E2615cc1D2C4a2D0026bFc1EBFdf68C1b', '中转站，收到就转走 → 余额永远是 0']
-];
-function flDai(hh){
-  if (typeof hh !== 'string' || hh.length < 66) return null;
-  return Number(BigInt('0x' + hh.slice(2, 66)) / 1000000000000n) / 1e6;
-}
-function readFlow(){
-  var calls = FLC.map(function(x){
-    return { to: DAI_TOKEN, data: '0x70a08231' + x[1].toLowerCase().replace('0x','').padStart(64,'0') };
-  });
-  return twBatch(calls).then(function(res){
-    var rows = [], total = 0;
-    FLC.forEach(function(x, i){
-      var v = flDai(res[i]); if (v === null) v = 0;
-      rows.push({ name:x[0], addr:x[1], note:x[2], dai:v });
-      total += v;
-    });
-    renderFlow(rows, total);
-  }).catch(function(e){
-    var el = document.getElementById('flowList');
-    if (el) el.innerHTML = '<div style="padding:12px" class="note">读取失败：' + e.message + '</div>';
-  });
-}
-function renderFlow(rows, total){
-  var sum = document.getElementById('flowSum');
-  if (sum){
-    var big = rows.filter(function(r){ return r.dai >= 1e6; });
-    sum.innerHTML =
-      card('协议储备', fmt(rows[0].dai/1e6, 2), '百万 DAI', '买算力的钱全在这') +
-      card('AiLGNS/DAI 主池', fmt(rows[1].dai/1e6, 2), '百万 DAI', '储备建的主池') +
-      card('百万以上共', big.length, '处', big.map(function(r){ return r.name; }).join(' · ')) +
-      card('DAI 合计', fmt(total/1e6, 2), '百万 DAI', '以上 5 个合约合计');
-  }
-  var list = document.getElementById('flowList');
-  if (!list) return;
-  var out = '<div class="fh">位置</div><div class="fh" style="text-align:right">DAI 余额</div><div class="fh">说明 / 地址</div>';
-  rows.forEach(function(r){
-    var isBig = r.dai >= 1e6;
-    out += '<div><b>' + r.name + '</b></div>' +
-           '<div class="fv' + (isBig ? ' big' : '') + '">' + fmt(r.dai, isBig ? 0 : 2) + '</div>' +
-           '<div class="fd">' + r.note + '<br><span style="font-family:ui-monospace,monospace;font-size:11px">' + r.addr + '</span></div>';
-  });
-  out += '<div><b>合计</b></div><div class="fv big">' + fmt(total, 0) + '</div><div class="fd">以上 5 个合约</div>';
-  list.innerHTML = out;
-}
-readFlow();
-setInterval(readFlow, 60000);
-
-
-load(false);
-setInterval(function(){ load(true); }, 30 * 60 * 1000);
-setInterval(function(){ if(DATA) $('age').textContent = ago(DATA.site.generatedAt); }, 60 * 1000);
+if (!window.ethereum) $('envWarn').style.display = 'block';
+if (window.ethereum) { window.ethereum.request({ method: 'eth_accounts' }).then(a => { if (a && a[0]) connect(); }); }
 </script>
 </body>
 </html>
