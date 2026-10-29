@@ -317,6 +317,19 @@ async function collectFlow(prev) {
   };
 }
 
+const FLOW_ACCOUNTS = [
+  ['协议储备', A.RESERVE, '买算力的钱全部进入这里'],
+  ['AiLGNS/DAI 主池', A.PAIR, '主池内的 DAI 储备'],
+  ['涡轮 Turbine', A.TURBINE, '激活排放收到的 DAI'],
+  ['手续费归集', '0x7088e192b9b7f41A07bB3f79378e13454D8a80D5', '卖出费里的 1%'],
+  ['算力账本', A.POWER, '中转站，收到后立即转出']
+];
+async function collectFlowBalances() {
+  const calls = FLOW_ACCOUNTS.map((x) => ({ to: A.DAI, data: S.balanceOf + x[1].slice(2).padStart(64, '0') }));
+  const res = await rpcBatch(calls);
+  return FLOW_ACCOUNTS.map((x, i) => ({ name:x[0], addr:x[1], note:x[2], dai:res[i] ? toNum(BigInt(res[i])) : null }));
+}
+
 async function collectTree() {
   const rootHex = await rpc('eth_call', [{ to: A.COMMUNITY, data: S.commRoot }, 'latest']);
   const root = asAddr(rootHex);
@@ -516,6 +529,16 @@ async function main() {
   protocol.suppressed = suppressed;
   protocol.queueToday = flow ? flow.last24hDai : null;
   protocol.depositedToday = flow ? flow.last24hDai : null;
+  if (flow) {
+    try {
+      const liveRows = await collectFlowBalances();
+      if (liveRows.every((x) => x.dai != null)) flow.rows = liveRows;
+      else if (prev.flow && prev.flow.rows) flow.rows = prev.flow.rows;
+    } catch (e) {
+      if (prev.flow && prev.flow.rows) flow.rows = prev.flow.rows;
+      note('flow balances: ' + e.message);
+    }
+  }
 
   let tree = { root: null, total: null, maxDepth: null, levels: {}, map: new Map() };
   try { tree = await collectTree(); } catch (e) { note('tree: ' + e.message); }
