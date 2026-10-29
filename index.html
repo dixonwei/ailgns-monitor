@@ -179,19 +179,19 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
     所以买算力的钱<b>全部在协议储备里</b>，账本余额永远是 0。
   </p>
 
-  <h2>P 等级门槛 · 三个区 DAI Power</h2>
+  <h2>P 等级门槛 · 三个区真实投入 DAI</h2>
   <div class="card">
     <div class="warn" style="margin-bottom:14px;font-size:13px">
       <b>最关键的一点 👇</b><br>
-      官方 P1–P5 要求：<b>3 个独立区域，每区达到对应数量的 DAI Power</b>。<br>
-      P1 每区需要 <b>50,000 DAI Power</b>，不是直接按本金 DAI 计算。<br>
-      如果只通过 DAI 参与，按 1 DAI = 2.5 Power 折算，理论本金约为 20,000 DAI/区；但其他 Power 来源也会计入，所以不能只看本金。
+      官方 P1–P5 要求：<b>3 个独立区域，每个区都要达到对应的真实投入 DAI 门槛</b>。<br>
+      P1 每区需要 <b>50,000 DAI 本金</b>，三个区合计至少 150,000 DAI；P2–P5 依次提高。<br>
+      三个区必须分别达标，不能把三个区加起来替代某一个区的门槛。
     </div>
     <div class="scroll">
       <table class="ptab" id="pTab">
         <thead><tr>
-          <th>等级</th><th>每区门槛<br>（DAI Power）</th><th>三个区合计<br>（DAI Power）</th>
-          <th>只走DAI时<br>约需本金/区</th><th>另外还要锁<br>veAiLGNS价值</th>
+          <th>等级</th><th>每区真实投入<br>（DAI）</th><th>三个区合计<br>（DAI）</th>
+          <th>另外还要锁<br>veAiLGNS价值</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -737,42 +737,16 @@ function pcFmt(n){ if(n===null||n===undefined||isNaN(n)) return '—';
 
 function pcTable(){
   var t = document.getElementById('pTab'); if(!t) return;
-  var html = '<thead><tr><th>等级</th><th>每区门槛<br>（DAI Power）</th><th>三个区合计<br>（DAI Power）</th><th>只走DAI时<br>约需本金/区</th><th>另外还要锁<br>veAiLGNS价值</th></tr></thead><tbody>';
+  var html = '<thead><tr><th>等级</th><th>每区真实投入<br>（DAI）</th><th>三个区合计<br>（DAI）</th><th>另外还要锁<br>veAiLGNS价值</th></tr></thead><tbody>';
   PCL.forEach(function(x){
     html += '<tr><td><b>' + x.lv + '</b></td>' +
       '<td class="big">' + pcFmt(x.region) + '</td>' +
       '<td class="big">' + pcFmt(x.region*3) + '</td>' +
-      '<td class="gray">' + pcFmt(x.region/PCM) + '</td>' +
       '<td class="gray">' + pcFmt(x.ve) + '</td></tr>';
   });
-  html += '<tr><td class="gray">P6</td><td class="gray">每区 1 名有效 P5</td><td class="gray">—</td><td class="gray">—</td><td class="gray">15,000</td></tr>';
-  html += '<tr><td class="gray">P7</td><td class="gray">每区 1 名有效 P6</td><td class="gray">—</td><td class="gray">—</td><td class="gray">20,000</td></tr>';
+  html += '<tr><td class="gray">P6</td><td class="gray">每区 1 名有效 P5</td><td class="gray">—</td><td class="gray">15,000</td></tr>';
+  html += '<tr><td class="gray">P7</td><td class="gray">每区 1 名有效 P6</td><td class="gray">—</td><td class="gray">20,000</td></tr>';
   t.innerHTML = html + '</tbody>';
-}
-
-function pcCalc(){
-  var out = document.getElementById('pcOut'); if(!out) return;
-  var idx = Number((document.getElementById('pcLv')||{}).value || 0);
-  var x = PCL[idx] || PCL[0];
-  var raw = String((document.getElementById('pcHave')||{}).value || '').replace(/[, ]/g,'');
-  var have = raw === '' ? null : Number(raw);
-  var s = '';
-  s += '<div style="font-size:15px;margin-bottom:8px">要上 <b style="color:var(--gold)">' + x.lv + '</b>，你需要：</div>';
-  s += '<div class="step"><div class="no">1</div><div class="t">每个区都要达到 <b>' + pcFmt(x.region) + ' DAI Power</b><br><span class="note">考核单位是 Power，不是本金 DAI</span></div></div>';
-  s += '<div class="step"><div class="no">2</div><div class="t">三个区合计至少 <b>' + pcFmt(x.region*3) + ' DAI Power</b><br><span class="note">' + pcFmt(x.region) + ' × 3 = ' + pcFmt(x.region*3) + ' Power，且必须三个区分别达标</span></div></div>';
-  s += '<div class="step"><div class="no">3</div><div class="t">如果只通过 DAI 参与，按 2.5 倍 Power 约需本金 <b>' + pcFmt(x.region/PCM) + ' DAI/区</b><br><span class="note">' + pcFmt(x.region) + ' ÷ 2.5 = ' + pcFmt(x.region/PCM) + ' DAI（其他 Power 来源未计入）</span></div></div>';
-  s += '<div class="step"><div class="no">4</div><div class="t">另外还要锁 <b>价值 ' + pcFmt(x.ve) + ' DAI 的 AiLGNS</b><br><span class="note">按币价折算价值，不是 ' + pcFmt(x.ve) + ' 枚</span></div></div>';
-  if (have !== null && !isNaN(have)) {
-    var gap = x.region - have;
-    if (gap <= 0) {
-      s += '<div class="warn" style="margin-top:10px">这个区当前有 <b>' + pcFmt(have) + ' DAI Power</b> → <b style="color:var(--green)">够 ' + x.lv + ' 了</b>。<br>别忘了另外两个区也要分别达标。</div>';
-    } else {
-      s += '<div class="warn" style="margin-top:10px">这个区当前有 <b>' + pcFmt(have) + ' DAI Power</b>，还差 <b>' + pcFmt(gap) + ' DAI Power</b>。<br>' +
-           '<span class="note">若只靠 DAI 新增，按 2.5 倍折算，大约还需 ' + pcFmt(gap/PCM) + ' DAI 本金。</span></div>';
-    }
-  }
-  s += '<div class="warn" style="margin-top:10px">⚠️ <b>三个区必须分别达标</b>，不能加起来算。<br>哪个区最弱，就把新增算力放到哪个区。</div>';
-  out.innerHTML = s;
 }
 
 pcTable();
@@ -1072,72 +1046,10 @@ function twRenderBranches(){
         '<div class="note" style="font-size:11px;font-weight:400">≈ ' + twFmt(x.sum / PCM, 0) + ' DAI · ' + x.withPower + ' 人有算力</div></div></div>';
   });
   var out = document.getElementById('twOut');
+  var out = document.getElementById('twOut');
   out.innerHTML += '<div class="card" style="padding:0;overflow:hidden;margin-top:10px">' + rows + '</div>' +
-    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「线下算力合计」= 这条线往下<b>能读到</b>的成员登记算力之和（含创世算力、含这条线本人）。' +
-    '<b style="color:var(--gold)">⚠️ 链上 referrals() 关系表不完整，深层成员读不到，所以这里的合计只是「下限」，一定比官方团队页小得多。</b>' +
-    '官方团队页的「各线业绩 · 累计」是全量口径，判断等级请以官方为准。改勾选后按「重新判定」。</p>' +
-    (TWRES.cut ? '<div class="warn" style="margin-top:8px"><b>⚠️ 这次没展开完（到上限了），下面的数字偏小、等级会判低。</b>把上面的「展开层数」调大再查一次。</div>' : '') +
-    '<div style="margin-top:8px"><button id="twJudge">查看链上近似线业绩</button></div>' +
-    '<div id="twJudgeOut"></div>';
-  document.getElementById('twJudge').addEventListener('click', twJudge);
-  twJudge();
-}
-
-function twJudge(){
-  var out = document.getElementById('twJudgeOut');
-  if (!out || !TWRES) return;
-  var picked = [];
-  document.querySelectorAll('.twpick').forEach(function(cb){ if (cb.checked) picked.push(cb.getAttribute('data-addr')); });
-  if (picked.length < 3) {
-    out.innerHTML = '<div class="warn" style="margin-top:10px">晋级 P1 以上需要 <b>3 个独立区域</b>，请至少勾选 3 条线（现在勾了 ' + picked.length + ' 条）。</div>';
-    return;
-  }
-  var byAddr = {}; TWRES.sorted.forEach(function(x){ byAddr[x.addr.toLowerCase()] = x; });
-  var sel = picked.map(function(a){ return byAddr[a.toLowerCase()]; }).filter(Boolean);
-  sel.forEach(function(x){ x.power = x.sum; });
-  sel.sort(function(a,b){ return a.power - b.power; });
-  var weakest = sel[0];
-  var rows = '<div class="lvp"><div class="hh">等级</div><div class="hh">单区门槛（DAI Power）</div><div class="hh">三区是否达标</div><div class="hh">还差多少</div></div>';
-  var reached = '—';
-  TWC.PLV.forEach(function(p){
-    if (p.region === null) {
-      rows += '<div><b>' + p.lv + '</b></div><div>' + p.t + '</div>' +
-              '<div class="note">需每区有 1 名有效 ' + (p.lv==='P6'?'P5':'P6') + '（链上无法判断）</div><div class="note">—</div>';
-      return;
-    }
-    var okAll = sel.every(function(x){ return x.power >= p.region; });
-    var below = sel.filter(function(x){ return x.power < p.region; });
-    if (okAll) reached = p.lv;
-    rows += '<div><b>' + p.lv + '</b></div><div>' + pcFmt(p.region) + ' Power</div>' +
-      '<div>' + (okAll ? '<span class="pill ok">达标</span>' : '<span class="pill no">' + below.length + ' 个区不够</span>') + '</div>' +
-      '<div>' + (okAll ? '—' : twFmt(p.region - below[0].power, 0) + ' Power') + '</div>';
-  });
-  var next = null;
-  for (var i=0;i<TWC.PLV.length;i++){
-    if (TWC.PLV[i].region === null) break;
-    var all = sel.every(function(x){ return x.power >= TWC.PLV[i].region; });
-    if (!all) { next = TWC.PLV[i]; break; }
-  }
-  var advice = '';
-  if (!next) {
-    advice = '你选的三条线都已过 P5 的单区门槛。P6/P7 还要求「每区至少 1 名有效 P5/P6」，链上判断不了，需要官方后台确认。';
-  } else if (reached === '—') {
-    advice = '目前三条线都还没到 P1 的单区门槛（<b>每区 50,000 DAI Power</b>）。<br>' +
-      '<b>最弱的是 ' + twShort(weakest.addr) + '（当前约 ' + twFmt(weakest.power,0) + ' DAI Power）</b>。<br>' +
-      '它还差 <b>' + twFmt(Math.max(0,50000-weakest.power),0) + ' DAI Power</b> 才够 P1 单区门槛。';
-  } else {
-    var gapP = next.region - weakest.power;
-    advice = '你当前能对应到 <b>' + reached + '</b>。要往 <b>' + next.lv + '</b> 走，最弱那个区还差 <b>' +
-      twFmt(gapP, 0) + ' DAI Power</b>。P 等级考核的是三区 Power，不是本金 DAI。<br>' +
-      '<b>建议把新增算力优先放到最弱的这条线：' + weakest.addr + '</b>（当前约 ' + twFmt(weakest.power,0) + ' DAI Power）。';
-  }
-  out.innerHTML = (TWRES.cut ? '<div class="warn" style="margin-top:10px"><b>⚠️ 本次展开不完整：</b>已到上限，线下还有成员没算进来，所以每条线业绩都偏小、判出来的等级会偏低。把「展开层数」调到更大再查。</div>' : '') +
-    '<div class="warn" style="margin-top:10px"><b>⚠️ 这里只是近似值。</b>官方「三个区」怎么划分未公开，本站用你勾选的 3 条直推线近似；最终以官方 DApp 为准。</div>' +
-    '<div class="card" style="margin-top:10px"><div class="k" style="margin-bottom:8px">链上近似线业绩（非官方P等级）</div>' + rows + '</div>' +
-    '<div class="warn" style="margin-top:10px">' + advice + '</div>' +
-    '<p class="note" style="margin-top:8px">说明：本表直接使用「线下已读到的登记算力（DAI Power）」，不再除以 2.5。' +
-    '<b>只会偏小</b>（链上关系表不完整）。它主要帮你看<b>哪条线最弱</b>，<b>不能当官方等级认证</b>。' +
-    '另 P1–P7 还要求达到对应的 veAiLGNS 价值门槛。</p>';
+    '<p class="note" style="margin-top:8px">默认勾选算力最大的 3 条线。「线下算力合计」= 这条线往下<b>能读到</b>的成员登记算力之和。链上 referrals() 可能不完整，深层成员读不到，因此这里只用于看团队结构，不作官方 P 等级判断。</p>' +
+    (TWRES.cut ? '<div class="warn" style="margin-top:8px"><b>⚠️ 这次没展开完（到上限了），下面数字偏小。</b>把上面的「展开层数」调大再查一次。</div>' : '');
 }
 
 document.getElementById('twGo').addEventListener('click', twQuery);
