@@ -490,18 +490,23 @@ async function main() {
   console.log('[chain] 开始采集');
   let prev = {};
   if (existsSync(OUT)) { try { prev = JSON.parse(readFileSync(OUT, 'utf8')); } catch (e) {} }
-  const headHex = await rpc('eth_blockNumber', []);
-  const head = parseInt(headHex, 16);
-  const block = await rpc('eth_getBlockByNumber', [headHex, false]);
-
-  const chain = {
-    block: head,
-    blockTime: new Date(Number(block.timestamp) * 1000).toISOString(),
-    gasPriceGwei: Number(BigInt(await rpc('eth_gasPrice', []))) / 1e9,
-    rpc: RPC,
-    explorer: EXPLORER + '/block/' + head,
-    chainId: 6714
-  };
+  let headHex = null, head = Number(prev.chain?.block || 0), chain = prev.chain || null;
+  try {
+    headHex = await rpc('eth_blockNumber', []);
+    head = parseInt(headHex, 16);
+    const block = await rpc('eth_getBlockByNumber', [headHex, false]);
+    chain = {
+      block: head,
+      blockTime: new Date(Number(block.timestamp) * 1000).toISOString(),
+      gasPriceGwei: Number(BigInt(await rpc('eth_gasPrice', []))) / 1e9,
+      rpc: RPC,
+      explorer: EXPLORER + '/block/' + head,
+      chainId: 6714
+    };
+  } catch (e) {
+    note('chain: ' + e.message);
+    if (!chain) chain = { block: head, blockTime: null, gasPriceGwei: null, rpc: RPC, explorer: EXPLORER, chainId: 6714 };
+  }
 
   let protocol = prev.protocol || null;
   try {
@@ -554,7 +559,12 @@ async function main() {
   };
 
   const claimMap = new Map();
-  let claims = await collectClaims(latestRoot, head, claimMap);
+  let claims = prev.claims || { all: [], top: [], addresses: 0, events: 0, staticTotal: 0, dynamicTotal: 0, total: 0 };
+  try {
+    claims = await collectClaims(latestRoot, head, claimMap);
+  } catch (e) {
+    note('claims: ' + e.message);
+  }
   rewards.latest = Object.assign({}, latestRoot, { addresses: claims.addresses });
   if (!history.length && prev.rewards) {
     rewards = prev.rewards;
