@@ -2,7 +2,6 @@ name: update-data
 
 on:
   schedule:
-    # 每 30 分钟一次（用 :07 和 :37，避开整点拥堵）
     - cron: '7,37 * * * *'
   workflow_dispatch:
 
@@ -21,10 +20,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: 抓取数据
-        run: node collect.mjs
+        run: node collect-chain.mjs
 
       - name: 提交 data.json
         run: |
