@@ -271,12 +271,18 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
     </div>
     <div id="whoList"></div>
   </div>
-  <h2>领取明细 · 链上事件</h2>
-  <div class="grid g4" id="wdSum"></div>
-  <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
-    <div id="wdTab" style="padding:4px 10px 10px"></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <details class="who">
+      <summary><span><b>领取明细 · 链上事件</b></span><span class="note">点开查看领取地址</span></summary>
+      <div style="padding:10px">
+        <div class="grid g4" id="wdSum"></div>
+        <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
+          <div id="wdTab" style="padding:4px 10px 10px"></div>
+        </div>
+        <p class="note" id="wdNote" style="margin-top:8px"></p>
+      </div>
+    </details>
   </div>
-  <p class="note" id="wdNote" style="margin-top:8px"></p>
 
   <h2>走势 · 每日三池实际分配</h2>
   <div class="card">
