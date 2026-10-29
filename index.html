@@ -201,22 +201,6 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       ⚠️ P6/P7 还要求每个独立区域分别有 1 名有效 P5/P6。
     </p>
   </div>
-  <h2>算一算 · 我还差多少</h2>
-  <div class="card">
-    <div class="twrow">
-      <select id="pcLv">
-        <option value="0">我想上 P1</option>
-        <option value="1">我想上 P2</option>
-        <option value="2">我想上 P3</option>
-        <option value="3">我想上 P4</option>
-        <option value="4">我想上 P5</option>
-      </select>
-      <input id="pcHave" placeholder="我某个区现在有多少 DAI Power（可不填）" spellcheck="false">
-      <button id="pcGo">算一下</button>
-    </div>
-    <div id="pcOut" style="margin-top:12px"></div>
-  </div>
-
   <h2>当前 P1–P7 · 官方等级与钱包记录</h2>
   <div class="card">
     <div class="warn" style="margin-bottom:12px">
@@ -290,14 +274,9 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   <h2>领取明细 · 链上事件</h2>
   <div class="grid g4" id="wdSum"></div>
   <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
-    <div class="scroll" style="max-height:520px;overflow-y:auto"><table class="wtab" id="wdTab"></table></div>
+    <div id="wdTab" style="padding:4px 10px 10px"></div>
   </div>
   <p class="note" id="wdNote" style="margin-top:8px"></p>
-
-  <p class="note" style="margin-top:8px">
-    共识按等级发，同一级每人一样；网络和增长按各自团队当天新增算，所以同等级内部差距很大。
-    「合计」栏显示的是该等级当天的<b>最低到最高</b>，中位数更能代表一般人。
-  </p>
 
   <h2>走势 · 每日三池实际分配</h2>
   <div class="card">
@@ -311,8 +290,11 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   </div>
 
   <h2>历史 · 每天发放</h2>
-  <div class="card" style="padding:6px 10px">
-    <div class="scroll"><table id="hist"></table></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <details class="who">
+      <summary><span><b>每日发放明细</b></span><span class="note">点开查看 D1–当前天</span></summary>
+      <div class="scroll" style="max-height:560px;overflow:auto;padding:0 10px 10px"><table id="hist"></table></div>
+    </details>
   </div>
 
   <h2>链上协议状态</h2>
@@ -451,13 +433,22 @@ function render(){
     card('地址数量', fmt(claims.addresses, 0), '个', '同一地址已合并');
   var wt = document.getElementById('wdTab');
   if (wt) {
-    var wrows = '<thead><tr><th>地址</th><th>静态领取</th><th>动态领取</th><th>合计</th><th>次数</th></tr></thead><tbody>';
-    claimTop.forEach(function(x){
-      wrows += '<tr><td class="addr"><a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener">' + x.a + '</a></td>' +
-        '<td>' + fmt(x.static,4) + '</td><td>' + fmt(x.dynamic,4) + '</td>' +
-        '<td class="tot">' + fmt(x.total,4) + '</td><td>' + fmt(x.events,0) + '</td></tr>';
-    });
-    wt.innerHTML = wrows + '</tbody>';
+    wt.innerHTML = claimTop.length ? claimTop.map(function(x, idx){
+      return '<details class="who claimFold">' +
+        '<summary><span><b>#' + (idx + 1) + '</b>　' + x.a.slice(0,10) + '…' + x.a.slice(-6) + '</span>' +
+        '<span class="note">' + fmt(x.total,4) + ' AiLGNS　点开查看</span></summary>' +
+        '<div class="lst" style="padding:10px">' +
+          '<div style="font-family:ui-monospace,monospace;word-break:break-all;margin-bottom:8px">' +
+            '<a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener">' + x.a + '</a>' +
+          '</div>' +
+          '<div class="grid g3">' +
+            card('静态领取', fmt(x.static,4), 'AiLGNS', 'StaticClaimed') +
+            card('动态领取', fmt(x.dynamic,4), 'AiLGNS', 'DynamicClaimed') +
+            card('领取次数', fmt(x.events,0), '笔', '同一地址合并') +
+          '</div>' +
+        '</div>' +
+      '</details>';
+    }).join('') : '<div class="note" style="padding:14px">暂无领取事件</div>';
   }
   var wn = document.getElementById('wdNote');
   if (wn) wn.innerHTML = '统计区间：区块 <b>' + (claims.fromBlock || '—') + '</b> 至 <b>' + (claims.toBlock || '—') + '</b>。' +
@@ -785,10 +776,6 @@ function pcCalc(){
 }
 
 pcTable();
-pcCalc();
-document.getElementById('pcGo').addEventListener('click', pcCalc);
-document.getElementById('pcLv').addEventListener('change', pcCalc);
-document.getElementById('pcHave').addEventListener('input', pcCalc);
 
 /* ================= 团队树查询 ================= */
 var TWC = {
