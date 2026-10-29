@@ -32,12 +32,20 @@ const A = {
   COMMUNITY: '0xc9f9a8a2dBf8188AD6610e0239105CAbE67c4993',
   COMMUNITY_VAULT: '0x3DEea5f638cA0dFb03A0873CF4c0b90BA50E1aA2',
   INSURANCE: '0x22841307af7e663F8Ce784230C8F8e10a46888cF',
-  TURBINE: '0xE884A336550a4482Ca6A17A3F93aa30Ed4eD9BaD'
+  TURBINE: '0xE884A336550a4482Ca6A17A3F93aa30Ed4eD9BaD',
+  LENS: '0xa69a60b8d97D43031C00F16742Eb6989553796fc',
+  CLOCK: '0x6C5352E15A8327C3F44898FE220100Edc2989C58'
 };
 
 const S = {
   currentDay: '0x5c9302c9',
   currentEpoch: '0x76671808',
+  dayStart: '0x65b09d2d',
+  daiDepositCapToday: '0xd29b59c5',
+  daiDepositRemainingToday: '0x7e1a72f0',
+  dailyDaiPowerCap: '0x30928d3e',
+  burnBudgetRemainingToday: '0xf77c6cce',
+  dailyBurnPowerCap: '0x5fad1fe4',
   activePower: '0xf2cfb069',
   recordedPower: '0x8a420cfb',
   powerRateBps: '0xbe7f8c68',
@@ -63,7 +71,9 @@ const T = {
   communitySettled: '0x91dfa08597fd3a8af82de15a379094239ef672f8a7db3d481834c8060b63975b',
   dynamicRoot: '0xce1281bbe035883e4d8e329a4e92ce777c42ec0f072558a5868bd845baa45d99',
   staticClaimed: '0x4c80b813621f984c5d34c5126aabaccd262b9ca81236927656681e7303356164',
-  dynamicClaimed: '0x834a7928c8bc071f15b35f427d0a750bf524f2bbeb96c04c0a05ee38ff8fca35'
+  dynamicClaimed: '0x834a7928c8bc071f15b35f427d0a750bf524f2bbeb96c04c0a05ee38ff8fca35',
+  daiQueued: '0x41fd86243836b698405554ae311d223dec7e355200f05fd658fb3adffe567668',
+  lgnsBurnQueued: '0x16b309670cfc6e855d1def7ee55e395827e8a8694f4c701ffe0adbc7b75121cc'
 };
 // DynamicClaimed topic is computed from the ABI below; kept literal to avoid a runtime keccak dependency.
 
@@ -198,6 +208,103 @@ async function logsRangeUser(addr, topic, user, fromBlock, toBlock) {
   if (Array.isArray(j.result)) return j.result;
   if (/No logs found/i.test(String(j.message || ''))) return [];
   throw new Error(j.message || 'explorer user logs error');
+}
+async function blockByTimestamp(ts) {
+  const u = EXPLORER_API + '?module=block&action=getblocknobytime&timestamp=' + ts + '&closest=before';
+  const j = await fetchJson(u);
+  if (!j.result || !j.result.blockNumber) throw new Error('blockByTimestamp failed');
+  return Number(j.result.blockNumber);
+}
+
+async function collectPowerParticipation() {
+  const head = parseInt(await rpc('eth_blockNumber', []), 16);
+  const dayHex = await rpc('eth_call', [{ to: A.CLOCK, data: S.currentDay }, 'latest']);
+  const day = Number(BigInt(dayHex));
+  const startHex = await rpc('eth_call', [{ to: A.CLOCK, data: S.dayStart + amountPad(day) }, 'latest']);
+  const startTs = Number(BigInt(startHex));
+  let startBlock;
+  try { startBlock = await blockByTimestamp(startTs); } catch (e) { startBlock = Math.max(0, head - 90000); }
+  const calls = await rpcBatch([
+    { to: A.LENS, data: S.daiDepositCapToday },
+    { to: A.LENS, data: S.daiDepositRemainingToday },
+    { to: A.LENS, data: S.burnBudgetRemainingToday },
+    { to: A.POWER, data: S.dailyBurnPowerCap },
+    { to: A.POWER, data: S.dailyDaiPowerCap }
+  ]);
+  const daiCap = calls[0] ? toNum(BigInt(calls[0])) : null;
+  const daiLeft = calls[1] ? toNum(BigInt(calls[1])) : null;
+  const burnLeftPower = calls[2] ? toNum(BigInt(calls[2])) : null;
+  const burnCapPower = calls[3] ? toNum(BigInt(calls[3])) : null;
+  const daiPowerCap = calls[4] ? toNum(BigInt(calls[4])) : null;
+  const daiLogs = await logsRange(A.POWER, T.daiQueued, startBlock, head);
+  const lgnsLogs = await logsRange(A.POWER, T.lgnsBurnQueued, startBlock, head);
+  function stats(items, kind, decimals) {
+    const rows = items.map((x) => {
+      const w = words(x.data);
+      return {
+        user: asAddr(x.topics[1]).toLowerCase(),
+        amount: w[0] ? Number(BigInt(w[0])) / (10 ** decimals) : 0,
+        power: w[1] ? toNum(BigInt(w[1])) : 0,
+        ts: Number(BigInt(x.timeStamp))
+      };
+    });
+    const first = rows.length ? Math.min(...rows.map((x) => x.ts)) : null;
+    const last = rows.length ? Math.max(...rows.map((x) => x.ts)) : null;
+    return {
+      kind, events: rows.length, wallets: new Set(rows.map((x) => x.user)).size,
+      amount: rows.reduce((s, x) => s + x.amount, 0),
+      power: rows.reduce((s, x) => s + x.power, 0),
+      firstTs: first, lastTs: last,
+      firstAt: first ? new Date(first * 1000).toISOString() : null,
+      lastAt: last ? new Date(last * 1000).toISOString() : null,
+      durationSec: first && last ? Math.max(0, last - first) : 0
+    };
+  }
+  const dai = stats(daiLogs, 'DAI', 18);
+  const lgns = stats(lgnsLogs, 'LGNS', 9);
+  const daiUsed = daiCap != null && daiLeft != null ? Math.max(0, daiCap - daiLeft) : null;
+  const burnUsedPower = burnLeftPower != null ? Math.max(0, burnCapPower - burnLeftPower) : null;
+  const rate = 2;
+  const prevDay = day - 1;
+  let prevStartTs = null, prevDaiLogs = [], prevLgnsLogs = [];
+  try {
+    prevStartTs = Number(BigInt(await rpc('eth_call', [{ to: A.CLOCK, data: S.dayStart + amountPad(prevDay) }, 'latest'])));
+    const prevStartBlock = await blockByTimestamp(prevStartTs);
+    prevDaiLogs = await logsRange(A.POWER, T.daiQueued, prevStartBlock, Math.max(prevStartBlock, startBlock - 1));
+    prevLgnsLogs = await logsRange(A.POWER, T.lgnsBurnQueued, prevStartBlock, Math.max(prevStartBlock, startBlock - 1));
+  } catch (e) { note('yesterday participation: ' + e.message); }
+  const ydai = stats(prevDaiLogs, 'DAI', 18);
+  const ylgns = stats(prevLgnsLogs, 'LGNS', 9);
+  const yesterday = {
+    day: prevDay,
+    startAt: prevStartTs ? new Date(prevStartTs * 1000).toISOString() : null,
+    endAt: new Date(startTs * 1000).toISOString(),
+    dai: Object.assign(ydai, {
+      powerCap: daiPowerCap,
+      soldOut: daiPowerCap != null && ydai.power >= daiPowerCap * 0.999
+    }),
+    lgns: Object.assign(ylgns, {
+      capPower: burnCapPower,
+      soldOut: burnCapPower != null && ylgns.power >= burnCapPower * 0.999
+    })
+  };
+  return {
+    checkedAt: new Date().toISOString(),
+    day, startTs, startAt: new Date(startTs * 1000).toISOString(), startBlock, head,
+    yesterday,
+    dai: Object.assign(dai, {
+      cap: daiCap, remaining: daiLeft, used: daiUsed,
+      soldOut: daiLeft != null && daiLeft <= 0.000001,
+      filledPct: daiCap ? Math.min(100, Math.max(0, (daiUsed || 0) / daiCap * 100)) : null
+    }),
+    lgns: Object.assign(lgns, {
+      capPower: burnCapPower, remainingPower: burnLeftPower, usedPower: burnUsedPower,
+      rate, cap: burnCapPower / rate, remaining: burnLeftPower != null ? burnLeftPower / rate : null,
+      used: burnUsedPower != null ? burnUsedPower / rate : null,
+      soldOut: burnLeftPower != null && burnLeftPower <= 0.000001,
+      filledPct: burnLeftPower != null ? Math.min(100, Math.max(0, burnUsedPower / burnCapPower * 100)) : null
+    })
+  };
 }
 function parseCommunitySettled(items) {
   return items.map((x) => {
@@ -596,6 +703,8 @@ async function main() {
 
   let officialLevelsData = prev.officialLevels || null;
   try { officialLevelsData = await officialJson('/level'); } catch (e) { note('official levels: ' + e.message); }
+  let powerParticipation = prev.powerParticipation || null;
+  try { powerParticipation = await collectPowerParticipation(); } catch (e) { note('power participation: ' + e.message); }
   let tree = { root: null, total: null, maxDepth: null, levels: {}, map: new Map() };
   try { tree = await collectTree(); } catch (e) { note('tree: ' + e.message); }
   const watch = await collectWatch(loadWatchlist(), tree, claims).catch((e) => { note('watch: ' + e.message); return {}; });
@@ -627,6 +736,7 @@ async function main() {
     claims,
     pLevels,
     officialLevels: officialLevelsData,
+    powerParticipation,
     tree: { root: tree.root, total: tree.total, maxDepth: tree.maxDepth, levels: tree.levels },
     watch,
     errors
