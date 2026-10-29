@@ -639,4 +639,18 @@ async function main() {
   if (errors.length) console.log('  警告 ' + errors.length + ' 条');
 }
 
-main().catch((e) => { console.error('FATAL', e); process.exit(1); });
+main().catch((e) => {
+  console.error('FATAL', e);
+  try {
+    if (existsSync(OUT)) {
+      const prev = JSON.parse(readFileSync(OUT, 'utf8'));
+      prev.errors = Array.from(new Set([...(prev.errors || []), 'collector: ' + (e && e.message ? e.message : String(e))]));
+      prev.site = Object.assign({}, prev.site || {}, { generatedAt: new Date().toISOString() });
+      writeFileSync(OUT, JSON.stringify(prev, null, 2), 'utf8');
+      console.error('[fallback] 已保留上一次成功快照，并写入错误提示');
+    }
+  } catch (writeErr) {
+    console.error('[fallback] 写入快照失败', writeErr);
+  }
+  process.exitCode = 0;
+});
