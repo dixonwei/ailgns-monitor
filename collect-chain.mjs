@@ -135,8 +135,20 @@ async function rpcBatch(calls) {
   for (let i = 0; i < calls.length; i += 40) {
     const part = calls.slice(i, i + 40);
     const body = part.map((c, j) => ({ jsonrpc: '2.0', id: j, method: 'eth_call', params: [c, 'latest'] }));
-    const arr = await fetchJson(RPC, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    if (!Array.isArray(arr)) throw new Error('RPC batch failed');
+    let arr = null, last = null;
+    for (let attempt = 0; attempt < RPC_LIST.length * 2; attempt++) {
+      try {
+        arr = await fetchJson(RPC, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }, 2);
+        if (!Array.isArray(arr)) throw new Error('RPC batch failed');
+        break;
+      } catch (e) {
+        last = e;
+        RPC_IDX = (RPC_IDX + 1) % RPC_LIST.length;
+        RPC = RPC_LIST[RPC_IDX];
+        await new Promise((res) => setTimeout(res, 400));
+      }
+    }
+    if (!Array.isArray(arr)) throw last;
     const sorted = arr.slice().sort((a, b) => a.id - b.id);
     for (let k = 0; k < part.length; k++) out.push(sorted[k] && sorted[k].result ? sorted[k].result : null);
   }
@@ -491,14 +503,25 @@ async function main() {
     chainId: 6714
   };
 
-  const protocol = await collectProtocol();
-  protocol.powerDAI = protocol.activePower;
-  protocol.powerRecordedDAI = protocol.recordedPower;
+  let protocol = prev.protocol || null;
+  try {
+    protocol = await collectProtocol();
+    protocol.powerDAI = protocol.activePower;
+    protocol.powerRecordedDAI = protocol.recordedPower;
+  } catch (e) {
+    note('protocol: ' + e.message);
+    if (!protocol) throw e;
+  }
   let flow = prev.flow || null;
   try { flow = await collectFlow(prev.flow); } catch (e) { note('flow: ' + e.message); }
 
-  const settledItems = await explorerAll(A.COMMUNITY_VAULT, T.communitySettled);
-  const rootItems = await explorerAll(A.COMMUNITY_VAULT, T.dynamicRoot);
+  let settledItems = [], rootItems = [];
+  try {
+    settledItems = await explorerAll(A.COMMUNITY_VAULT, T.communitySettled);
+    rootItems = await explorerAll(A.COMMUNITY_VAULT, T.dynamicRoot);
+  } catch (e) {
+    note('explorer rewards: ' + e.message);
+  }
   const settledRaw = parseCommunitySettled(settledItems);
   const rootsRaw = parseDynamicRoot(rootItems);
   const settledMap = new Map();
@@ -523,7 +546,7 @@ async function main() {
     });
   });
   const latestRoot = history.length ? history[history.length - 1] : null;
-  const rewards = {
+  let rewards = {
     latest: latestRoot,
     history: history.slice().reverse(),
     unitPrice: {},
@@ -533,6 +556,16 @@ async function main() {
   const claimMap = new Map();
   let claims = await collectClaims(latestRoot, head, claimMap);
   rewards.latest = Object.assign({}, latestRoot, { addresses: claims.addresses });
+  if (!history.length && prev.rewards) {
+    rewards = prev.rewards;
+    claims = prev.claims || claims;
+  }
+  let emissionsData = {
+    latest: history.length ? history[history.length - 1] : (prev.emissions && prev.emissions.latest) || null,
+    history: history.length ? history.slice().reverse() : ((prev.emissions && prev.emissions.history) || []),
+    settled: settled.length ? settled.slice().reverse() : ((prev.emissions && prev.emissions.settled) || []),
+    latestSettled: settled.length ? settled[settled.length - 1] : ((prev.emissions && prev.emissions.latestSettled) || null)
+  };
 
   const released = settled.reduce((s, x) => s + (x.actual || 0), 0);
   const suppressed = settled.reduce((s, x) => s + (x.suppressed || 0), 0);
@@ -580,12 +613,7 @@ async function main() {
       thirdParty: false
     },
     chain, protocol, flow,
-    rewards, emissions: {
-      latest: history.length ? history[history.length - 1] : null,
-      history: history.slice().reverse(),
-      settled: settled.slice().reverse(),
-      latestSettled: settled.length ? settled[settled.length - 1] : null
-    },
+    rewards, emissions: emissionsData,
     claims,
     pLevels,
     officialLevels: officialLevelsData,
