@@ -27,7 +27,7 @@ let collecting = null;
 async function collect() {
   if (collecting) return collecting;
   collecting = (async () => {
-    return await import('./collect.mjs?t=' + Date.now());
+    return await import('./collect-chain.mjs?t=' + Date.now());
   })().finally(() => { setTimeout(() => { collecting = null; }, 500); });
   return collecting;
 }
@@ -47,6 +47,12 @@ const server = createServer(async (req, res) => {
       res.writeHead(500, { 'content-type': 'application/json; charset=utf-8' })
          .end(JSON.stringify({ ok: false, error: String((e && e.message) || e) }));
     }
+    return;
+  }
+
+  if (path === '/api/addr') {
+    res.writeHead(410, { 'content-type': 'application/json; charset=utf-8' })
+       .end(JSON.stringify({ ok:false, error:'已切换为链上原生查询，请在 check.html 直接输入钱包地址' }));
     return;
   }
 
