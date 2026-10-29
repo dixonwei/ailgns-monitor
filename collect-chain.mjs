@@ -13,6 +13,7 @@ const OUT = join(__dirname, 'data.json');
 const WATCH_FILE = join(__dirname, 'watchlist.txt');
 const LEVEL_FILE = join(__dirname, 'p-levels.json');
 const EXPLORER = 'https://browser.anubispace.org';
+const OFFICIAL_API = 'https://awakehelix.io/api/v1';
 const EXPLORER_API = EXPLORER + '/api';
 const RPC_LIST = ['https://rpc.anubispace.org', 'https://rpc2.anubispace.org', 'https://rpc3.anubispace.org'];
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36';
@@ -100,6 +101,16 @@ async function fetchJson(url, opts = {}, tries = 3) {
   throw last;
 }
 
+async function officialJson(path) {
+  const r = await fetchJson(OFFICIAL_API + path, { headers: { 'content-type': 'application/json' } }, 4);
+  return r;
+}
+async function officialLevel(a) {
+  return await officialJson('/level/' + a);
+}
+async function officialCommunity(a) {
+  return await officialJson('/community/' + a);
+}
 async function rpc(method, params) {
   let last;
   for (let i = 0; i < RPC_LIST.length * 2; i++) {
@@ -540,9 +551,19 @@ async function main() {
     }
   }
 
+  let officialLevelsData = prev.officialLevels || null;
+  try { officialLevelsData = await officialJson('/level'); } catch (e) { note('official levels: ' + e.message); }
   let tree = { root: null, total: null, maxDepth: null, levels: {}, map: new Map() };
   try { tree = await collectTree(); } catch (e) { note('tree: ' + e.message); }
   const watch = await collectWatch(loadWatchlist(), tree, claims).catch((e) => { note('watch: ' + e.message); return {}; });
+  try {
+    const keys = Object.keys(watch);
+    const official = await Promise.all(keys.map(async (a) => {
+      const [ol, oc] = await Promise.all([officialLevel(a), officialCommunity(a)]);
+      return { a, ol, oc };
+    }));
+    official.forEach((x) => { watch[x.a].officialLevel = x.ol; watch[x.a].officialCommunity = x.oc; });
+  } catch (e) { note('official watch: ' + e.message); }
 
   let pLevels = prev.pLevels || null;
   if (existsSync(LEVEL_FILE)) {
@@ -567,6 +588,7 @@ async function main() {
     },
     claims,
     pLevels,
+    officialLevels: officialLevelsData,
     tree: { root: tree.root, total: tree.total, maxDepth: tree.maxDepth, levels: tree.levels },
     watch,
     errors
