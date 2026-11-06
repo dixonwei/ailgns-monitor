@@ -217,7 +217,6 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       <button id="plGo">查官方等级</button>
     </div>
     <div id="plOut" style="margin-top:12px"></div>
-    <div id="plLists" style="margin-top:10px"></div>
   </div>
   <h2>团队树查询 · 输入钱包看下级结构</h2>
   <div class="card">
@@ -240,24 +239,18 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
   </div>
   <div id="twOut"></div>
 
-  <h2>钱包快查 · 算力每天分多少</h2>
+  <h2>钱包领取记录查询 · 个人 / 社区 / 合计</h2>
   <div class="card">
     <div class="twrow">
-      <input id="qkAddr" placeholder="粘贴钱包地址 0x…（只读链上，不连钱包、不发起交易）" spellcheck="false">
-      <button id="qkGo">查一下</button>
+      <input id="qkAddr" placeholder="输入一个钱包地址 0x…（只读查询，不连钱包）" spellcheck="false">
+      <button id="qkGo">查询领取记录</button>
     </div>
-    <div id="qkOut" class="note" style="margin-top:9px">
-      查两件事：<b>① 个人算力每天能兑付多少</b>；<b>② 最新结算后的链上静态/动态领取记录</b>。
+    <div id="qkOut" class="note" style="margin-top:12px">
+      输入一个钱包地址，直接查询链上领取记录：<b>个人算力兑付</b>、<b>社区动态奖励</b>、<b>合计</b>，并列出每笔历史释放。
     </div>
-  </div>
-
-  <h2>关注钱包 · 链上地址状态</h2>
-  <div class="card">
-    <div class="note" style="margin-bottom:10px">
-      这些地址的算力、直推人数、推荐人和最近领取记录全部直接读链上。想关注新地址：把钱包一行一个写进仓库根目录的 <b>watchlist.txt</b>。
-      <b style="color:var(--gold)">这里全部是链上可读数据；链上关系表不代表完整的官方三区业绩，P 等级仍需结合 veAiLGNS 门槛和官方规则确认。</b>
-    </div>
-    <div id="watchCard"><div class="note">加载中…</div></div>
+    <p class="note" style="margin-top:10px">
+      不需要连接钱包，不会发起交易；任何地址都能查。数据来自 Anubis 链上领取交易，最多回溯最近 40 天 / 1500 笔。
+    </p>
   </div>
 
   <h2>最新一期 · 链上奖励分配</h2>
@@ -610,41 +603,132 @@ function render(){
   pr += card('已释放 AiLGNS', fmt(p.released, 2), 'AiLGNS', '从排放金库发出');
   pr += card('排放金库余额', fmt(p.emissionVault, 2), 'AiLGNS', '保险金库 ' + fmt(p.insuranceVault, 2));
   $('proto').innerHTML = pr;
-  renderWatch();
   renderPLevels();
 }
 
-/* ================= 钱包快查 ================= */
+/* ================= 钱包领取记录查询 ================= */
+var QK = {
+  API: 'https://browser.anubispace.org/api',
+  POOL: '0x3deea5f638ca0dfb03a0873cf4c0b90ba50e1aa2',
+  POWER: '0x9e68f61e2615cc1d2c4a2d0026bfc1ebfdf68c1b',
+  TRANSFER: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+  MAX_PAGE: 15,
+  DAYS: 40,
+  CONC: 6
+};
+function qkTopic0(l){ return String((l.topics || [])[0] || '').toLowerCase(); }
+function qkAddrOf(l){ var a = (l && l.address) || ''; if (a && a.hash) a = a.hash; return String(a).toLowerCase(); }
+function qkTxList(a, page){
+  var u = QK.API + '?module=account&action=txlist&address=' + a + '&page=' + page + '&offset=100&sort=desc';
+  return fetch(u, { cache:'no-store' }).then(function(r){ return r.json(); })
+    .then(function(j){ return (j && j.result) || []; });
+}
+function qkTxLogs(h){
+  return fetch('https://browser.anubispace.org/api/v2/transactions/' + h + '/logs', { cache:'no-store' })
+    .then(function(r){ return r.json(); }).then(function(j){ return (j && j.items) || []; }).catch(function(){ return []; });
+}
+function qkPoolAmount(ls){
+  var v = 0;
+  ls.forEach(function(l){
+    if (qkTopic0(l) !== QK.TRANSFER) return;
+    var tp = l.topics || [];
+    var from = '0x' + String(tp[1] || '').slice(26).toLowerCase();
+    if (from !== QK.POOL) return;
+    try { var n = Number(BigInt(l.data)) / 1e18; if (n > v) v = n; } catch (e) {}
+  });
+  return v;
+}
+function qkDate(ts){
+  var d = new Date(Number(ts) * 1000);
+  return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' +
+    String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+function qkClaimLookup(a, onStep){
+  var rows = [], page = 1, capped = false;
+  function nextPage(){
+    if (page > QK.MAX_PAGE) { capped = true; return process(); }
+    onStep && onStep('读取交易记录… 第 ' + page + ' 页');
+    return qkTxList(a, page).then(function(items){
+      if (!items.length) return process();
+      rows = rows.concat(items);
+      var last = items[items.length - 1];
+      var oldest = Number(last.timeStamp) * 1000;
+      page++;
+      if (Date.now() - oldest > QK.DAYS * 86400000) return process();
+      return nextPage();
+    }).catch(function(){ return process(); });
+  }
+  function process(){
+    var cand = rows.filter(function(x){ return String(x.to || '').toLowerCase() === QK.POOL; });
+    var mine = [], comm = [], i = 0;
+    function step(){
+      if (i >= cand.length) return done();
+      var part = cand.slice(i, i + QK.CONC); i += QK.CONC;
+      onStep && onStep('读取领取明细… ' + i + ' / ' + cand.length);
+      return Promise.all(part.map(function(x){ return qkTxLogs(x.hash); })).then(function(lls){
+        part.forEach(function(x, k){
+          var ls = lls[k] || [], v = qkPoolAmount(ls);
+          if (!v) return;
+          var item = { d:qkDate(x.timeStamp), v:v, hash:x.hash, ts:Number(x.timeStamp) };
+          var isMine = x.methodId === '0x064f3406' || ls.some(function(l){ return qkAddrOf(l) === QK.POWER; });
+          (isMine ? mine : comm).push(item);
+        });
+        return step();
+      });
+    }
+    function done(){
+      var sum = function(arr){ return arr.reduce(function(total, x){ return total + x.v; }, 0); };
+      mine.sort(function(a,b){ return b.ts - a.ts; });
+      comm.sort(function(a,b){ return b.ts - a.ts; });
+      onStep(null, { payCum:sum(mine), rwCum:sum(comm), payHist:mine, rwHist:comm,
+        payTimes:mine.length, rwTimes:comm.length, capped:capped, txs:rows.length });
+    }
+    return step();
+  }
+  return nextPage();
+}
+function qkHistory(title, arr){
+  if (!arr || !arr.length) return '';
+  var h = '<h2 style="margin-top:18px">' + title + '</h2><div class="scroll"><table class="wtab"><thead><tr>' +
+    '<th>领取时间</th><th>AiLGNS</th><th>链上交易</th></tr></thead><tbody>';
+  arr.forEach(function(x){
+    h += '<tr><td>' + x.d + '</td><td class="tot">' + fmt(x.v, 4) + '</td>' +
+      '<td class="addr"><a href="https://browser.anubispace.org/tx/' + x.hash + '" target="_blank" rel="noopener">' +
+      x.hash.slice(0,10) + '…' + x.hash.slice(-8) + '</a></td></tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+function qkRender(a, m){
+  var pay = m.payCum || 0, rw = m.rwCum || 0;
+  var h = '<div class="grid g3" style="margin-top:4px">' +
+    card('个人（算力兑付）', fmt(pay, 4), 'AiLGNS', m.payTimes + ' 次领取') +
+    card('社区（动态奖励）', fmt(rw, 4), 'AiLGNS', m.rwTimes + ' 次领取') +
+    card('一共领取', fmt(pay + rw, 4), 'AiLGNS', '个人 + 社区') +
+    '</div>';
+  h += qkHistory('历史领取 · 个人算力兑付', m.payHist);
+  h += qkHistory('历史领取 · 社区动态奖励', m.rwHist);
+  if (!m.payHist.length && !m.rwHist.length) {
+    h += '<div class="warn" style="margin-top:12px">这个地址在查询范围内没有领取记录。可能还没参与算力、还没上 P 等级，或最近 40 天没有领取。</div>';
+  }
+  if (m.capped) h += '<p class="note">提示：这个地址交易较多，只统计了最近的部分交易，结果可能偏小。</p>';
+  h += '<p class="note" style="word-break:break-all">查询地址：' + a + ' · 已读取 ' + m.txs + ' 笔交易</p>';
+  document.getElementById('qkOut').innerHTML = h;
+}
 function qkQuery(){
   var out = document.getElementById('qkOut');
   var raw = (document.getElementById('qkAddr').value || '').trim();
   if (!twOkAddr(raw)) { out.innerHTML = '<span style="color:var(--red)">请填完整地址（0x 开头，42 位）</span>'; return; }
   var a = raw.toLowerCase();
-  var p = (DATA && DATA.protocol) || {};
-  var ratio = (p.dailyPayRatio || 0) / 100;
-  var price = p.priceDAI || 0;
-  out.innerHTML = '查询中…';
-  Promise.all([
-    twCall(TWC.POWER, TWC.S_PWR_REG + twPad(a)).catch(function(){ return null; }),
-    twCall(TWC.POWER, TWC.S_PWR_LEFT + twPad(a)).catch(function(){ return null; }),
-    walletClaims(a).catch(function(){ return null; })
-  ]).then(function(r){
-    var reg = r[0] ? twDai(r[0]) : 0;
-    var left = r[1] ? twDai(r[1]) : 0;
-    var daiDay = left * ratio;
-    var aiDay = price ? daiDay / price : 0;
-    var hit = r[2];
-    var h = '<div class="grid g4" style="margin-top:4px">' +
-      card('我的登记算力', fmt(reg, 2), '算力', '存 1 DAI = 2.5 算力') +
-      card('我的剩余算力', fmt(left, 2), '算力', '按这个数每天兑付') +
-      card('个人算力 · 每天分', fmt(daiDay, 2), 'DAI', '≈ ' + fmt(aiDay, 6) + ' AiLGNS（链上协议价 ' + fmt(price, 2) + '）') +
-      card('最近链上领取', fmt(hit ? hit.total : 0, 4), 'AiLGNS', hit ? ('静态 ' + fmt(hit.static,4) + ' · 动态 ' + fmt(hit.dynamic,4)) : '统计区间内无领取') +
-      '</div>';
-    h += '<div class="warn" style="margin-top:10px"><b>链上领取说明</b><br>' +
-      '这里显示的是最新结算区块之后的 StaticClaimed / DynamicClaimed 原始事件记录，不再依赖第三方 P 等级名单。' +
-      '<br><span class="note">个人算力仍按“剩余算力 × ' + fmt(p.dailyPayRatio, 4) + '% ÷ 协议价”估算每日兑付。</span></div>';
-    out.innerHTML = h;
+  var btn = document.getElementById('qkGo');
+  btn.disabled = true;
+  out.innerHTML = '<p class="note">查询中… 正在直接读取 Anubis 链上领取记录</p>';
+  qkClaimLookup(a, function(step, res){
+    if (step) { out.innerHTML = '<p class="note">' + step + '</p>'; return; }
+    btn.disabled = false;
+    if (!res) { out.innerHTML = '<span style="color:var(--red)">读取失败，请稍后重试。</span>'; return; }
+    qkRender(a, res);
   }).catch(function(e){
+    btn.disabled = false;
     out.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
   });
 }
@@ -673,22 +757,6 @@ function renderPLevels(){
     ? ('官方当前天数：<b>' + official.currentDay + '</b> · 已评估天数：<b>' + official.day + '</b> · 已评估地址：<b>' + fmt(official.evaluated,0) + '</b><br>' +
        '<span style="color:var(--gold)">人数直接来自 Awake Helix 官方 API；钱包等级和三区数值以官方接口为准。</span>')
     : '<span style="color:var(--red)">官方等级接口暂未读取成功，稍后刷新。</span>';
-  var watch = (DATA && DATA.watch) || {};
-  var watchRows = '<div class="scroll"><table class="wtab"><thead><tr><th>关注钱包</th><th>官方等级</th><th>ve价值</th><th>官方三区数值</th><th>官方评估天数</th></tr></thead><tbody>';
-  var count = 0;
-  Object.keys(watch).forEach(function(a){
-    var o = watch[a].officialLevel;
-    if (!o) return;
-    count++;
-    var z = o.zones || [];
-    watchRows += '<tr><td class="addr"><a href="https://awakehelix.io/#/community?view=rewards" target="_blank" rel="noopener">' + a + '</a></td>' +
-      '<td class="lv">' + (o.level ? 'P' + o.level : '无等级') + '</td>' +
-      '<td>' + fmt(Number(o.veUsd),2) + '</td>' +
-      '<td>' + z.map(function(x){return fmt(Number(x),0);}).join(' / ') + '</td>' +
-      '<td>' + fmt(o.day,0) + '</td></tr>';
-  });
-  watchRows += '</tbody></table></div>';
-  document.getElementById('plLists').innerHTML = count ? watchRows : '<div class="note">在 watchlist.txt 加入钱包后，这里会显示官方等级与三区数值。</div>';
 }
 function plQuery(){
   var raw = (document.getElementById('plAddr')||{}).value || '';
@@ -723,36 +791,6 @@ function plQuery(){
 }
 document.getElementById('plGo').addEventListener('click', plQuery);
 document.getElementById('plAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') plQuery(); });
-
-/* ================= 关注钱包 · 链上地址状态 ================= */
-function renderWatch(){
-  var el = document.getElementById('watchCard');
-  if (!el) return;
-  var w = (DATA && DATA.watch) || null;
-  var keys = w ? Object.keys(w) : [];
-  if (!keys.length) {
-    el.innerHTML = '<div class="note">还没有数据。把要盯的钱包地址（0x 开头 42 位）一行一个写进仓库根目录的 ' +
-      '<b>watchlist.txt</b>，等下一次链上采集就会显示在这里。</div>';
-    return;
-  }
-  var html = '';
-  keys.forEach(function(a){
-    var x = w[a];
-    if (!x) return;
-    html += '<div style="border-top:1px solid var(--line);padding:12px 0 4px">' +
-      '<div style="font-family:ui-monospace,monospace;font-size:12.5px;word-break:break-all">' +
-      '<a href="https://browser.anubispace.org/address/' + a + '" target="_blank" rel="noopener">' + a + '</a></div>' +
-      '<div class="grid g4" style="margin-top:8px">' +
-        card('生效算力', fmt(x.powerEff, 2), '算力', '登记 ' + fmt(x.powerReg, 2)) +
-        card('直推地址', fmt(x.direct, 0), '个', '链上 referrals 可读数') +
-        card('推荐层级', x.depth == null ? '—' : ('第 ' + x.depth + ' 层'), '', x.parent ? ('上级 ' + x.parent.slice(0,8) + '…' + x.parent.slice(-6)) : '根节点或不在链上关系树') +
-        card('最近链上领取', fmt(x.claimTotal, 4), 'AiLGNS', '静态 ' + fmt(x.claimStatic,4) + ' · 动态 ' + fmt(x.claimDynamic,4)) +
-      '</div></div>';
-  });
-  html += '<p class="note" style="margin-top:10px">数据时间：' +
-    new Date(DATA.site.generatedAt).toLocaleString('zh-CN', {hour12:false}) + '　（链上自动采集）</p>';
-  el.innerHTML = html;
-}
 
 function drawSpark(pts){
   var svg = $('spark');
