@@ -217,6 +217,7 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       <button id="plGo">查官方等级</button>
     </div>
     <div id="plOut" style="margin-top:12px"></div>
+    <div id="plAddressList" style="margin-top:18px"></div>
   </div>
   <h2>团队树查询 · 输入钱包看下级结构</h2>
   <div class="card">
@@ -261,25 +262,6 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
 
   <h2>最近一期领取统计 · 链上逐笔汇总</h2>
   <div class="grid g4" id="lvtable"></div>
-  <div class="card" style="margin-top:10px;padding:0;overflow:hidden">
-    <div style="padding:12px 14px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line)">
-      领取地址 Top 200 <span class="note" id="whoMeta" style="font-weight:400"></span>
-    </div>
-    <div id="whoList"></div>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <details class="who">
-      <summary><span><b>领取明细 · 链上事件</b></span><span class="note">点开查看领取地址</span></summary>
-      <div style="padding:10px">
-        <div class="grid g4" id="wdSum"></div>
-        <div class="card" style="padding:0;overflow:hidden;margin-top:10px">
-          <div id="wdTab" style="padding:4px 10px 10px"></div>
-        </div>
-        <p class="note" id="wdNote" style="margin-top:8px"></p>
-      </div>
-    </details>
-  </div>
-
   <h2>走势 · 每日三池实际分配</h2>
   <div class="card">
     <svg class="spark" id="spark" viewBox="0 0 900 150" preserveAspectRatio="none"></svg>
@@ -289,14 +271,6 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line)}
       <span><i style="background:var(--purple)"></i>共识池</span>
       <span><i style="background:var(--green)"></i>分配合计</span>
     </div>
-  </div>
-
-  <h2>历史 · 每天发放</h2>
-  <div class="card" style="padding:0;overflow:hidden">
-    <details class="who">
-      <summary><span><b>每日发放明细</b></span><span class="note">点开查看 D1–当前天</span></summary>
-      <div class="scroll" style="max-height:560px;overflow:auto;padding:0 10px 10px"><table id="hist"></table></div>
-    </details>
   </div>
 
   <h2>链上协议状态</h2>
@@ -532,49 +506,7 @@ function render(){
     card('链上领取总额', fmt(claims.total, 4), 'AiLGNS', '自最新结算区块以来的领取事件') +
     card('领取地址', fmt(claims.addresses, 0), '个', '按地址去重') +
     card('领取事件', fmt(claims.events, 0), '笔', '静态＋动态领取') +
-    card('最大单地址', top1 ? fmt(top1.total, 4) : '—', 'AiLGNS', top1 ? top1.a : '暂无');
-
-  var wm = document.getElementById('whoMeta');
-  if (wm) wm.innerHTML = claims.day != null ? '（第 ' + claims.day + ' 天结算后 · 共 ' + fmt(claims.addresses, 0) + ' 个地址）' : '';
-  var wlEl = document.getElementById('whoList');
-  if (wlEl) {
-    wlEl.innerHTML = claimTop.length
-      ? '<details class="who" open><summary><span><b>按领取总额排序</b>　' + claimTop.length + ' 个地址</span><span class="note">点开收起</span></summary><div class="lst">' +
-        claimTop.map(function(x){
-          return '<a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener" title="' + x.a + '">' +
-            x.a.slice(0,10) + '…' + x.a.slice(-6) + '<i>' + fmt(x.total,4) + '</i></a>';
-        }).join('') + '</div></details>'
-      : '<div style="padding:14px" class="note">暂无领取事件</div>';
-  }
-
-  var sumEl = document.getElementById('wdSum');
-  if (sumEl) sumEl.innerHTML =
-    card('静态领取', fmt(claims.staticTotal, 4), 'AiLGNS', 'StaticClaimed 事件合计') +
-    card('动态领取', fmt(claims.dynamicTotal, 4), 'AiLGNS', 'DynamicClaimed 事件合计') +
-    card('事件笔数', fmt(claims.events, 0), '笔', '同一地址可能多次') +
-    card('地址数量', fmt(claims.addresses, 0), '个', '同一地址已合并');
-  var wt = document.getElementById('wdTab');
-  if (wt) {
-    wt.innerHTML = claimTop.length ? claimTop.map(function(x, idx){
-      return '<details class="who claimFold">' +
-        '<summary><span><b>#' + (idx + 1) + '</b>　' + x.a.slice(0,10) + '…' + x.a.slice(-6) + '</span>' +
-        '<span class="note">' + fmt(x.total,4) + ' AiLGNS　点开查看</span></summary>' +
-        '<div class="lst" style="padding:10px">' +
-          '<div style="font-family:ui-monospace,monospace;word-break:break-all;margin-bottom:8px">' +
-            '<a href="https://browser.anubispace.org/address/' + x.a + '" target="_blank" rel="noopener">' + x.a + '</a>' +
-          '</div>' +
-          '<div class="grid g3">' +
-            card('静态领取', fmt(x.static,4), 'AiLGNS', 'StaticClaimed') +
-            card('动态领取', fmt(x.dynamic,4), 'AiLGNS', 'DynamicClaimed') +
-            card('领取次数', fmt(x.events,0), '笔', '同一地址合并') +
-          '</div>' +
-        '</div>' +
-      '</details>';
-    }).join('') : '<div class="note" style="padding:14px">暂无领取事件</div>';
-  }
-  var wn = document.getElementById('wdNote');
-  if (wn) wn.innerHTML = '统计区间：区块 <b>' + (claims.fromBlock || '—') + '</b> 至 <b>' + (claims.toBlock || '—') + '</b>。' +
-    '数据直接来自 CommunityVault 的 StaticClaimed / DynamicClaimed 原始事件。';
+    card('最大单地址', top1 ? fmt(top1.total, 4) : '—', 'AiLGNS', '按地址合并后的最高一笔');
 
   // 趋势图
   var hist = (r.history || []).slice().reverse();
@@ -582,17 +514,6 @@ function render(){
     return { date: h.date, p1: h.growth, p2: h.network, p3: h.consensus, total: h.total };
   });
   drawSpark(pts);
-
-  // 历史表
-  var t = '<thead><tr><th>日期</th><th>天数</th><th>分配合计</th><th>增长</th><th>网络</th><th>共识</th><th>日结算</th><th>静态</th><th>动态</th><th>抑制量</th></tr></thead><tbody>';
-  (r.history || []).forEach(function(h){
-    t += '<tr><td>' + h.date + '</td><td>第 ' + h.day + ' 天</td>' +
-         '<td>' + fmt(h.total, 4) + '</td><td>' + fmt(h.growth, 4) + '</td><td>' + fmt(h.network, 4) + '</td>' +
-         '<td>' + fmt(h.consensus, 4) + '</td><td>' + fmt(h.actual, 0) + '</td><td>' + fmt(h.staticAmount, 0) + '</td>' +
-         '<td>' + fmt(h.dynamicAmount, 0) + '</td><td>' + fmt(h.suppressed, 0) + '</td></tr>';
-  });
-  t += '</tbody>';
-  $('hist').innerHTML = t;
 
   // 协议状态
   var pr = '';
@@ -757,6 +678,53 @@ function renderPLevels(){
     ? ('官方当前天数：<b>' + official.currentDay + '</b> · 已评估天数：<b>' + official.day + '</b> · 已评估地址：<b>' + fmt(official.evaluated,0) + '</b><br>' +
        '<span style="color:var(--gold)">人数直接来自 Awake Helix 官方 API；钱包等级和三区数值以官方接口为准。</span>')
     : '<span style="color:var(--red)">官方等级接口暂未读取成功，稍后刷新。</span>';
+  renderPLevelAddresses(official);
+}
+function renderPLevelAddresses(official){
+  var host = document.getElementById('plAddressList');
+  if (!host) return;
+  var pl = (DATA && DATA.pLevels) || null;
+  if (!pl || !Array.isArray(pl.levels)) {
+    host.innerHTML = '<div class="warn">当前快照没有链上 P 等级地址名单。</div>';
+    return;
+  }
+  var dist = {};
+  ((official && official.distribution) || []).forEach(function(x){ dist[x.level] = x.members; });
+  var byLevel = {};
+  pl.levels.forEach(function(g){ byLevel[g.level] = g; });
+  var stamp = pl.generatedAt ? new Date(pl.generatedAt).toLocaleString('zh-CN', {hour12:false}) : '—';
+  var h = '<div class="warn" style="font-size:12.5px;margin-bottom:10px">' +
+    '<b>今日已上 P 等级的钱包地址</b><br>' +
+    '官方当前只公开各级人数，<b>不公开完整地址名单</b>。下面是链上按真实投入、推荐关系和锁仓价值筛选出的地址，仅供教学核对；' +
+    '与官方人数不一致时，以官方 DApp 单个钱包查询结果为准。<br>' +
+    '<span class="note">链上筛选时间：' + stamp + '</span></div>';
+  [1,2,3,4,5,6,7].filter(function(lv){
+    var g = byLevel['P' + lv] || {list:[]};
+    return Number(dist[lv] || 0) > 0 || (Array.isArray(g.list) && g.list.length > 0);
+  }).forEach(function(lv){
+    var g = byLevel['P' + lv] || {list:[]};
+    var list = Array.isArray(g.list) ? g.list.slice() : [];
+    list.sort(function(a,b){ return Number(b.teamDai || 0) - Number(a.teamDai || 0); });
+    var oc = dist[lv];
+    h += '<details class="who" style="border:1px solid var(--line);border-radius:10px;margin-top:8px;background:var(--panel2);overflow:hidden">' +
+      '<summary><span><b>P' + lv + '</b>　官方 ' + (oc == null ? '—' : fmt(oc,0)) + ' 个</span>' +
+      '<span class="note">链上可读 ' + fmt(list.length,0) + ' 个地址　点开查看</span></summary>';
+    if (!list.length) {
+      h += '<div class="note" style="padding:12px 14px">当前没有链上可读的 P' + lv + '地址。</div>';
+    } else {
+      h += '<div class="scroll" style="padding:0 10px 10px"><table class="wtab"><thead><tr>' +
+        '<th>#</th><th>钱包地址</th><th>区1真实投入</th><th>区2真实投入</th><th>区3真实投入</th><th>锁仓价值</th></tr></thead><tbody>';
+      list.forEach(function(x, i){
+        var a = String(x.address || '').toLowerCase();
+        h += '<tr><td>' + (i + 1) + '</td><td class="addr"><a href="https://browser.anubispace.org/address/' + a + '" target="_blank" rel="noopener" title="' + a + '">' + a + '</a></td>' +
+          '<td>' + fmt(Number(x.zone1 || 0),0) + '</td><td>' + fmt(Number(x.zone2 || 0),0) + '</td><td>' + fmt(Number(x.zone3 || 0),0) + '</td>' +
+          '<td>' + fmt(Number(x.lockValueDai || 0),0) + ' DAI</td></tr>';
+      });
+      h += '</tbody></table></div>';
+    }
+    h += '</details>';
+  });
+  host.innerHTML = h;
 }
 function plQuery(){
   var raw = (document.getElementById('plAddr')||{}).value || '';
