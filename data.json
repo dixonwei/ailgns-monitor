@@ -2,78 +2,78 @@
   "mode": "chain",
   "site": {
     "name": "AiLGNS 链上观测站",
-    "generatedAt": "2026-11-06T22:14:23.162Z",
+    "generatedAt": "2026-11-06T22:21:49.455Z",
     "generator": "ailgns-monitor/collect-chain.mjs",
     "dataSource": "Anubis RPC + 原始链上日志",
     "thirdParty": false
   },
   "chain": {
-    "block": 18468487,
-    "blockTime": "2026-11-06T22:14:23.000Z",
+    "block": 18468933,
+    "blockTime": "2026-11-06T22:21:49.000Z",
     "gasPriceGwei": 12,
     "rpc": "https://rpc.anubispace.org",
-    "explorer": "https://browser.anubispace.org/block/18468487",
+    "explorer": "https://browser.anubispace.org/block/18468933",
     "chainId": 6714
   },
   "protocol": {
     "day": 41,
     "epoch": 6,
     "activePower": 221125335.51097855,
-    "recordedPower": 236693533.54229972,
+    "recordedPower": 236693907.29229972,
     "powerMultiplier": 2.5,
     "dailyPayRatio": 0.2795,
-    "priceDAI": 836.4819264193413,
-    "poolPriceDAI": 833.9465211756816,
-    "poolAiLGNS": 32125.950972474177,
-    "poolDAI": 26791325.052955344,
-    "reserveDAI": 85781378.46264835,
+    "priceDAI": 836.5522442192521,
+    "poolPriceDAI": 834.0166247561517,
+    "poolAiLGNS": 32124.609903297165,
+    "poolDAI": 26792458.723155946,
+    "reserveDAI": 85781677.96264835,
     "totalSupply": 209998495.71749815,
-    "emissionVault": 162870815.10975567,
+    "emissionVault": 162870811.73613766,
     "insuranceVault": 10971382.234717079,
-    "queuedPower": 0,
-    "depositedToday": 1542797.233445,
+    "queuedPower": 375,
+    "depositedToday": 1542655.17736,
     "depositCap": 1000000,
     "buyOpen": true,
     "buyFee": "2.5%",
     "sellFee": "3.00%",
-    "queueToday": 1542797.233445,
+    "queueToday": 1542655.17736,
     "released": 661065.3,
     "suppressed": 906558.1334971846,
     "powerDAI": 221125335.51097855,
-    "powerRecordedDAI": 236693533.54229972
+    "powerRecordedDAI": 236693907.29229972
   },
   "flow": {
-    "scannedToBlock": 18468488,
-    "totalWei": "77755971239816681810731406",
-    "txCount": 76973,
-    "totalDai": 77755971.239816,
+    "scannedToBlock": 18468934,
+    "totalWei": "77756270739816681810731406",
+    "txCount": 76979,
+    "totalDai": 77756270.739816,
     "totalFrom": "2026-09-28 13:00 (UTC+8) 官方算力参与开放",
-    "last24hDai": 1542797.233445,
-    "last24hTx": 2028,
+    "last24hDai": 1542655.17736,
+    "last24hTx": 2030,
     "rows": [
       {
         "name": "协议储备",
         "addr": "0x27Cb55eE75E777fF972B74B6E68782D12Bd4ec46",
         "note": "买算力的钱全部进入这里",
-        "dai": 85781378.46264835
+        "dai": 85781677.96264835
       },
       {
         "name": "AiLGNS/DAI 主池",
         "addr": "0x0a1Cce65d995C6C5100e6F5bA3c388Ef34CEcaf0",
         "note": "主池内的 DAI 储备",
-        "dai": 26791586.62626095
+        "dai": 26792200.472462695
       },
       {
         "name": "涡轮 Turbine",
         "addr": "0xE884A336550a4482Ca6A17A3F93aa30Ed4eD9BaD",
         "note": "激活排放收到的 DAI",
-        "dai": 177490.86852208365
+        "dai": 177535.04053756263
       },
       {
         "name": "手续费归集",
         "addr": "0x7088e192b9b7f41A07bB3f79378e13454D8a80D5",
         "note": "卖出费里的 1%",
-        "dai": 152993.91234805578
+        "dai": 153023.36035837512
       },
       {
         "name": "算力账本",
@@ -103,7 +103,7 @@
       "staticAmount": 4725,
       "dynamicAmount": 4725,
       "suppressed": 26044.68989364163,
-      "addresses": 5548
+      "addresses": 5751
     },
     "history": [
       {
@@ -2434,12 +2434,12 @@
     "date": "11月7日",
     "day": 40,
     "fromBlock": 18449514,
-    "toBlock": 18468487,
-    "addresses": 5548,
-    "staticTotal": 110.53800794638683,
+    "toBlock": 18468933,
+    "addresses": 5751,
+    "staticTotal": 113.88492155757932,
     "dynamicTotal": 0,
-    "total": 110.53800794638683,
-    "events": 5551,
+    "total": 113.88492155757932,
+    "events": 5754,
     "all": [
       {
         "a": "0xb4407156b45c409e3e7e7c6a6ecd75b9d5d08c80",
@@ -2652,6 +2652,13 @@
         "events": 1
       },
       {
+        "a": "0xee8755aac7f030eb1bfcaf066ad0e20bf584b685",
+        "static": 0.28324130557900573,
+        "dynamic": 0,
+        "total": 0.28324130557900573,
+        "events": 1
+      },
+      {
         "a": "0x598645d1fd3279cd244735357e89e092fee105ca",
         "static": 0.2774735509909716,
         "dynamic": 0,
@@ -2698,6 +2705,13 @@
         "static": 0.24172523536371304,
         "dynamic": 0,
         "total": 0.24172523536371304,
+        "events": 1
+      },
+      {
+        "a": "0x1da6f00607d4a22ad0d1bee53473d07fa31748b5",
+        "static": 0.24049298334848207,
+        "dynamic": 0,
+        "total": 0.24049298334848207,
         "events": 1
       },
       {
@@ -3107,6 +3121,13 @@
         "events": 1
       },
       {
+        "a": "0x98bd71972df6d79c27d291bf4cf2a0a2de3f4a91",
+        "static": 0.15700555195984128,
+        "dynamic": 0,
+        "total": 0.15700555195984128,
+        "events": 1
+      },
+      {
         "a": "0x3a13aaf484229b0ae65d9e8c5592471e85f94f18",
         "static": 0.15662228316984877,
         "dynamic": 0,
@@ -3398,6 +3419,13 @@
         "static": 0.11970246210050328,
         "dynamic": 0,
         "total": 0.11970246210050328,
+        "events": 1
+      },
+      {
+        "a": "0x41c3c5f6cff8071c1fe9e6e39f33dec287f95c1d",
+        "static": 0.1193679511105238,
+        "dynamic": 0,
+        "total": 0.1193679511105238,
         "events": 1
       },
       {
@@ -3800,45 +3828,17 @@
         "events": 1
       },
       {
+        "a": "0x23078889ad2f26f3b62ca0691f9466f5793215c2",
+        "static": 0.08673932396224346,
+        "dynamic": 0,
+        "total": 0.08673932396224346,
+        "events": 1
+      },
+      {
         "a": "0xae85c1f2bd657464bd2e33ce9f31d673910da038",
         "static": 0.08662928972749531,
         "dynamic": 0,
         "total": 0.08662928972749531,
-        "events": 1
-      },
-      {
-        "a": "0x45fd5a7250dbea6a5a9ab3970d8070eeda765cd6",
-        "static": 0.08645844131482258,
-        "dynamic": 0,
-        "total": 0.08645844131482258,
-        "events": 1
-      },
-      {
-        "a": "0x3b78be598b8e3f5cd02846a043127ea3415173cd",
-        "static": 0.08629584442590255,
-        "dynamic": 0,
-        "total": 0.08629584442590255,
-        "events": 1
-      },
-      {
-        "a": "0x7518012944415725a440ce8a333863a78705b648",
-        "static": 0.08601761628384702,
-        "dynamic": 0,
-        "total": 0.08601761628384702,
-        "events": 1
-      },
-      {
-        "a": "0x93f59669cfed4a52ec60844dd247714956240e03",
-        "static": 0.08561904093316647,
-        "dynamic": 0,
-        "total": 0.08561904093316647,
-        "events": 1
-      },
-      {
-        "a": "0xaf41b76d25041f52bcee42438915365d82e21ec4",
-        "static": 0.08541397030350727,
-        "dynamic": 0,
-        "total": 0.08541397030350727,
         "events": 1
       }
     ],
@@ -4054,6 +4054,13 @@
         "events": 1
       },
       {
+        "a": "0xee8755aac7f030eb1bfcaf066ad0e20bf584b685",
+        "static": 0.28324130557900573,
+        "dynamic": 0,
+        "total": 0.28324130557900573,
+        "events": 1
+      },
+      {
         "a": "0x598645d1fd3279cd244735357e89e092fee105ca",
         "static": 0.2774735509909716,
         "dynamic": 0,
@@ -4100,6 +4107,13 @@
         "static": 0.24172523536371304,
         "dynamic": 0,
         "total": 0.24172523536371304,
+        "events": 1
+      },
+      {
+        "a": "0x1da6f00607d4a22ad0d1bee53473d07fa31748b5",
+        "static": 0.24049298334848207,
+        "dynamic": 0,
+        "total": 0.24049298334848207,
         "events": 1
       },
       {
@@ -4509,6 +4523,13 @@
         "events": 1
       },
       {
+        "a": "0x98bd71972df6d79c27d291bf4cf2a0a2de3f4a91",
+        "static": 0.15700555195984128,
+        "dynamic": 0,
+        "total": 0.15700555195984128,
+        "events": 1
+      },
+      {
         "a": "0x3a13aaf484229b0ae65d9e8c5592471e85f94f18",
         "static": 0.15662228316984877,
         "dynamic": 0,
@@ -4800,6 +4821,13 @@
         "static": 0.11970246210050328,
         "dynamic": 0,
         "total": 0.11970246210050328,
+        "events": 1
+      },
+      {
+        "a": "0x41c3c5f6cff8071c1fe9e6e39f33dec287f95c1d",
+        "static": 0.1193679511105238,
+        "dynamic": 0,
+        "total": 0.1193679511105238,
         "events": 1
       },
       {
@@ -5202,45 +5230,17 @@
         "events": 1
       },
       {
+        "a": "0x23078889ad2f26f3b62ca0691f9466f5793215c2",
+        "static": 0.08673932396224346,
+        "dynamic": 0,
+        "total": 0.08673932396224346,
+        "events": 1
+      },
+      {
         "a": "0xae85c1f2bd657464bd2e33ce9f31d673910da038",
         "static": 0.08662928972749531,
         "dynamic": 0,
         "total": 0.08662928972749531,
-        "events": 1
-      },
-      {
-        "a": "0x45fd5a7250dbea6a5a9ab3970d8070eeda765cd6",
-        "static": 0.08645844131482258,
-        "dynamic": 0,
-        "total": 0.08645844131482258,
-        "events": 1
-      },
-      {
-        "a": "0x3b78be598b8e3f5cd02846a043127ea3415173cd",
-        "static": 0.08629584442590255,
-        "dynamic": 0,
-        "total": 0.08629584442590255,
-        "events": 1
-      },
-      {
-        "a": "0x7518012944415725a440ce8a333863a78705b648",
-        "static": 0.08601761628384702,
-        "dynamic": 0,
-        "total": 0.08601761628384702,
-        "events": 1
-      },
-      {
-        "a": "0x93f59669cfed4a52ec60844dd247714956240e03",
-        "static": 0.08561904093316647,
-        "dynamic": 0,
-        "total": 0.08561904093316647,
-        "events": 1
-      },
-      {
-        "a": "0xaf41b76d25041f52bcee42438915365d82e21ec4",
-        "static": 0.08541397030350727,
-        "dynamic": 0,
-        "total": 0.08541397030350727,
         "events": 1
       }
     ]
@@ -8122,12 +8122,12 @@
     ]
   },
   "powerParticipation": {
-    "checkedAt": "2026-11-06T22:15:12.154Z",
+    "checkedAt": "2026-11-06T22:22:38.337Z",
     "day": 41,
     "startTs": 1793980800,
     "startAt": "2026-11-06T16:00:00.000Z",
     "startBlock": 18446040,
-    "head": 18468525,
+    "head": 18468971,
     "yesterday": {
       "day": 40,
       "startAt": "2026-11-05T16:00:00.000Z",
@@ -8163,20 +8163,20 @@
     },
     "dai": {
       "kind": "DAI",
-      "events": 224,
-      "wallets": 209,
-      "amount": 101115.11483166991,
-      "power": 252787.78707917474,
+      "events": 230,
+      "wallets": 215,
+      "amount": 101414.61483166991,
+      "power": 253536.53707917474,
       "firstTs": 1793980817,
-      "lastTs": 1794003169,
+      "lastTs": 1794003677,
       "firstAt": "2026-11-06T16:00:17.000Z",
-      "lastAt": "2026-11-06T22:12:49.000Z",
-      "durationSec": 22352,
+      "lastAt": "2026-11-06T22:21:17.000Z",
+      "durationSec": 22860,
       "cap": 1000000,
-      "remaining": 898884.8851683302,
-      "used": 101115.11483166984,
+      "remaining": 898585.3851683302,
+      "used": 101414.61483166984,
       "soldOut": false,
-      "filledPct": 10.111511483166984
+      "filledPct": 10.141461483166985
     },
     "lgns": {
       "kind": "LGNS",
