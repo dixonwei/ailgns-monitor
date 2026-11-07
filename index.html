@@ -395,8 +395,7 @@ function render(){
           '</div><div class="s">链上第 ' + (L.day || '—') + ' 天</div></div>';
   hero += card('30 / 40 / 30 分配合计', fmt(L.total, 4), 'AiLGNS',
           '增长＋网络＋共识的链上实际值');
-  hero += card('昨日个人算力全网合计领取', fmt(claims.staticTotal, 4), 'AiLGNS',
-          '链上 StaticClaimed 实际领取合计');
+  hero += '<div class="card"><div class="k">昨日个人算力全网合计领取</div><div class="v" id="personalStaticValue">' + fmt(claims.staticTotal, 4) + '<small>AiLGNS</small></div><div class="s" id="personalStaticSub">正在读取官方个人池实际下发量…</div></div>';
   hero += card('社区日结算', fmt(L.actual, 0), 'AiLGNS',
           L.actual != null ? '静态 ' + fmt(L.staticAmount, 0) + ' · 动态 ' + fmt(L.dynamicAmount, 0) : '');
   hero += card('全网个人合计分配', fmt(L.staticAmount, 0), 'AiLGNS', '全网个人算力兑付合计');
@@ -438,6 +437,23 @@ function render(){
   $('proto').innerHTML = pr;
   renderPLevels();
   renderPowerParticipation();
+  readOfficialSettlementStatic(L.day);
+}
+function readOfficialSettlementStatic(day){
+  return fetch('https://awakehelix.io/api/v1/emission', {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){
+      var row = (j.recentDays || []).filter(function(x){ return Number(x.day) === Number(day); })[0];
+      if (!row || row.communityStatic == null) return;
+      var v = document.getElementById('personalStaticValue');
+      var sub = document.getElementById('personalStaticSub');
+      if (v) v.innerHTML = fmt(Number(row.communityStatic), 4) + '<small>AiLGNS</small>';
+      if (sub) sub.textContent = '官方第 ' + day + ' 天 · 个人池实际下发量';
+    })
+    .catch(function(){
+      var sub = document.getElementById('personalStaticSub');
+      if (sub) sub.textContent = '官方接口暂不可用 · 暂显示链上领取合计';
+    });
 }
 
 /* ================= 钱包领取记录查询 ================= */
