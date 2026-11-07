@@ -49,7 +49,7 @@ h2{color:var(--ink);font-size:16px;letter-spacing:-.2px;margin:22px 0 10px;paddi
 #flowSum{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 #flowSum .card{padding:15px 16px;border-radius:14px;box-shadow:var(--shadow-sm)}
 #flowSum .card .v{font-size:21px}
-.dashboard{display:grid;grid-template-columns:1.5fr .8fr 1fr;gap:12px;margin-top:12px}
+.dashboard{display:grid;grid-template-columns:1.5fr .8fr;gap:12px;margin-top:12px}
 .dash-card{padding:18px}.card-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.card-title h2{font-size:14px;margin:0;letter-spacing:-.15px}.card-title p{font-size:9.5px;color:var(--dim2);margin:4px 0 0;line-height:1.5}
 #hero{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;margin-top:14px}
 #hero .card{padding:12px;border-radius:12px;box-shadow:none;background:#f8faff;border-color:#e8edf6}
@@ -67,7 +67,7 @@ h2{color:var(--ink);font-size:16px;letter-spacing:-.2px;margin:22px 0 10px;paddi
 #powerLiveNote{margin-top:9px;color:var(--dim2);font-size:9.5px;line-height:1.7}
 .level-card{padding:18px}.level-tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:12px}.level-tools input{flex:1;min-width:210px}.level-tools button{background:var(--blue);border:0;color:#fff;font-weight:800}.level-tools button:hover{background:#315de1;color:#fff}
 #plOut{margin-top:11px;font-size:10px}#plAddressList{margin-top:14px}#plAddressList .who{background:#f8faff!important;border-color:var(--line)!important;margin-top:7px!important}#plAddressList .who>summary{padding:10px 12px!important;font-size:10px!important}#plAddressList .who>summary b{color:var(--blue)!important}
-.wtab{width:100%;border-collapse:collapse;font-size:10px}.wtab th,.wtab td{padding:8px 7px;border-bottom:1px solid #edf1f6;text-align:right;white-space:nowrap}.wtab th{color:var(--dim2);font-size:9px;font-weight:750;background:#f8faff;text-align:right}.wtab th:first-child,.wtab td:first-child{text-align:left}.wtab tbody tr:hover{background:#fbfcff}.wtab td.addr{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px}.wtab td.addr a{color:var(--blue)}.wtab .tot{font-weight:750}.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#plOut .reward-summary{margin-top:9px}#plOut .reward-summary .card{padding:12px;box-shadow:none}#plOut .reward-summary .card .v{font-size:19px}#plOut .reward-growth{background:var(--gold-soft);border-color:#eed8a8}#plOut .reward-growth .v{color:var(--gold)}#plOut .reward-network{background:var(--blue-soft);border-color:#d6e0ff}#plOut .reward-network .v{color:var(--blue)}#plOut .reward-consensus{background:var(--purple-soft);border-color:#e1d9fa}#plOut .reward-consensus .v{color:var(--purple)}#plOut .reward-total{background:var(--teal-soft);border-color:#c4e9df}#plOut .reward-total .v{color:var(--green)}@media(max-width:760px){#plOut .reward-summary{grid-template-columns:1fr 1fr}}.wtab{width:100%;border-collapse:collapse;font-size:10px}.wtab th,.wtab td{padding:8px 7px;border-bottom:1px solid #edf1f6;text-align:right;white-space:nowrap}.wtab th{color:var(--dim2);font-size:9px;font-weight:750;background:#f8faff;text-align:right}.wtab th:first-child,.wtab td:first-child{text-align:left}.wtab tbody tr:hover{background:#fbfcff}.wtab td.addr{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px}.wtab td.addr a{color:var(--blue)}.wtab .tot{font-weight:750}.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .flow-box{padding:18px}.flow-list-card{margin-top:10px;overflow:hidden;border:1px solid var(--line);border-radius:11px;background:#fff}.fc{display:grid;grid-template-columns:1.05fr .8fr 1.65fr;gap:0;font-size:10px;align-items:center}.fc>div{padding:9px 10px;border-bottom:1px solid #edf1f6}.fc .fh{color:var(--dim2);font-size:9px;font-weight:750;background:#f8faff}.fc .fv{text-align:right;font-weight:750;font-size:11px}.fc .fd{color:var(--dim2);font-size:9px;line-height:1.5}.fc .big{color:var(--blue)}
 #flowStat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}#flowStat .card{padding:11px;border-radius:10px;box-shadow:none;background:#f8faff}#flowStat .card .v{font-size:17px}
 #proto{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:12px}#proto .card{padding:11px;border-radius:10px;box-shadow:none;background:#f8faff;border-color:#e9edf5}#proto .card .v{font-size:16px}
@@ -79,14 +79,14 @@ h2{color:var(--ink);font-size:16px;letter-spacing:-.2px;margin:22px 0 10px;paddi
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tool-card{padding:18px}.tool-card h2{font-size:14px;margin:0}.tool-card .note{margin-top:8px}.ptab-wrap{margin-top:10px;overflow-x:auto}
 footer{margin-top:24px;border-top:1px solid var(--line);padding-top:15px;color:var(--dim2);font-size:9.5px;line-height:1.7}footer .warn{font-size:9.5px}
 @media(max-width:980px){
-  .nav{display:none}.dashboard{grid-template-columns:1fr 1fr}.settlement-panel{grid-column:1/-1}.query-panel{grid-column:2}.level-mini{grid-column:1}.two-col{grid-template-columns:1fr}#flowSum,#unit,#lvtable{grid-template-columns:1fr 1fr}#powerLiveCards{grid-template-columns:1fr}
+  .nav{display:none}.dashboard{grid-template-columns:1fr}.settlement-panel{grid-column:auto}.level-mini{grid-column:auto}.two-col{grid-template-columns:1fr}#flowSum,#unit,#lvtable{grid-template-columns:1fr 1fr}#powerLiveCards{grid-template-columns:1fr}
 }
 @media(max-width:620px){
   .wrap{padding:0 11px 34px}.topbar-in{height:58px;padding:0 11px}.brand b{font-size:12px}.brand span{display:none}.live{display:none}.refresh{padding:7px 9px}.page-head{padding:20px 2px 13px}.page-head h1{font-size:25px}.page-head p{max-width:245px;font-size:10.5px}.datebox b{font-size:11px}.datebox span{font-size:8.5px}
   .status-strip{gap:5px}.status-strip>div{gap:5px}.chip{font-size:9px;padding:5px 7px}.section-head{margin-top:18px}.section-head h2{font-size:16px}.section-head p{font-size:9px}
   #flowSum,#unit,#lvtable{grid-template-columns:1fr 1fr;gap:7px}#flowSum .card,#unit .card,#lvtable .card{padding:12px}#flowSum .card .v,#unit .card .v,#lvtable .card .v{font-size:17px}
-  .dashboard{grid-template-columns:1fr;gap:9px}.settlement-panel,.level-mini,.query-panel{grid-column:auto}.dash-card{padding:15px}#hero{grid-template-columns:1fr 1fr}#hero .card.hero{grid-column:1/-1;grid-row:auto;min-height:125px}#hero .card:nth-child(4){grid-column:auto}#hero .card.hero .v{font-size:28px}
-  #plCounts{grid-template-columns:repeat(2,1fr)}.twrow{flex-direction:column;align-items:stretch}.twrow input,.twrow select,.twrow button{width:100%;min-width:0}.query-panel .twrow{flex-direction:row}.query-panel .twrow input{min-width:0}.query-panel .twrow button{padding:9px 10px}
+  .dashboard{grid-template-columns:1fr;gap:9px}.settlement-panel,.level-mini{grid-column:auto}.dash-card{padding:15px}#hero{grid-template-columns:1fr 1fr}#hero .card.hero{grid-column:1/-1;grid-row:auto;min-height:125px}#hero .card:nth-child(4){grid-column:auto}#hero .card.hero .v{font-size:28px}
+  #plCounts{grid-template-columns:repeat(2,1fr)}.twrow{flex-direction:column;align-items:stretch}.twrow input,.twrow select,.twrow button{width:100%;min-width:0}.level-tools{flex-direction:column;align-items:stretch}.level-tools input,.level-tools button{width:100%}
   #powerLiveCards{grid-template-columns:1fr}.pwrow{font-size:9px}.level-tools{flex-direction:column;align-items:stretch}.level-tools input,.level-tools button{width:100%}.two-col{grid-template-columns:1fr}.fc{grid-template-columns:1fr 82px}.fc .fd{grid-column:1/-1;border-top:0;padding-top:0}.flow-box,.tool-card{padding:15px}.chart-card{padding:13px}
 }
 </style>
@@ -128,12 +128,6 @@ footer{margin-top:24px;border-top:1px solid var(--line);padding-top:15px;color:v
       <div id="plMeta"></div>
     </article>
 
-    <article class="card dash-card query-panel" id="query">
-      <div class="card-title"><div><h2>钱包领取查询</h2><p>只读链上 · 不连接钱包</p></div></div>
-      <div class="query-copy">输入钱包，查看个人、社区和合计领取记录。</div>
-      <div class="twrow"><input id="qkAddr" placeholder="粘贴钱包地址 0x…" spellcheck="false"><button id="qkGo">查询</button></div>
-      <div id="qkOut" class="note">查询结果会显示在这里。数据直接读取 Anubis 链上领取记录。</div>
-    </article>
   </section>
 
   <div class="section-head"><div><h2>今日三池实际分配</h2><p>增长、网络、共识三条链上事件汇总。</p></div></div>
@@ -148,9 +142,9 @@ footer{margin-top:24px;border-top:1px solid var(--line);padding-top:15px;color:v
     <div id="plAddressList"></div>
   </article>
 
-  <div class="section-head"><div><h2>官方等级与单钱包查询</h2><p>输入钱包核对官方 P 等级、三区数值和每日记录。</p></div></div>
+  <div class="section-head" id="wallet-query"><div><h2>官方等级与单钱包查询</h2><p>一个入口查看官方 P 等级、三区数值，以及增长 / 网络 / 共识 / 合计奖励。</p></div></div>
   <article class="card level-card">
-    <div class="level-tools"><input id="plAddr" placeholder="输入钱包，查官方 P 等级、三区数值和每日记录" spellcheck="false"><button id="plGo">查官方等级</button></div>
+    <div class="level-tools"><input id="plAddr" placeholder="输入钱包，查官方 P 等级和增长/网络/共识奖励" spellcheck="false"><button id="plGo">查询钱包</button></div>
     <div id="plOut"></div>
   </article>
 
@@ -571,8 +565,10 @@ function qkQuery(){
     out.innerHTML = '<span style="color:var(--red)">查询失败：' + e.message + '</span>';
   });
 }
-document.getElementById('qkGo').addEventListener('click', qkQuery);
-document.getElementById('qkAddr').addEventListener('keydown', function(e){ if (e.key === 'Enter') qkQuery(); });
+var qkGoEl=document.getElementById('qkGo');
+var qkAddrEl=document.getElementById('qkAddr');
+if(qkGoEl) qkGoEl.addEventListener('click', qkQuery);
+if(qkAddrEl) qkAddrEl.addEventListener('keydown', function(e){ if (e.key === 'Enter') qkQuery(); });
 
 /* ================= P1–P7 官方等级 ================= */
 var OFFICIAL_API = 'https://awakehelix.io/api/v1';
@@ -663,11 +659,22 @@ function plQuery(){
       card('官方区2', fmt(Number(zones[1]||0),0), '', '真实投入考核口径') +
       card('官方区3', fmt(Number(zones[2]||0),0), '', '真实投入考核口径') +
       '</div>';
-    var hist = (c.history || []).slice();
-    h += '<h2 style="margin-top:18px">D1–D31 官方记录</h2><div class="scroll"><table class="wtab"><thead><tr><th>天数</th><th>状态</th><th>增长Power</th><th>网络Power</th><th>共识Power</th><th>奖励合计</th></tr></thead><tbody>';
+    var rc = c.rewardsCum || {};
+    var g = Number(rc.growth || 0), n = Number(rc.network || 0), co = Number(rc.consensus || 0);
+    var all = g + n + co;
+    h += '<h2 style="margin-top:18px">社区奖励累计 · 增长 / 网络 / 共识</h2>' +
+      '<div class="grid g4 reward-summary">' +
+      card('增长奖励', fmt(g,4), 'AiLGNS', '增长模块累计', 'reward-growth') +
+      card('网络奖励', fmt(n,4), 'AiLGNS', '网络模块累计', 'reward-network') +
+      card('共识奖励', fmt(co,4), 'AiLGNS', '共识模块累计', 'reward-consensus') +
+      card('三项合计', fmt(all,4), 'AiLGNS', '增长 + 网络 + 共识', 'reward-total') +
+      '</div>';
+    var hist = (c.history || []).slice().sort(function(a,b){ return Number(b.day)-Number(a.day); });
+    h += '<h2 style="margin-top:18px">按天奖励明细</h2><div class="scroll"><table class="wtab"><thead><tr><th>天数</th><th>状态</th><th>增长奖励</th><th>网络奖励</th><th>共识奖励</th><th>当日合计</th></tr></thead><tbody>';
     hist.forEach(function(x){
-      var total = Number(x.rewardGrowth||0) + Number(x.rewardNetwork||0) + Number(x.rewardConsensus||0);
-      h += '<tr><td>D' + x.day + '</td><td>' + x.status + '</td><td>' + fmt(Number(x.growthPower),2) + '</td><td>' + fmt(Number(x.networkPower),2) + '</td><td>' + fmt(Number(x.consensusPower),2) + '</td><td class="tot">' + fmt(total,6) + ' AiLGNS</td></tr>';
+      var rg = Number(x.rewardGrowth||0), rn = Number(x.rewardNetwork||0), rcons = Number(x.rewardConsensus||0);
+      var dayTotal = rg + rn + rcons;
+      h += '<tr><td>D' + x.day + '</td><td>' + x.status + '</td><td>' + fmt(rg,6) + '</td><td>' + fmt(rn,6) + '</td><td>' + fmt(rcons,6) + '</td><td class="tot">' + fmt(dayTotal,6) + ' AiLGNS</td></tr>';
     });
     h += '</tbody></table></div>';
     out.innerHTML = h;
@@ -1201,3 +1208,4 @@ setInterval(function(){ if(DATA) $('age').textContent = ago(DATA.site.generatedA
 </script>
 </body>
 </html>
+
