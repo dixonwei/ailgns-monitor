@@ -54,9 +54,9 @@ h2{color:var(--ink);font-size:16px;letter-spacing:-.2px;margin:22px 0 10px;paddi
 #hero{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:8px;margin-top:14px}
 #hero .card{padding:12px;border-radius:12px;box-shadow:none;background:#f8faff;border-color:#e8edf6}
 #hero .card.hero{grid-row:span 2;grid-column:1;background:linear-gradient(145deg,#0e8f7b,#3cb9a2);border-color:#0e8f7b;color:#fff;display:flex;flex-direction:column;justify-content:center}
-#hero .card.hero .k,#hero .card.hero .s{color:rgba(255,255,255,.76)}#hero .card.hero .v{color:#fff;font-size:30px}#hero .card:nth-child(4){grid-column:2/4}#hero .card.hero .v small{color:rgba(255,255,255,.76)}#hero .card.hero .tag{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.15)}
+#hero .card.hero .k,#hero .card.hero .s{color:rgba(255,255,255,.76)}#hero .card.hero .v{color:#fff;font-size:30px}#hero .card:nth-child(4){grid-column:2}#hero .card:nth-child(5){grid-column:3}#hero .card.hero .v small{color:rgba(255,255,255,.76)}#hero .card.hero .tag{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.15)}
 #plCounts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:13px}
-#plCounts .card{padding:10px;border-radius:10px;box-shadow:none;background:#f8faff;border-color:#e9edf5}#plCounts .card .k{font-size:9px;margin-bottom:2px}#plCounts .card .v{font-size:17px}#plCounts .card .v small{font-size:8px}#plCounts .card .s{font-size:8px;margin-top:1px}
+#plCounts .card{padding:10px;border-radius:10px;box-shadow:none;background:#f8faff;border-color:#e9edf5}#plCounts .level-total-banner{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--blue-soft);border:1px solid #d6e0ff;border-radius:10px;padding:9px 10px;color:#536487;font-size:9px}#plCounts .level-total-banner b{font-size:22px;color:var(--blue);letter-spacing:-.6px}#plCounts .level-total-banner small{font-size:8px;color:var(--dim)}#plCounts .card .k{font-size:9px;margin-bottom:2px}#plCounts .card .v{font-size:17px}#plCounts .card .v small{font-size:8px}#plCounts .card .s{font-size:8px;margin-top:1px}
 #plMeta{margin-top:10px;color:var(--dim2);font-size:9px;line-height:1.6}
 .query-panel{padding:18px}.query-copy{font-size:9.5px;line-height:1.6;color:var(--dim2);margin:9px 0 11px}
 .twrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.twrow input{flex:1;min-width:190px;background:#f8faff;border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--ink);font-size:10.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.twrow input:focus{outline:none;border-color:#9fb4ee;box-shadow:0 0 0 3px var(--blue-soft)}.twrow select{background:#f8faff;border:1px solid var(--line);border-radius:9px;padding:9px;color:var(--ink);font-size:10.5px}.twrow button{border:0;background:var(--blue);color:#fff;border-radius:9px;padding:9px 13px;font-size:10.5px;font-weight:800}.twrow button:hover{background:#315de1;color:#fff}
@@ -85,7 +85,7 @@ footer{margin-top:24px;border-top:1px solid var(--line);padding-top:15px;color:v
   .wrap{padding:0 11px 34px}.topbar-in{height:58px;padding:0 11px}.brand b{font-size:12px}.brand span{display:none}.live{display:none}.refresh{padding:7px 9px}.page-head{padding:20px 2px 13px}.page-head h1{font-size:25px}.page-head p{max-width:245px;font-size:10.5px}.datebox b{font-size:11px}.datebox span{font-size:8.5px}
   .status-strip{gap:5px}.status-strip>div{gap:5px}.chip{font-size:9px;padding:5px 7px}.section-head{margin-top:18px}.section-head h2{font-size:16px}.section-head p{font-size:9px}
   #flowSum,#unit,#lvtable{grid-template-columns:1fr 1fr;gap:7px}#flowSum .card,#unit .card,#lvtable .card{padding:12px}#flowSum .card .v,#unit .card .v,#lvtable .card .v{font-size:17px}
-  .dashboard{grid-template-columns:1fr;gap:9px}.settlement-panel,.level-mini{grid-column:auto}.dash-card{padding:15px}#hero{grid-template-columns:1fr 1fr}#hero .card.hero{grid-column:1/-1;grid-row:auto;min-height:125px}#hero .card:nth-child(4){grid-column:auto}#hero .card.hero .v{font-size:28px}
+  .dashboard{grid-template-columns:1fr;gap:9px}.settlement-panel,.level-mini{grid-column:auto}.dash-card{padding:15px}#hero{grid-template-columns:1fr 1fr}#hero .card.hero{grid-column:1/-1;grid-row:auto;min-height:125px}#hero .card:nth-child(4),#hero .card:nth-child(5){grid-column:auto}#hero .card.hero .v{font-size:28px}
   #plCounts{grid-template-columns:repeat(2,1fr)}.twrow{flex-direction:column;align-items:stretch}.twrow input,.twrow select,.twrow button{width:100%;min-width:0}.level-tools{flex-direction:column;align-items:stretch}.level-tools input,.level-tools button{width:100%}
   #powerLiveCards{grid-template-columns:1fr}.pwrow{font-size:9px}.level-tools{flex-direction:column;align-items:stretch}.level-tools input,.level-tools button{width:100%}.two-col{grid-template-columns:1fr}.fc{grid-template-columns:1fr 82px}.fc .fd{grid-column:1/-1;border-top:0;padding-top:0}.flow-box,.tool-card{padding:15px}.chart-card{padding:13px}
 }
@@ -399,6 +399,7 @@ function render(){
           '网络 ' + fmt(L.network, 4) + ' · 共识 ' + fmt(L.consensus, 4));
   hero += card('社区日结算', fmt(L.actual, 0), 'AiLGNS',
           L.actual != null ? '静态 ' + fmt(L.staticAmount, 0) + ' · 动态 ' + fmt(L.dynamicAmount, 0) : '');
+  hero += card('全网个人合计分配', fmt(L.staticAmount, 0), 'AiLGNS', '全网个人算力兑付合计');
   $('hero').innerHTML = hero;
 
   // 三池实际分配
@@ -585,9 +586,11 @@ function renderPLevels(){
   var dist = {};
   ((official && official.distribution) || []).forEach(function(x){ dist[x.level] = x.members; });
   var order = [1,2,3,4,5,6,7];
-  box.innerHTML = order.map(function(lv){
-    return card('P' + lv, fmt(dist[lv] || 0, 0), '个地址', '官方第 ' + ((official && official.day) || '—') + ' 天');
-  }).join('');
+  var totalLevel = order.reduce(function(sum, lv){ return sum + Number(dist[lv] || 0); }, 0);
+  box.innerHTML = '<div class="level-total-banner"><span>上 P 等级合计</span><span><b>' + fmt(totalLevel,0) + '</b> <small>个地址</small></span></div>' +
+    order.map(function(lv){
+      return card('P' + lv, fmt(dist[lv] || 0, 0), '个地址', '官方第 ' + ((official && official.day) || '—') + ' 天');
+    }).join('');
   document.getElementById('plMeta').innerHTML = official
     ? ('官方当前天数：<b>' + official.currentDay + '</b> · 已评估天数：<b>' + official.day + '</b> · 已评估地址：<b>' + fmt(official.evaluated,0) + '</b><br>' +
        '<span style="color:var(--gold)">人数直接来自 Awake Helix 官方 API；钱包等级和三区数值以官方接口为准。</span>')
