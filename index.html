@@ -395,8 +395,8 @@ function render(){
           '</div><div class="s">链上第 ' + (L.day || '—') + ' 天</div></div>';
   hero += card('30 / 40 / 30 分配合计', fmt(L.total, 4), 'AiLGNS',
           '增长＋网络＋共识的链上实际值');
-  hero += card('三池明细', fmt(L.growth, 4), '增长',
-          '网络 ' + fmt(L.network, 4) + ' · 共识 ' + fmt(L.consensus, 4));
+  hero += card('昨日个人算力全网合计领取', fmt(claims.staticTotal, 4), 'AiLGNS',
+          '链上 StaticClaimed 实际领取合计');
   hero += card('社区日结算', fmt(L.actual, 0), 'AiLGNS',
           L.actual != null ? '静态 ' + fmt(L.staticAmount, 0) + ' · 动态 ' + fmt(L.dynamicAmount, 0) : '');
   hero += card('全网个人合计分配', fmt(L.staticAmount, 0), 'AiLGNS', '全网个人算力兑付合计');
