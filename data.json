@@ -2,78 +2,78 @@
   "mode": "chain",
   "site": {
     "name": "AiLGNS 链上观测站",
-    "generatedAt": "2026-11-11T00:37:06.046Z",
+    "generatedAt": "2026-11-11T07:10:14.626Z",
     "generator": "ailgns-monitor/collect-chain.mjs",
     "dataSource": "Anubis RPC + 原始链上日志",
     "thirdParty": false
   },
   "chain": {
-    "block": 18822452,
-    "blockTime": "2026-11-11T00:37:05.000Z",
+    "block": 18846020,
+    "blockTime": "2026-11-11T07:10:14.000Z",
     "gasPriceGwei": 12,
     "rpc": "https://rpc.anubispace.org",
-    "explorer": "https://browser.anubispace.org/block/18822452",
+    "explorer": "https://browser.anubispace.org/block/18846020",
     "chainId": 6714
   },
   "protocol": {
     "day": 45,
     "epoch": 7,
     "activePower": 233941825.12582687,
-    "recordedPower": 252030157.7366901,
+    "recordedPower": 254087035.3914989,
     "powerMultiplier": 2.5,
     "dailyPayRatio": 0.2795,
-    "priceDAI": 847.731789347971,
-    "poolPriceDAI": 845.1635168824243,
-    "poolAiLGNS": 33703.605207433255,
-    "poolDAI": 28485057.508731082,
-    "reserveDAI": 89776168.14040452,
-    "totalSupply": 209998423.91505617,
-    "emissionVault": 162763494.04572996,
+    "priceDAI": 848.083885097282,
+    "poolPriceDAI": 845.5145412284991,
+    "poolAiLGNS": 33697.291542066545,
+    "poolDAI": 28491549.998833377,
+    "reserveDAI": 90438779.20232803,
+    "totalSupply": 209998423.73047417,
+    "emissionVault": 162763323.57159588,
     "insuranceVault": 11023426.966112522,
-    "queuedPower": 350,
-    "depositedToday": 1422280.499781,
+    "queuedPower": 0,
+    "depositedToday": 1682069.86109,
     "depositCap": 1000000,
     "buyOpen": true,
     "buyFee": "2.5%",
     "sellFee": "3.00%",
-    "queueToday": 1422280.499781,
+    "queueToday": 1682069.86109,
     "released": 698865.3,
     "suppressed": 1010647.5962880712,
     "powerDAI": 233941825.12582687,
-    "powerRecordedDAI": 252030157.7366901
+    "powerRecordedDAI": 254087035.3914989
   },
   "flow": {
-    "scannedToBlock": 18822454,
-    "totalWei": "83250761917572848657069046",
-    "txCount": 84555,
-    "totalDai": 83250761.917572,
+    "scannedToBlock": 18846021,
+    "totalWei": "83913372979496357846890555",
+    "txCount": 85205,
+    "totalDai": 83913372.979496,
     "totalFrom": "2026-09-28 13:00 (UTC+8) 官方算力参与开放",
-    "last24hDai": 1422280.499781,
-    "last24hTx": 1971,
+    "last24hDai": 1682069.86109,
+    "last24hTx": 1941,
     "rows": [
       {
         "name": "协议储备",
         "addr": "0x27Cb55eE75E777fF972B74B6E68782D12Bd4ec46",
         "note": "买算力的钱全部进入这里",
-        "dai": 89776568.14040452
+        "dai": 90439486.20232803
       },
       {
         "name": "AiLGNS/DAI 主池",
         "addr": "0x0a1Cce65d995C6C5100e6F5bA3c388Ef34CEcaf0",
         "note": "主池内的 DAI 储备",
-        "dai": 28485118.614769947
+        "dai": 28491986.677054808
       },
       {
         "name": "涡轮 Turbine",
         "addr": "0xE884A336550a4482Ca6A17A3F93aa30Ed4eD9BaD",
         "note": "激活排放收到的 DAI",
-        "dai": 217166.43277918603
+        "dai": 219466.80372363658
       },
       {
         "name": "手续费归集",
         "addr": "0x7088e192b9b7f41A07bB3f79378e13454D8a80D5",
         "note": "卖出费里的 1%",
-        "dai": 179444.28851945736
+        "dai": 180977.86914909104
       },
       {
         "name": "算力账本",
@@ -103,7 +103,7 @@
       "staticAmount": 4725,
       "dynamicAmount": 4725,
       "suppressed": 26010.872141489584,
-      "addresses": 11494
+      "addresses": 18417
     },
     "history": [
       {
@@ -2662,19 +2662,47 @@
     "date": "11月11日",
     "day": 44,
     "fromBlock": 18795359,
-    "toBlock": 18822452,
-    "addresses": 11494,
-    "staticTotal": 233.75875172171519,
+    "toBlock": 18846020,
+    "addresses": 18417,
+    "staticTotal": 384.99101552301056,
     "dynamicTotal": 0,
-    "total": 233.75875172171519,
-    "events": 11502,
+    "total": 384.99101552301056,
+    "events": 18430,
     "all": [
+      {
+        "a": "0xa3a34efc93a3eb12c0dab44da57b7386213a7078",
+        "static": 2.534220734485268,
+        "dynamic": 0,
+        "total": 2.534220734485268,
+        "events": 1
+      },
       {
         "a": "0xeea6006693ad2c2fe799e8e04542893e3c52b0ee",
         "static": 1.8839119764920353,
         "dynamic": 0,
         "total": 1.8839119764920353,
         "events": 2
+      },
+      {
+        "a": "0x99055b9be2d70ddaa1135034617ffc52f95ed06a",
+        "static": 1.3609810544176042,
+        "dynamic": 0,
+        "total": 1.3609810544176042,
+        "events": 1
+      },
+      {
+        "a": "0xb452df0b0e6096a2e2a87cb7f8599fa8c9e8d1fe",
+        "static": 1.1735723730297118,
+        "dynamic": 0,
+        "total": 1.1735723730297118,
+        "events": 1
+      },
+      {
+        "a": "0x24e31ad42d60333f74847739a1063aadb92e5dad",
+        "static": 1.1717816593855856,
+        "dynamic": 0,
+        "total": 1.1717816593855856,
+        "events": 1
       },
       {
         "a": "0x958fb4e8ac8610ff3fa206c3c43eeb27e30427d4",
@@ -2691,10 +2719,31 @@
         "events": 1
       },
       {
+        "a": "0xd90ae542686a65fefb85a12e0a06cb95e997b560",
+        "static": 0.9372860810507402,
+        "dynamic": 0,
+        "total": 0.9372860810507402,
+        "events": 1
+      },
+      {
+        "a": "0x4c569d88b3fc04e6be581816a6dd1d472eedd6cf",
+        "static": 0.9104790945014319,
+        "dynamic": 0,
+        "total": 0.9104790945014319,
+        "events": 1
+      },
+      {
         "a": "0x896c5a6ce35b6676e29659011a37cec5d60b5f20",
         "static": 0.9073207029418349,
         "dynamic": 0,
         "total": 0.9073207029418349,
+        "events": 1
+      },
+      {
+        "a": "0x3df9de0560d8b98d041c1d5ba987e5304b2dab87",
+        "static": 0.9050028051035084,
+        "dynamic": 0,
+        "total": 0.9050028051035084,
         "events": 1
       },
       {
@@ -2726,10 +2775,31 @@
         "events": 1
       },
       {
+        "a": "0x3754953e10d9c23e75ddfbe17aa15f8c2d829e4b",
+        "static": 0.7537635611596298,
+        "dynamic": 0,
+        "total": 0.7537635611596298,
+        "events": 1
+      },
+      {
         "a": "0x3fd565ed570a17e4644ee825ce235cd5f32bbbc1",
         "static": 0.7507781339540338,
         "dynamic": 0,
         "total": 0.7507781339540338,
+        "events": 1
+      },
+      {
+        "a": "0x8c25c819f101ce2b4d55a40026baf8986924525c",
+        "static": 0.7464610396559471,
+        "dynamic": 0,
+        "total": 0.7464610396559471,
+        "events": 1
+      },
+      {
+        "a": "0x34efa2516eb7ef78beb61fba890f331a95c4b9c4",
+        "static": 0.7406851951252965,
+        "dynamic": 0,
+        "total": 0.7406851951252965,
         "events": 1
       },
       {
@@ -2761,10 +2831,59 @@
         "events": 1
       },
       {
+        "a": "0xa4711ec343cd8681dee79c53cb721e54a9c45af8",
+        "static": 0.6379120077868403,
+        "dynamic": 0,
+        "total": 0.6379120077868403,
+        "events": 1
+      },
+      {
         "a": "0x0cece995719383ca7b61957cb5570e203e9708f1",
         "static": 0.6369346123575316,
         "dynamic": 0,
         "total": 0.6369346123575316,
+        "events": 1
+      },
+      {
+        "a": "0x433deb946a311e3b3b2d4934cc0faec176a4dfe1",
+        "static": 0.6362995756840047,
+        "dynamic": 0,
+        "total": 0.6362995756840047,
+        "events": 1
+      },
+      {
+        "a": "0x0f9301a01fca0dda9ead557b51bf76a3e845258b",
+        "static": 0.6289355551451237,
+        "dynamic": 0,
+        "total": 0.6289355551451237,
+        "events": 1
+      },
+      {
+        "a": "0x2e80094f82f35c8285d036a706076949d1fb29af",
+        "static": 0.6289355551451237,
+        "dynamic": 0,
+        "total": 0.6289355551451237,
+        "events": 1
+      },
+      {
+        "a": "0xdf0d6fc8d18d2e388212e204a71a4493295a125f",
+        "static": 0.6237555855136588,
+        "dynamic": 0,
+        "total": 0.6237555855136588,
+        "events": 1
+      },
+      {
+        "a": "0xf0bd7d721e41d60ed54a1bfcc009b7d8b1d8dc59",
+        "static": 0.6169124211411959,
+        "dynamic": 0,
+        "total": 0.6169124211411959,
+        "events": 1
+      },
+      {
+        "a": "0x0807035691f3163427455ae37227ab3e76fae431",
+        "static": 0.6126467032009695,
+        "dynamic": 0,
+        "total": 0.6126467032009695,
         "events": 1
       },
       {
@@ -2782,6 +2901,20 @@
         "events": 1
       },
       {
+        "a": "0x282964290c0a1599c551175432b078c36722988b",
+        "static": 0.5845486450310271,
+        "dynamic": 0,
+        "total": 0.5845486450310271,
+        "events": 1
+      },
+      {
+        "a": "0xd72142c96f9f24e509c2c42408bd08f08adca564",
+        "static": 0.5823171687634964,
+        "dynamic": 0,
+        "total": 0.5823171687634964,
+        "events": 1
+      },
+      {
         "a": "0x101d98a7c8e1c74bdadd48798e1542fc27840893",
         "static": 0.582197732307133,
         "dynamic": 0,
@@ -2793,6 +2926,20 @@
         "static": 0.5611895094314276,
         "dynamic": 0,
         "total": 0.5611895094314276,
+        "events": 1
+      },
+      {
+        "a": "0x745bedfa2dadee9d4f5034899fe0ab4a653f280e",
+        "static": 0.5524706407823574,
+        "dynamic": 0,
+        "total": 0.5524706407823574,
+        "events": 1
+      },
+      {
+        "a": "0xccb64b2d298a034bc4c734e55a1f09b51b8028a7",
+        "static": 0.5373304007215647,
+        "dynamic": 0,
+        "total": 0.5373304007215647,
         "events": 1
       },
       {
@@ -2810,6 +2957,13 @@
         "events": 1
       },
       {
+        "a": "0xc7366e2acb63b19f5c7ccf6b00d2f95f6ca9a677",
+        "static": 0.5212,
+        "dynamic": 0,
+        "total": 0.5212,
+        "events": 1
+      },
+      {
         "a": "0x802d3376416c38bca80aeca67c59771355b82931",
         "static": 0.5211314627468924,
         "dynamic": 0,
@@ -2817,10 +2971,31 @@
         "events": 1
       },
       {
+        "a": "0xc7d7729973f8f8fd98d0ac5934150b3c05fdde8d",
+        "static": 0.52,
+        "dynamic": 0,
+        "total": 0.52,
+        "events": 1
+      },
+      {
         "a": "0xf2628a12d61f86648818469ce1aa06d6cdee5ca2",
         "static": 0.51482927608814,
         "dynamic": 0,
         "total": 0.51482927608814,
+        "events": 1
+      },
+      {
+        "a": "0xaf9b3705a3de89061bc8586bbcf4ff53432e94c2",
+        "static": 0.5074029801596169,
+        "dynamic": 0,
+        "total": 0.5074029801596169,
+        "events": 1
+      },
+      {
+        "a": "0xc9850c43cf3eda74b98a59189d556824048312b3",
+        "static": 0.492413626503572,
+        "dynamic": 0,
+        "total": 0.492413626503572,
         "events": 1
       },
       {
@@ -2835,6 +3010,13 @@
         "static": 0.48013624161569823,
         "dynamic": 0,
         "total": 0.48013624161569823,
+        "events": 1
+      },
+      {
+        "a": "0xefc43f197d9afa1e265ef307a3fbc9e0ec7bd0a9",
+        "static": 0.4798748529586922,
+        "dynamic": 0,
+        "total": 0.4798748529586922,
         "events": 1
       },
       {
@@ -2873,6 +3055,13 @@
         "events": 1
       },
       {
+        "a": "0x1080fe80ac00e1b2901a2d5838462648a506fb75",
+        "static": 0.45877012479438306,
+        "dynamic": 0,
+        "total": 0.45877012479438306,
+        "events": 1
+      },
+      {
         "a": "0xe876881e1b68f858e39cc1bcad235426be590b2a",
         "static": 0.4539911846552553,
         "dynamic": 0,
@@ -2884,6 +3073,13 @@
         "static": 0.45395962666061607,
         "dynamic": 0,
         "total": 0.45395962666061607,
+        "events": 1
+      },
+      {
+        "a": "0xec68d5d150d48a694bd362e3579f9e90981def1e",
+        "static": 0.44735686463770163,
+        "dynamic": 0,
+        "total": 0.44735686463770163,
         "events": 1
       },
       {
@@ -2922,6 +3118,13 @@
         "events": 1
       },
       {
+        "a": "0x4098d4f9bda1ec5a6e40e167543d11ce75479b5e",
+        "static": 0.43404623573174866,
+        "dynamic": 0,
+        "total": 0.43404623573174866,
+        "events": 1
+      },
+      {
         "a": "0xf7e3df93378ca0aec519aa10759803a826d96b8f",
         "static": 0.4314647930982971,
         "dynamic": 0,
@@ -2943,6 +3146,13 @@
         "events": 1
       },
       {
+        "a": "0x2fdfb1ef38b4b31017110c25bdcd7c257b965885",
+        "static": 0.4295,
+        "dynamic": 0,
+        "total": 0.4295,
+        "events": 1
+      },
+      {
         "a": "0x4bc12133e1cff5d118ebf09f7b54dac1142bd564",
         "static": 0.4273,
         "dynamic": 0,
@@ -2954,6 +3164,20 @@
         "static": 0.42497746208905185,
         "dynamic": 0,
         "total": 0.42497746208905185,
+        "events": 1
+      },
+      {
+        "a": "0x32462cee7ac19bfb18bf3b1557667ce187dc474e",
+        "static": 0.42434222993090653,
+        "dynamic": 0,
+        "total": 0.42434222993090653,
+        "events": 1
+      },
+      {
+        "a": "0xd079217ee6132cdc0fb303ee4f6038aa8d9e267d",
+        "static": 0.4207637961264846,
+        "dynamic": 0,
+        "total": 0.4207637961264846,
         "events": 1
       },
       {
@@ -2971,10 +3195,24 @@
         "events": 1
       },
       {
+        "a": "0x8a876617bf35045565525a83e91d7d7b0e092784",
+        "static": 0.4175347464507336,
+        "dynamic": 0,
+        "total": 0.4175347464507336,
+        "events": 1
+      },
+      {
         "a": "0xdaf3d6f30bc25137e40c053eaaa6dedd14c9cbae",
         "static": 0.4175018222748823,
         "dynamic": 0,
         "total": 0.4175018222748823,
+        "events": 1
+      },
+      {
+        "a": "0x1846123fecc98d62b5771388a57eded531ee5999",
+        "static": 0.41722708620282356,
+        "dynamic": 0,
+        "total": 0.41722708620282356,
         "events": 1
       },
       {
@@ -2985,10 +3223,31 @@
         "events": 1
       },
       {
+        "a": "0x34c73b683a3e35d9fa3b70ba06cc22bb3d40f01e",
+        "static": 0.4169666407516882,
+        "dynamic": 0,
+        "total": 0.4169666407516882,
+        "events": 1
+      },
+      {
         "a": "0x3dea3758d4f6f9c849c56724cf40e4ff7c19b287",
         "static": 0.41452286265719673,
         "dynamic": 0,
         "total": 0.41452286265719673,
+        "events": 1
+      },
+      {
+        "a": "0x0f364569d148eeb83427134f9ba61756ee275a79",
+        "static": 0.41414631356414405,
+        "dynamic": 0,
+        "total": 0.41414631356414405,
+        "events": 1
+      },
+      {
+        "a": "0xf76cf93b1bce72ed50e53f5b1831e0e9f019d322",
+        "static": 0.4138,
+        "dynamic": 0,
+        "total": 0.4138,
         "events": 1
       },
       {
@@ -3041,6 +3300,13 @@
         "events": 1
       },
       {
+        "a": "0xc27e86b58181749ac644fb9f5809e7466d512327",
+        "static": 0.40245824058860796,
+        "dynamic": 0,
+        "total": 0.40245824058860796,
+        "events": 1
+      },
+      {
         "a": "0x27436a645e592bd5b893af656b433e8ae5f73075",
         "static": 0.40156680575653764,
         "dynamic": 0,
@@ -3052,6 +3318,20 @@
         "static": 0.4014041797984773,
         "dynamic": 0,
         "total": 0.4014041797984773,
+        "events": 1
+      },
+      {
+        "a": "0x73de56adbbc35c4751d8bde938acd42809f21e25",
+        "static": 0.4013686712408423,
+        "dynamic": 0,
+        "total": 0.4013686712408423,
+        "events": 1
+      },
+      {
+        "a": "0xc94d72988eb2063b16d1350b5d13a06256a3d591",
+        "static": 0.4002741314483899,
+        "dynamic": 0,
+        "total": 0.4002741314483899,
         "events": 1
       },
       {
@@ -3097,10 +3377,24 @@
         "events": 1
       },
       {
+        "a": "0xa534939b30f8d5e52c174ea66cf3c317e43aeffa",
+        "static": 0.39551004214354346,
+        "dynamic": 0,
+        "total": 0.39551004214354346,
+        "events": 1
+      },
+      {
         "a": "0x11393595061f50fb89a2bf8ed3686f2f02a28a63",
         "static": 0.39472762913464937,
         "dynamic": 0,
         "total": 0.39472762913464937,
+        "events": 1
+      },
+      {
+        "a": "0xaf8c6de407d939ba0699ce4fb21a9017ca57572d",
+        "static": 0.3942763774589353,
+        "dynamic": 0,
+        "total": 0.3942763774589353,
         "events": 1
       },
       {
@@ -3146,6 +3440,20 @@
         "events": 1
       },
       {
+        "a": "0x241af02d7d64aa3b74676620b5d9bf8fc545a338",
+        "static": 0.38940158082004356,
+        "dynamic": 0,
+        "total": 0.38940158082004356,
+        "events": 1
+      },
+      {
+        "a": "0x978c464b63f4c14f716a98693c8b0739919fef18",
+        "static": 0.38654662928002625,
+        "dynamic": 0,
+        "total": 0.38654662928002625,
+        "events": 1
+      },
+      {
         "a": "0xe3da2b27e5f7913145a7ac1c35497c0d0ccb5199",
         "static": 0.3861461230789479,
         "dynamic": 0,
@@ -3160,10 +3468,24 @@
         "events": 1
       },
       {
+        "a": "0x9427e1a1e01cabc420934e697af97daf1ca279dc",
+        "static": 0.38439982635082465,
+        "dynamic": 0,
+        "total": 0.38439982635082465,
+        "events": 1
+      },
+      {
         "a": "0xd04b6df1a5f9d603deed04c37319e2a2d7f49361",
         "static": 0.3837481300714139,
         "dynamic": 0,
         "total": 0.3837481300714139,
+        "events": 1
+      },
+      {
+        "a": "0x510bb316929ca1bd01ade6c27a89a69468a73f71",
+        "static": 0.38188416356473415,
+        "dynamic": 0,
+        "total": 0.38188416356473415,
         "events": 1
       },
       {
@@ -3188,6 +3510,13 @@
         "events": 1
       },
       {
+        "a": "0xe5cb589880f13022daa3958061f32f8a9f086ce7",
+        "static": 0.36446433199280975,
+        "dynamic": 0,
+        "total": 0.36446433199280975,
+        "events": 1
+      },
+      {
         "a": "0x87eef593bda791803bc633df318b512424b221f7",
         "static": 0.3614190982364251,
         "dynamic": 0,
@@ -3199,6 +3528,13 @@
         "static": 0.3575118661546195,
         "dynamic": 0,
         "total": 0.3575118661546195,
+        "events": 1
+      },
+      {
+        "a": "0x9d284a1687c1e96076a47cc4f43b12903b453401",
+        "static": 0.3523055852536311,
+        "dynamic": 0,
+        "total": 0.3523055852536311,
         "events": 1
       },
       {
@@ -3237,6 +3573,20 @@
         "events": 1
       },
       {
+        "a": "0x173a7d5d6750318dd7428d47e02e63d43ea8f301",
+        "static": 0.3415291707618507,
+        "dynamic": 0,
+        "total": 0.3415291707618507,
+        "events": 1
+      },
+      {
+        "a": "0x5974e2a676cfc639916cd950185dca169dc2488b",
+        "static": 0.34125498777256386,
+        "dynamic": 0,
+        "total": 0.34125498777256386,
+        "events": 1
+      },
+      {
         "a": "0x32bab9e21e75d09efe61ed0bd455c15792374f6d",
         "static": 0.336996512542121,
         "dynamic": 0,
@@ -3255,6 +3605,20 @@
         "static": 0.3332,
         "dynamic": 0,
         "total": 0.3332,
+        "events": 1
+      },
+      {
+        "a": "0xaf25c960b221a95f237f5b9a423a52bb375db8cf",
+        "static": 0.3327186934554818,
+        "dynamic": 0,
+        "total": 0.3327186934554818,
+        "events": 1
+      },
+      {
+        "a": "0x476dd49fab899b77934d0e413773c901296a39ca",
+        "static": 0.32901583114236443,
+        "dynamic": 0,
+        "total": 0.32901583114236443,
         "events": 1
       },
       {
@@ -3286,10 +3650,31 @@
         "events": 1
       },
       {
+        "a": "0xd9c0f8c3b94ae4254c6a352e6249c4102881fa35",
+        "static": 0.31589646959641154,
+        "dynamic": 0,
+        "total": 0.31589646959641154,
+        "events": 1
+      },
+      {
+        "a": "0x0bd3ecc8a1ecba280e9d6ed822266588d058e31c",
+        "static": 0.31418575151290645,
+        "dynamic": 0,
+        "total": 0.31418575151290645,
+        "events": 1
+      },
+      {
         "a": "0x0e2fc21e78df970a98560e5cb3bdb649d46272f6",
         "static": 0.31391523148393186,
         "dynamic": 0,
         "total": 0.31391523148393186,
+        "events": 1
+      },
+      {
+        "a": "0x0e16e21211595dcbe8fe799ef64311ba30742918",
+        "static": 0.31129174251749325,
+        "dynamic": 0,
+        "total": 0.31129174251749325,
         "events": 1
       },
       {
@@ -3307,6 +3692,34 @@
         "events": 1
       },
       {
+        "a": "0xce4c3a4123fdcf5464e5700383f64f77c0db8ba5",
+        "static": 0.31,
+        "dynamic": 0,
+        "total": 0.31,
+        "events": 1
+      },
+      {
+        "a": "0x9c0380a3f51936371a87e507db784d7ebe2ac6f9",
+        "static": 0.309782592282688,
+        "dynamic": 0,
+        "total": 0.309782592282688,
+        "events": 1
+      },
+      {
+        "a": "0xeda4098df17f7019ef4a8b2085c2142d6976f7de",
+        "static": 0.30901646507946406,
+        "dynamic": 0,
+        "total": 0.30901646507946406,
+        "events": 1
+      },
+      {
+        "a": "0xffb869c6d7464c5a7741c89786b988a76fabd757",
+        "static": 0.3084229281199115,
+        "dynamic": 0,
+        "total": 0.3084229281199115,
+        "events": 1
+      },
+      {
         "a": "0xbbaba756d2146d47405790f0919f64e85eed432a",
         "static": 0.3083,
         "dynamic": 0,
@@ -3321,6 +3734,34 @@
         "events": 1
       },
       {
+        "a": "0x33720aa269103c49751a8f54a6da97c7cf42bb48",
+        "static": 0.30708096264890344,
+        "dynamic": 0,
+        "total": 0.30708096264890344,
+        "events": 1
+      },
+      {
+        "a": "0x12858fba5fd44acf2f5f9f1d64f431cc90f529d9",
+        "static": 0.30670630342376853,
+        "dynamic": 0,
+        "total": 0.30670630342376853,
+        "events": 1
+      },
+      {
+        "a": "0x0d5f67c4d8f9e67f1ff442b8e5b0985d178dfa36",
+        "static": 0.30660286526990016,
+        "dynamic": 0,
+        "total": 0.30660286526990016,
+        "events": 1
+      },
+      {
+        "a": "0x0aa8bda7ee475b1a4a20a694b64672d9b430aee8",
+        "static": 0.30567178547578505,
+        "dynamic": 0,
+        "total": 0.30567178547578505,
+        "events": 1
+      },
+      {
         "a": "0x15a8d803ae621a6f48d595c7e127118c4495295b",
         "static": 0.3005,
         "dynamic": 0,
@@ -3328,10 +3769,24 @@
         "events": 1
       },
       {
+        "a": "0xc63097618adfb13c7465bf4865778e9b4f67cf3a",
+        "static": 0.2999115684048864,
+        "dynamic": 0,
+        "total": 0.2999115684048864,
+        "events": 1
+      },
+      {
         "a": "0xa83b9ae72787dc61af37070b33440412f94e412d",
         "static": 0.299367750611424,
         "dynamic": 0,
         "total": 0.299367750611424,
+        "events": 1
+      },
+      {
+        "a": "0x2723cbd715527b33b869c03c770e8ac684b56055",
+        "static": 0.29914682642215684,
+        "dynamic": 0,
+        "total": 0.29914682642215684,
         "events": 1
       },
       {
@@ -3346,6 +3801,13 @@
         "static": 0.29788058391681144,
         "dynamic": 0,
         "total": 0.29788058391681144,
+        "events": 1
+      },
+      {
+        "a": "0x54587107d902e747ac4d4635976b204df7771167",
+        "static": 0.29657315875856033,
+        "dynamic": 0,
+        "total": 0.29657315875856033,
         "events": 1
       },
       {
@@ -3377,10 +3839,24 @@
         "events": 1
       },
       {
+        "a": "0xee2fb1cb3b0b74f0e5781a312b2cd144582ce577",
+        "static": 0.2911241781126053,
+        "dynamic": 0,
+        "total": 0.2911241781126053,
+        "events": 1
+      },
+      {
         "a": "0x1de951d20cca6316e89ae294aa30b0a43938cb90",
         "static": 0.28904318872873885,
         "dynamic": 0,
         "total": 0.28904318872873885,
+        "events": 1
+      },
+      {
+        "a": "0x77c80c74df65bd40defd827f426d8cdbb8b757c2",
+        "static": 0.28602900615477894,
+        "dynamic": 0,
+        "total": 0.28602900615477894,
         "events": 1
       },
       {
@@ -3395,6 +3871,13 @@
         "static": 0.28189013384860084,
         "dynamic": 0,
         "total": 0.28189013384860084,
+        "events": 1
+      },
+      {
+        "a": "0xa0eca1f20011c1986a0d07a067aef03c7ff2f4a1",
+        "static": 0.28060754595250953,
+        "dynamic": 0,
+        "total": 0.28060754595250953,
         "events": 1
       },
       {
@@ -3419,10 +3902,38 @@
         "events": 1
       },
       {
+        "a": "0x0c2500d13fe005eac930579ad86c0a6ecf0be81f",
+        "static": 0.2699245964475532,
+        "dynamic": 0,
+        "total": 0.2699245964475532,
+        "events": 1
+      },
+      {
+        "a": "0xf43466c389b4a14d3ded739f32699cb3f26e1314",
+        "static": 0.2606292684319353,
+        "dynamic": 0,
+        "total": 0.2606292684319353,
+        "events": 1
+      },
+      {
+        "a": "0x89851dae992c910d8f9f2911f79b04c2895775fe",
+        "static": 0.2590298543929274,
+        "dynamic": 0,
+        "total": 0.2590298543929274,
+        "events": 1
+      },
+      {
         "a": "0x2aabfec46e5b20fc69b842b0845330bc511ac4f3",
         "static": 0.25845572760072943,
         "dynamic": 0,
         "total": 0.25845572760072943,
+        "events": 1
+      },
+      {
+        "a": "0xf26dd21418953d936610bbf94727514fbd61dc48",
+        "static": 0.2537,
+        "dynamic": 0,
+        "total": 0.2537,
         "events": 1
       },
       {
@@ -3437,6 +3948,20 @@
         "static": 0.24778598445866998,
         "dynamic": 0,
         "total": 0.24778598445866998,
+        "events": 1
+      },
+      {
+        "a": "0x276b494d393f03889803983daf3efb72b5c99edb",
+        "static": 0.2468037057900828,
+        "dynamic": 0,
+        "total": 0.2468037057900828,
+        "events": 1
+      },
+      {
+        "a": "0xd58840853e139785147698be99de32108be98be1",
+        "static": 0.2464548133740984,
+        "dynamic": 0,
+        "total": 0.2464548133740984,
         "events": 1
       },
       {
@@ -3465,6 +3990,20 @@
         "static": 0.2443399391549393,
         "dynamic": 0,
         "total": 0.2443399391549393,
+        "events": 1
+      },
+      {
+        "a": "0x179b4d4086a2a2588122a2297f25c97919496173",
+        "static": 0.24420693009525712,
+        "dynamic": 0,
+        "total": 0.24420693009525712,
+        "events": 1
+      },
+      {
+        "a": "0xe8664463cb4232430268ca82d74ca12068d189bc",
+        "static": 0.2437,
+        "dynamic": 0,
+        "total": 0.2437,
         "events": 1
       },
       {
@@ -3503,6 +4042,13 @@
         "events": 1
       },
       {
+        "a": "0xba7b675bf57c57696f6adba7f77b7222e8166128",
+        "static": 0.237926859643064,
+        "dynamic": 0,
+        "total": 0.237926859643064,
+        "events": 1
+      },
+      {
         "a": "0x3263b704db6b2aaa2180f7adccb5cb99142912f4",
         "static": 0.23725852700684827,
         "dynamic": 0,
@@ -3517,566 +4063,48 @@
         "events": 1
       },
       {
-        "a": "0x46deb656383fc630a83e30343bff2240bd18341e",
-        "static": 0.2345065284341423,
+        "a": "0xe6c5adefd49b65791e0e2d5f86114e14111f8577",
+        "static": 0.23528833423090187,
         "dynamic": 0,
-        "total": 0.2345065284341423,
-        "events": 1
-      },
-      {
-        "a": "0xff39d20050ca58aac5c61f48196f881876ddad90",
-        "static": 0.23359712127889182,
-        "dynamic": 0,
-        "total": 0.23359712127889182,
-        "events": 1
-      },
-      {
-        "a": "0x361e5cd00d711a1182e387d53faaddab8bace706",
-        "static": 0.2327842064746951,
-        "dynamic": 0,
-        "total": 0.2327842064746951,
-        "events": 1
-      },
-      {
-        "a": "0x529ee8008877b14ffcba2b3cc2394754ea4dcf0d",
-        "static": 0.23194981737935966,
-        "dynamic": 0,
-        "total": 0.23194981737935966,
-        "events": 1
-      },
-      {
-        "a": "0xc51a90c079049a5559b64977b58f018a30b3f82f",
-        "static": 0.23130847573334254,
-        "dynamic": 0,
-        "total": 0.23130847573334254,
-        "events": 1
-      },
-      {
-        "a": "0xb8fa3bd4ce2cb5f581ba8dfb20059145cb3e9fe1",
-        "static": 0.2310443234168595,
-        "dynamic": 0,
-        "total": 0.2310443234168595,
-        "events": 1
-      },
-      {
-        "a": "0x5c52d5146dcfa1da9cac2797ca961d108e8b628a",
-        "static": 0.23104021788209664,
-        "dynamic": 0,
-        "total": 0.23104021788209664,
-        "events": 1
-      },
-      {
-        "a": "0x87284edd79402bb3e6a0a4956bbb26e8f00109cb",
-        "static": 0.23069780541299115,
-        "dynamic": 0,
-        "total": 0.23069780541299115,
-        "events": 1
-      },
-      {
-        "a": "0xf3db2637370b9506159ebfb51ae44244660cb178",
-        "static": 0.23011275107573684,
-        "dynamic": 0,
-        "total": 0.23011275107573684,
-        "events": 1
-      },
-      {
-        "a": "0x132415742dc51969a989b8f91b6b0d99b3527da5",
-        "static": 0.22910490015961338,
-        "dynamic": 0,
-        "total": 0.22910490015961338,
-        "events": 1
-      },
-      {
-        "a": "0x38488897f2674cb27a6e3840e03d20c1b639105a",
-        "static": 0.22466715526346778,
-        "dynamic": 0,
-        "total": 0.22466715526346778,
-        "events": 1
-      },
-      {
-        "a": "0xeb4665ce3e87b09560c4230e529328fc6367f95f",
-        "static": 0.22337741358568336,
-        "dynamic": 0,
-        "total": 0.22337741358568336,
-        "events": 1
-      },
-      {
-        "a": "0xf5f0457ebc5ebf917f5c59732e2a929cbb05d0d7",
-        "static": 0.22326939900212586,
-        "dynamic": 0,
-        "total": 0.22326939900212586,
-        "events": 1
-      },
-      {
-        "a": "0x7fbc6e4547c41c3df2a28a6acddfb387805922dc",
-        "static": 0.22234407088063673,
-        "dynamic": 0,
-        "total": 0.22234407088063673,
-        "events": 1
-      },
-      {
-        "a": "0x9d99ca6ddd800b6ddc55c6ee5c3438828593b420",
-        "static": 0.221771777312376,
-        "dynamic": 0,
-        "total": 0.221771777312376,
-        "events": 1
-      },
-      {
-        "a": "0x85d670887b0393ec8a24fe1eaf28f34da28add5f",
-        "static": 0.221771777312376,
-        "dynamic": 0,
-        "total": 0.221771777312376,
-        "events": 1
-      },
-      {
-        "a": "0xd0cfe54027c9481808c3387fb54818dec059af0d",
-        "static": 0.22110313208164684,
-        "dynamic": 0,
-        "total": 0.22110313208164684,
-        "events": 1
-      },
-      {
-        "a": "0x9d3ad69fac23022fa5f1216abae602cbeb1d3a44",
-        "static": 0.220923586346429,
-        "dynamic": 0,
-        "total": 0.220923586346429,
-        "events": 1
-      },
-      {
-        "a": "0xdba12dbbb09c230101ebeb5deeab54f2015f1598",
-        "static": 0.21820533661971558,
-        "dynamic": 0,
-        "total": 0.21820533661971558,
-        "events": 1
-      },
-      {
-        "a": "0xdfc2d2e31d16da0e6fcd11d56a3396927391db07",
-        "static": 0.2158,
-        "dynamic": 0,
-        "total": 0.2158,
-        "events": 1
-      },
-      {
-        "a": "0x089743b5f4746168ed8ed229bfcd2843c997d8eb",
-        "static": 0.21395004334110992,
-        "dynamic": 0,
-        "total": 0.21395004334110992,
-        "events": 1
-      },
-      {
-        "a": "0x6044b486e0a9e9c5937bc8c05e4ad5ab5f285cf4",
-        "static": 0.21323976196734662,
-        "dynamic": 0,
-        "total": 0.21323976196734662,
-        "events": 1
-      },
-      {
-        "a": "0x17e3563c87ad685b748ed1fd6391f0320afe11fb",
-        "static": 0.21235471020206,
-        "dynamic": 0,
-        "total": 0.21235471020206,
-        "events": 1
-      },
-      {
-        "a": "0x3958ab40e9e7412d1732b693c49b20806caeac58",
-        "static": 0.2110880422758656,
-        "dynamic": 0,
-        "total": 0.2110880422758656,
-        "events": 1
-      },
-      {
-        "a": "0x366c92bbf44606cbc804872ccb45cfd7c4b7147d",
-        "static": 0.2110248599386424,
-        "dynamic": 0,
-        "total": 0.2110248599386424,
-        "events": 1
-      },
-      {
-        "a": "0xed775c549107558e8c1288e38edf97d70636291b",
-        "static": 0.20772098054846255,
-        "dynamic": 0,
-        "total": 0.20772098054846255,
-        "events": 1
-      },
-      {
-        "a": "0xc949f7279244326a6c79467615bdfe9ff1553dfb",
-        "static": 0.20766332451041436,
-        "dynamic": 0,
-        "total": 0.20766332451041436,
-        "events": 1
-      },
-      {
-        "a": "0x5fa3920c3c6320e9373cd8c16387854f25231f91",
-        "static": 0.20315974184129926,
-        "dynamic": 0,
-        "total": 0.20315974184129926,
-        "events": 1
-      },
-      {
-        "a": "0xbb673acff8a426a5650bb8425920e0fd6490536d",
-        "static": 0.20278097738522305,
-        "dynamic": 0,
-        "total": 0.20278097738522305,
-        "events": 1
-      },
-      {
-        "a": "0xbd2f445d63442e808a234b2c540dc8b75c761356",
-        "static": 0.20210105955448507,
-        "dynamic": 0,
-        "total": 0.20210105955448507,
-        "events": 1
-      },
-      {
-        "a": "0x94d5401d3ddc8a06cb22fbcbdb178a8364290025",
-        "static": 0.20146208889747513,
-        "dynamic": 0,
-        "total": 0.20146208889747513,
-        "events": 1
-      },
-      {
-        "a": "0x0f3810697041f171bef0b8639afc4f90cd59ec4b",
-        "static": 0.19735007074414945,
-        "dynamic": 0,
-        "total": 0.19735007074414945,
-        "events": 1
-      },
-      {
-        "a": "0x5ab6a94f794233df70fd99b5ba1a8c79204d8d25",
-        "static": 0.19678395656183045,
-        "dynamic": 0,
-        "total": 0.19678395656183045,
-        "events": 1
-      },
-      {
-        "a": "0x2fd66d00d834697e917f8e37f7c0be7d43a3adbb",
-        "static": 0.19574271318008324,
-        "dynamic": 0,
-        "total": 0.19574271318008324,
-        "events": 1
-      },
-      {
-        "a": "0xf6a381d21355b9cf256b24d317f4bceac4c0456d",
-        "static": 0.1944787342731578,
-        "dynamic": 0,
-        "total": 0.1944787342731578,
-        "events": 1
-      },
-      {
-        "a": "0xccb7dd63b23c9f9374b5e48ca0844db992eb4983",
-        "static": 0.19392958620533995,
-        "dynamic": 0,
-        "total": 0.19392958620533995,
-        "events": 1
-      },
-      {
-        "a": "0xe1045ff142092f37ec54b3af2e0686771a1dba13",
-        "static": 0.19378524268081948,
-        "dynamic": 0,
-        "total": 0.19378524268081948,
-        "events": 1
-      },
-      {
-        "a": "0x27fa56098b85406e463e0a5223db7fad52069030",
-        "static": 0.1935464730926749,
-        "dynamic": 0,
-        "total": 0.1935464730926749,
-        "events": 1
-      },
-      {
-        "a": "0x48ef83886a7f5b6000156cd6455beb47c64eb7cc",
-        "static": 0.19246146137984066,
-        "dynamic": 0,
-        "total": 0.19246146137984066,
-        "events": 1
-      },
-      {
-        "a": "0x3e4c684d0fce63f99a825c41c332aaf28caa8ac4",
-        "static": 0.19199547603818615,
-        "dynamic": 0,
-        "total": 0.19199547603818615,
-        "events": 1
-      },
-      {
-        "a": "0xd66fceda9e43db462a8d62bbc55c80359039b803",
-        "static": 0.1919656445369717,
-        "dynamic": 0,
-        "total": 0.1919656445369717,
-        "events": 1
-      },
-      {
-        "a": "0x6ce26d68594ac01ea45bc2680f20b697c7df8a18",
-        "static": 0.19157580029007312,
-        "dynamic": 0,
-        "total": 0.19157580029007312,
-        "events": 1
-      },
-      {
-        "a": "0x698f3566be095c958b0635b031d8797c0d38cb0f",
-        "static": 0.1913312635767571,
-        "dynamic": 0,
-        "total": 0.1913312635767571,
-        "events": 1
-      },
-      {
-        "a": "0xa10a434175d3ca58f00c5273fba4793ca99260f5",
-        "static": 0.1910287064314462,
-        "dynamic": 0,
-        "total": 0.1910287064314462,
-        "events": 1
-      },
-      {
-        "a": "0xc7840dc30a58e5212aa19419e39651df314fc2f3",
-        "static": 0.19101548892193113,
-        "dynamic": 0,
-        "total": 0.19101548892193113,
-        "events": 1
-      },
-      {
-        "a": "0x67db07708da9d7f6949c777abaca6d85244d070d",
-        "static": 0.1898780281314855,
-        "dynamic": 0,
-        "total": 0.1898780281314855,
-        "events": 1
-      },
-      {
-        "a": "0xbfbf2ccc3b33f3e5161873a593589f37a61f035b",
-        "static": 0.18931524039820755,
-        "dynamic": 0,
-        "total": 0.18931524039820755,
-        "events": 1
-      },
-      {
-        "a": "0xa2bacc97989eb94b75c2c6e80f5b5955c473920d",
-        "static": 0.18826579960938758,
-        "dynamic": 0,
-        "total": 0.18826579960938758,
-        "events": 1
-      },
-      {
-        "a": "0xb7a8be84f4ccdf2e3a4d6b8a0156f84467eb6f3d",
-        "static": 0.18617536494800713,
-        "dynamic": 0,
-        "total": 0.18617536494800713,
-        "events": 1
-      },
-      {
-        "a": "0xefe2a87556e2ad6ea784eefc88397b0959dc5346",
-        "static": 0.18487232119858435,
-        "dynamic": 0,
-        "total": 0.18487232119858435,
-        "events": 1
-      },
-      {
-        "a": "0x72b23e6469c91ac10c81637ed79edf14016630b5",
-        "static": 0.1846,
-        "dynamic": 0,
-        "total": 0.1846,
-        "events": 1
-      },
-      {
-        "a": "0x12eb203b351d23f15753ba1c627e25bd9c06f94c",
-        "static": 0.18398291762726476,
-        "dynamic": 0,
-        "total": 0.18398291762726476,
-        "events": 1
-      },
-      {
-        "a": "0xc967dd5e1502b5ce68091ab1443d65ed0dd96541",
-        "static": 0.18069324566622544,
-        "dynamic": 0,
-        "total": 0.18069324566622544,
-        "events": 1
-      },
-      {
-        "a": "0xc0f0cda369c6e207a44620acda4cde43ca497751",
-        "static": 0.180288591258054,
-        "dynamic": 0,
-        "total": 0.180288591258054,
-        "events": 1
-      },
-      {
-        "a": "0x68e9d3d25c6dd0e466364d4eb287ea0290d5602e",
-        "static": 0.17962669767483191,
-        "dynamic": 0,
-        "total": 0.17962669767483191,
-        "events": 1
-      },
-      {
-        "a": "0xd2a7d4cac679b6d4c7d3beb6c3ad82e94aecc502",
-        "static": 0.178643390571928,
-        "dynamic": 0,
-        "total": 0.178643390571928,
-        "events": 1
-      },
-      {
-        "a": "0xb5e6d079e85684adcb930ea83f90ac75e87a2faa",
-        "static": 0.17855213306963902,
-        "dynamic": 0,
-        "total": 0.17855213306963902,
-        "events": 1
-      },
-      {
-        "a": "0xacb7c8166187f9b9067ef9604443950c8d6b1f5d",
-        "static": 0.17818256230759588,
-        "dynamic": 0,
-        "total": 0.17818256230759588,
-        "events": 1
-      },
-      {
-        "a": "0xee3568342a3d08bd666dcfff186402586561ba7d",
-        "static": 0.17804331548383318,
-        "dynamic": 0,
-        "total": 0.17804331548383318,
-        "events": 1
-      },
-      {
-        "a": "0x5df8b2afe58a80d9df44dddc4419c10df2eaa222",
-        "static": 0.17597571825297015,
-        "dynamic": 0,
-        "total": 0.17597571825297015,
-        "events": 1
-      },
-      {
-        "a": "0x25520750249584f3e0bfdd2564a8cb6a8da659e8",
-        "static": 0.17579555859538099,
-        "dynamic": 0,
-        "total": 0.17579555859538099,
-        "events": 1
-      },
-      {
-        "a": "0xc5e979df42a7f03fb0a1d3b78c6c55bd310b65a6",
-        "static": 0.17579555859538099,
-        "dynamic": 0,
-        "total": 0.17579555859538099,
-        "events": 1
-      },
-      {
-        "a": "0x76c76d3ca402c87f6c8195386b2f11566c9c417f",
-        "static": 0.1741991876466907,
-        "dynamic": 0,
-        "total": 0.1741991876466907,
-        "events": 1
-      },
-      {
-        "a": "0xaeb4c7cebcb7dfa3dac9ccf9d0994148d7afaeb1",
-        "static": 0.1737865381425317,
-        "dynamic": 0,
-        "total": 0.1737865381425317,
-        "events": 1
-      },
-      {
-        "a": "0x10c7f2a9e216bf422a2e23cff175182fa3c404ca",
-        "static": 0.17206621814655024,
-        "dynamic": 0,
-        "total": 0.17206621814655024,
-        "events": 1
-      },
-      {
-        "a": "0xac476ef3801d09e6c973303b87fcf3cbf58a4df5",
-        "static": 0.16790687846360774,
-        "dynamic": 0,
-        "total": 0.16790687846360774,
-        "events": 1
-      },
-      {
-        "a": "0x33dc57a5db16745adf64a24bfc31d93188f258ae",
-        "static": 0.16671761124604292,
-        "dynamic": 0,
-        "total": 0.16671761124604292,
-        "events": 1
-      },
-      {
-        "a": "0x2f728d79f64c784d2355442f53332e7fd3475af8",
-        "static": 0.16631792706149015,
-        "dynamic": 0,
-        "total": 0.16631792706149015,
-        "events": 1
-      },
-      {
-        "a": "0x1ed1733b02a52874544c0ea5b2d2877ad5eb826b",
-        "static": 0.16565145891333774,
-        "dynamic": 0,
-        "total": 0.16565145891333774,
-        "events": 1
-      },
-      {
-        "a": "0xfc81c95bc51140b9accb74eef0a307139d702cbf",
-        "static": 0.16472756473845157,
-        "dynamic": 0,
-        "total": 0.16472756473845157,
-        "events": 1
-      },
-      {
-        "a": "0xe68df711296202ec26cc5bc7864c2f4f5b2a9735",
-        "static": 0.16413841903434978,
-        "dynamic": 0,
-        "total": 0.16413841903434978,
-        "events": 1
-      },
-      {
-        "a": "0x0e1120354b4f0b2cd3607fbb6ee5fccd28408d5c",
-        "static": 0.16383432115424626,
-        "dynamic": 0,
-        "total": 0.16383432115424626,
-        "events": 1
-      },
-      {
-        "a": "0x09b4a432139dd1baa4e4a213a3132596ffa25691",
-        "static": 0.1633617511856247,
-        "dynamic": 0,
-        "total": 0.1633617511856247,
-        "events": 1
-      },
-      {
-        "a": "0xcd589bcf2983fd953d4d03fc732adbc6b1128fd7",
-        "static": 0.16251241554461351,
-        "dynamic": 0,
-        "total": 0.16251241554461351,
-        "events": 1
-      },
-      {
-        "a": "0xa7765232fd3b0252e94a96293e624dd533e95638",
-        "static": 0.16224648084798005,
-        "dynamic": 0,
-        "total": 0.16224648084798005,
-        "events": 1
-      },
-      {
-        "a": "0x214f7591b09b7e10ad9881b2d2c8edd4932a363f",
-        "static": 0.16207962031325654,
-        "dynamic": 0,
-        "total": 0.16207962031325654,
-        "events": 1
-      },
-      {
-        "a": "0xd6c802cbcabeb3ee9f950c34673f6ccfb2375d39",
-        "static": 0.16153147952358343,
-        "dynamic": 0,
-        "total": 0.16153147952358343,
-        "events": 1
-      },
-      {
-        "a": "0xbf4b5e3ef8faa5949aa5d16775b952d521b94bbf",
-        "static": 0.16151556067813316,
-        "dynamic": 0,
-        "total": 0.16151556067813316,
-        "events": 1
-      },
-      {
-        "a": "0x2118856972c05c8f6e3d509bfa239f9c3f03c819",
-        "static": 0.16126435984225992,
-        "dynamic": 0,
-        "total": 0.16126435984225992,
+        "total": 0.23528833423090187,
         "events": 1
       }
     ],
     "top": [
       {
+        "a": "0xa3a34efc93a3eb12c0dab44da57b7386213a7078",
+        "static": 2.534220734485268,
+        "dynamic": 0,
+        "total": 2.534220734485268,
+        "events": 1
+      },
+      {
         "a": "0xeea6006693ad2c2fe799e8e04542893e3c52b0ee",
         "static": 1.8839119764920353,
         "dynamic": 0,
         "total": 1.8839119764920353,
         "events": 2
+      },
+      {
+        "a": "0x99055b9be2d70ddaa1135034617ffc52f95ed06a",
+        "static": 1.3609810544176042,
+        "dynamic": 0,
+        "total": 1.3609810544176042,
+        "events": 1
+      },
+      {
+        "a": "0xb452df0b0e6096a2e2a87cb7f8599fa8c9e8d1fe",
+        "static": 1.1735723730297118,
+        "dynamic": 0,
+        "total": 1.1735723730297118,
+        "events": 1
+      },
+      {
+        "a": "0x24e31ad42d60333f74847739a1063aadb92e5dad",
+        "static": 1.1717816593855856,
+        "dynamic": 0,
+        "total": 1.1717816593855856,
+        "events": 1
       },
       {
         "a": "0x958fb4e8ac8610ff3fa206c3c43eeb27e30427d4",
@@ -4093,10 +4121,31 @@
         "events": 1
       },
       {
+        "a": "0xd90ae542686a65fefb85a12e0a06cb95e997b560",
+        "static": 0.9372860810507402,
+        "dynamic": 0,
+        "total": 0.9372860810507402,
+        "events": 1
+      },
+      {
+        "a": "0x4c569d88b3fc04e6be581816a6dd1d472eedd6cf",
+        "static": 0.9104790945014319,
+        "dynamic": 0,
+        "total": 0.9104790945014319,
+        "events": 1
+      },
+      {
         "a": "0x896c5a6ce35b6676e29659011a37cec5d60b5f20",
         "static": 0.9073207029418349,
         "dynamic": 0,
         "total": 0.9073207029418349,
+        "events": 1
+      },
+      {
+        "a": "0x3df9de0560d8b98d041c1d5ba987e5304b2dab87",
+        "static": 0.9050028051035084,
+        "dynamic": 0,
+        "total": 0.9050028051035084,
         "events": 1
       },
       {
@@ -4128,10 +4177,31 @@
         "events": 1
       },
       {
+        "a": "0x3754953e10d9c23e75ddfbe17aa15f8c2d829e4b",
+        "static": 0.7537635611596298,
+        "dynamic": 0,
+        "total": 0.7537635611596298,
+        "events": 1
+      },
+      {
         "a": "0x3fd565ed570a17e4644ee825ce235cd5f32bbbc1",
         "static": 0.7507781339540338,
         "dynamic": 0,
         "total": 0.7507781339540338,
+        "events": 1
+      },
+      {
+        "a": "0x8c25c819f101ce2b4d55a40026baf8986924525c",
+        "static": 0.7464610396559471,
+        "dynamic": 0,
+        "total": 0.7464610396559471,
+        "events": 1
+      },
+      {
+        "a": "0x34efa2516eb7ef78beb61fba890f331a95c4b9c4",
+        "static": 0.7406851951252965,
+        "dynamic": 0,
+        "total": 0.7406851951252965,
         "events": 1
       },
       {
@@ -4163,10 +4233,59 @@
         "events": 1
       },
       {
+        "a": "0xa4711ec343cd8681dee79c53cb721e54a9c45af8",
+        "static": 0.6379120077868403,
+        "dynamic": 0,
+        "total": 0.6379120077868403,
+        "events": 1
+      },
+      {
         "a": "0x0cece995719383ca7b61957cb5570e203e9708f1",
         "static": 0.6369346123575316,
         "dynamic": 0,
         "total": 0.6369346123575316,
+        "events": 1
+      },
+      {
+        "a": "0x433deb946a311e3b3b2d4934cc0faec176a4dfe1",
+        "static": 0.6362995756840047,
+        "dynamic": 0,
+        "total": 0.6362995756840047,
+        "events": 1
+      },
+      {
+        "a": "0x0f9301a01fca0dda9ead557b51bf76a3e845258b",
+        "static": 0.6289355551451237,
+        "dynamic": 0,
+        "total": 0.6289355551451237,
+        "events": 1
+      },
+      {
+        "a": "0x2e80094f82f35c8285d036a706076949d1fb29af",
+        "static": 0.6289355551451237,
+        "dynamic": 0,
+        "total": 0.6289355551451237,
+        "events": 1
+      },
+      {
+        "a": "0xdf0d6fc8d18d2e388212e204a71a4493295a125f",
+        "static": 0.6237555855136588,
+        "dynamic": 0,
+        "total": 0.6237555855136588,
+        "events": 1
+      },
+      {
+        "a": "0xf0bd7d721e41d60ed54a1bfcc009b7d8b1d8dc59",
+        "static": 0.6169124211411959,
+        "dynamic": 0,
+        "total": 0.6169124211411959,
+        "events": 1
+      },
+      {
+        "a": "0x0807035691f3163427455ae37227ab3e76fae431",
+        "static": 0.6126467032009695,
+        "dynamic": 0,
+        "total": 0.6126467032009695,
         "events": 1
       },
       {
@@ -4184,6 +4303,20 @@
         "events": 1
       },
       {
+        "a": "0x282964290c0a1599c551175432b078c36722988b",
+        "static": 0.5845486450310271,
+        "dynamic": 0,
+        "total": 0.5845486450310271,
+        "events": 1
+      },
+      {
+        "a": "0xd72142c96f9f24e509c2c42408bd08f08adca564",
+        "static": 0.5823171687634964,
+        "dynamic": 0,
+        "total": 0.5823171687634964,
+        "events": 1
+      },
+      {
         "a": "0x101d98a7c8e1c74bdadd48798e1542fc27840893",
         "static": 0.582197732307133,
         "dynamic": 0,
@@ -4195,6 +4328,20 @@
         "static": 0.5611895094314276,
         "dynamic": 0,
         "total": 0.5611895094314276,
+        "events": 1
+      },
+      {
+        "a": "0x745bedfa2dadee9d4f5034899fe0ab4a653f280e",
+        "static": 0.5524706407823574,
+        "dynamic": 0,
+        "total": 0.5524706407823574,
+        "events": 1
+      },
+      {
+        "a": "0xccb64b2d298a034bc4c734e55a1f09b51b8028a7",
+        "static": 0.5373304007215647,
+        "dynamic": 0,
+        "total": 0.5373304007215647,
         "events": 1
       },
       {
@@ -4212,6 +4359,13 @@
         "events": 1
       },
       {
+        "a": "0xc7366e2acb63b19f5c7ccf6b00d2f95f6ca9a677",
+        "static": 0.5212,
+        "dynamic": 0,
+        "total": 0.5212,
+        "events": 1
+      },
+      {
         "a": "0x802d3376416c38bca80aeca67c59771355b82931",
         "static": 0.5211314627468924,
         "dynamic": 0,
@@ -4219,10 +4373,31 @@
         "events": 1
       },
       {
+        "a": "0xc7d7729973f8f8fd98d0ac5934150b3c05fdde8d",
+        "static": 0.52,
+        "dynamic": 0,
+        "total": 0.52,
+        "events": 1
+      },
+      {
         "a": "0xf2628a12d61f86648818469ce1aa06d6cdee5ca2",
         "static": 0.51482927608814,
         "dynamic": 0,
         "total": 0.51482927608814,
+        "events": 1
+      },
+      {
+        "a": "0xaf9b3705a3de89061bc8586bbcf4ff53432e94c2",
+        "static": 0.5074029801596169,
+        "dynamic": 0,
+        "total": 0.5074029801596169,
+        "events": 1
+      },
+      {
+        "a": "0xc9850c43cf3eda74b98a59189d556824048312b3",
+        "static": 0.492413626503572,
+        "dynamic": 0,
+        "total": 0.492413626503572,
         "events": 1
       },
       {
@@ -4237,6 +4412,13 @@
         "static": 0.48013624161569823,
         "dynamic": 0,
         "total": 0.48013624161569823,
+        "events": 1
+      },
+      {
+        "a": "0xefc43f197d9afa1e265ef307a3fbc9e0ec7bd0a9",
+        "static": 0.4798748529586922,
+        "dynamic": 0,
+        "total": 0.4798748529586922,
         "events": 1
       },
       {
@@ -4275,6 +4457,13 @@
         "events": 1
       },
       {
+        "a": "0x1080fe80ac00e1b2901a2d5838462648a506fb75",
+        "static": 0.45877012479438306,
+        "dynamic": 0,
+        "total": 0.45877012479438306,
+        "events": 1
+      },
+      {
         "a": "0xe876881e1b68f858e39cc1bcad235426be590b2a",
         "static": 0.4539911846552553,
         "dynamic": 0,
@@ -4286,6 +4475,13 @@
         "static": 0.45395962666061607,
         "dynamic": 0,
         "total": 0.45395962666061607,
+        "events": 1
+      },
+      {
+        "a": "0xec68d5d150d48a694bd362e3579f9e90981def1e",
+        "static": 0.44735686463770163,
+        "dynamic": 0,
+        "total": 0.44735686463770163,
         "events": 1
       },
       {
@@ -4324,6 +4520,13 @@
         "events": 1
       },
       {
+        "a": "0x4098d4f9bda1ec5a6e40e167543d11ce75479b5e",
+        "static": 0.43404623573174866,
+        "dynamic": 0,
+        "total": 0.43404623573174866,
+        "events": 1
+      },
+      {
         "a": "0xf7e3df93378ca0aec519aa10759803a826d96b8f",
         "static": 0.4314647930982971,
         "dynamic": 0,
@@ -4345,6 +4548,13 @@
         "events": 1
       },
       {
+        "a": "0x2fdfb1ef38b4b31017110c25bdcd7c257b965885",
+        "static": 0.4295,
+        "dynamic": 0,
+        "total": 0.4295,
+        "events": 1
+      },
+      {
         "a": "0x4bc12133e1cff5d118ebf09f7b54dac1142bd564",
         "static": 0.4273,
         "dynamic": 0,
@@ -4356,6 +4566,20 @@
         "static": 0.42497746208905185,
         "dynamic": 0,
         "total": 0.42497746208905185,
+        "events": 1
+      },
+      {
+        "a": "0x32462cee7ac19bfb18bf3b1557667ce187dc474e",
+        "static": 0.42434222993090653,
+        "dynamic": 0,
+        "total": 0.42434222993090653,
+        "events": 1
+      },
+      {
+        "a": "0xd079217ee6132cdc0fb303ee4f6038aa8d9e267d",
+        "static": 0.4207637961264846,
+        "dynamic": 0,
+        "total": 0.4207637961264846,
         "events": 1
       },
       {
@@ -4373,10 +4597,24 @@
         "events": 1
       },
       {
+        "a": "0x8a876617bf35045565525a83e91d7d7b0e092784",
+        "static": 0.4175347464507336,
+        "dynamic": 0,
+        "total": 0.4175347464507336,
+        "events": 1
+      },
+      {
         "a": "0xdaf3d6f30bc25137e40c053eaaa6dedd14c9cbae",
         "static": 0.4175018222748823,
         "dynamic": 0,
         "total": 0.4175018222748823,
+        "events": 1
+      },
+      {
+        "a": "0x1846123fecc98d62b5771388a57eded531ee5999",
+        "static": 0.41722708620282356,
+        "dynamic": 0,
+        "total": 0.41722708620282356,
         "events": 1
       },
       {
@@ -4387,10 +4625,31 @@
         "events": 1
       },
       {
+        "a": "0x34c73b683a3e35d9fa3b70ba06cc22bb3d40f01e",
+        "static": 0.4169666407516882,
+        "dynamic": 0,
+        "total": 0.4169666407516882,
+        "events": 1
+      },
+      {
         "a": "0x3dea3758d4f6f9c849c56724cf40e4ff7c19b287",
         "static": 0.41452286265719673,
         "dynamic": 0,
         "total": 0.41452286265719673,
+        "events": 1
+      },
+      {
+        "a": "0x0f364569d148eeb83427134f9ba61756ee275a79",
+        "static": 0.41414631356414405,
+        "dynamic": 0,
+        "total": 0.41414631356414405,
+        "events": 1
+      },
+      {
+        "a": "0xf76cf93b1bce72ed50e53f5b1831e0e9f019d322",
+        "static": 0.4138,
+        "dynamic": 0,
+        "total": 0.4138,
         "events": 1
       },
       {
@@ -4443,6 +4702,13 @@
         "events": 1
       },
       {
+        "a": "0xc27e86b58181749ac644fb9f5809e7466d512327",
+        "static": 0.40245824058860796,
+        "dynamic": 0,
+        "total": 0.40245824058860796,
+        "events": 1
+      },
+      {
         "a": "0x27436a645e592bd5b893af656b433e8ae5f73075",
         "static": 0.40156680575653764,
         "dynamic": 0,
@@ -4454,6 +4720,20 @@
         "static": 0.4014041797984773,
         "dynamic": 0,
         "total": 0.4014041797984773,
+        "events": 1
+      },
+      {
+        "a": "0x73de56adbbc35c4751d8bde938acd42809f21e25",
+        "static": 0.4013686712408423,
+        "dynamic": 0,
+        "total": 0.4013686712408423,
+        "events": 1
+      },
+      {
+        "a": "0xc94d72988eb2063b16d1350b5d13a06256a3d591",
+        "static": 0.4002741314483899,
+        "dynamic": 0,
+        "total": 0.4002741314483899,
         "events": 1
       },
       {
@@ -4499,10 +4779,24 @@
         "events": 1
       },
       {
+        "a": "0xa534939b30f8d5e52c174ea66cf3c317e43aeffa",
+        "static": 0.39551004214354346,
+        "dynamic": 0,
+        "total": 0.39551004214354346,
+        "events": 1
+      },
+      {
         "a": "0x11393595061f50fb89a2bf8ed3686f2f02a28a63",
         "static": 0.39472762913464937,
         "dynamic": 0,
         "total": 0.39472762913464937,
+        "events": 1
+      },
+      {
+        "a": "0xaf8c6de407d939ba0699ce4fb21a9017ca57572d",
+        "static": 0.3942763774589353,
+        "dynamic": 0,
+        "total": 0.3942763774589353,
         "events": 1
       },
       {
@@ -4548,6 +4842,20 @@
         "events": 1
       },
       {
+        "a": "0x241af02d7d64aa3b74676620b5d9bf8fc545a338",
+        "static": 0.38940158082004356,
+        "dynamic": 0,
+        "total": 0.38940158082004356,
+        "events": 1
+      },
+      {
+        "a": "0x978c464b63f4c14f716a98693c8b0739919fef18",
+        "static": 0.38654662928002625,
+        "dynamic": 0,
+        "total": 0.38654662928002625,
+        "events": 1
+      },
+      {
         "a": "0xe3da2b27e5f7913145a7ac1c35497c0d0ccb5199",
         "static": 0.3861461230789479,
         "dynamic": 0,
@@ -4562,10 +4870,24 @@
         "events": 1
       },
       {
+        "a": "0x9427e1a1e01cabc420934e697af97daf1ca279dc",
+        "static": 0.38439982635082465,
+        "dynamic": 0,
+        "total": 0.38439982635082465,
+        "events": 1
+      },
+      {
         "a": "0xd04b6df1a5f9d603deed04c37319e2a2d7f49361",
         "static": 0.3837481300714139,
         "dynamic": 0,
         "total": 0.3837481300714139,
+        "events": 1
+      },
+      {
+        "a": "0x510bb316929ca1bd01ade6c27a89a69468a73f71",
+        "static": 0.38188416356473415,
+        "dynamic": 0,
+        "total": 0.38188416356473415,
         "events": 1
       },
       {
@@ -4590,6 +4912,13 @@
         "events": 1
       },
       {
+        "a": "0xe5cb589880f13022daa3958061f32f8a9f086ce7",
+        "static": 0.36446433199280975,
+        "dynamic": 0,
+        "total": 0.36446433199280975,
+        "events": 1
+      },
+      {
         "a": "0x87eef593bda791803bc633df318b512424b221f7",
         "static": 0.3614190982364251,
         "dynamic": 0,
@@ -4601,6 +4930,13 @@
         "static": 0.3575118661546195,
         "dynamic": 0,
         "total": 0.3575118661546195,
+        "events": 1
+      },
+      {
+        "a": "0x9d284a1687c1e96076a47cc4f43b12903b453401",
+        "static": 0.3523055852536311,
+        "dynamic": 0,
+        "total": 0.3523055852536311,
         "events": 1
       },
       {
@@ -4639,6 +4975,20 @@
         "events": 1
       },
       {
+        "a": "0x173a7d5d6750318dd7428d47e02e63d43ea8f301",
+        "static": 0.3415291707618507,
+        "dynamic": 0,
+        "total": 0.3415291707618507,
+        "events": 1
+      },
+      {
+        "a": "0x5974e2a676cfc639916cd950185dca169dc2488b",
+        "static": 0.34125498777256386,
+        "dynamic": 0,
+        "total": 0.34125498777256386,
+        "events": 1
+      },
+      {
         "a": "0x32bab9e21e75d09efe61ed0bd455c15792374f6d",
         "static": 0.336996512542121,
         "dynamic": 0,
@@ -4657,6 +5007,20 @@
         "static": 0.3332,
         "dynamic": 0,
         "total": 0.3332,
+        "events": 1
+      },
+      {
+        "a": "0xaf25c960b221a95f237f5b9a423a52bb375db8cf",
+        "static": 0.3327186934554818,
+        "dynamic": 0,
+        "total": 0.3327186934554818,
+        "events": 1
+      },
+      {
+        "a": "0x476dd49fab899b77934d0e413773c901296a39ca",
+        "static": 0.32901583114236443,
+        "dynamic": 0,
+        "total": 0.32901583114236443,
         "events": 1
       },
       {
@@ -4688,10 +5052,31 @@
         "events": 1
       },
       {
+        "a": "0xd9c0f8c3b94ae4254c6a352e6249c4102881fa35",
+        "static": 0.31589646959641154,
+        "dynamic": 0,
+        "total": 0.31589646959641154,
+        "events": 1
+      },
+      {
+        "a": "0x0bd3ecc8a1ecba280e9d6ed822266588d058e31c",
+        "static": 0.31418575151290645,
+        "dynamic": 0,
+        "total": 0.31418575151290645,
+        "events": 1
+      },
+      {
         "a": "0x0e2fc21e78df970a98560e5cb3bdb649d46272f6",
         "static": 0.31391523148393186,
         "dynamic": 0,
         "total": 0.31391523148393186,
+        "events": 1
+      },
+      {
+        "a": "0x0e16e21211595dcbe8fe799ef64311ba30742918",
+        "static": 0.31129174251749325,
+        "dynamic": 0,
+        "total": 0.31129174251749325,
         "events": 1
       },
       {
@@ -4709,6 +5094,34 @@
         "events": 1
       },
       {
+        "a": "0xce4c3a4123fdcf5464e5700383f64f77c0db8ba5",
+        "static": 0.31,
+        "dynamic": 0,
+        "total": 0.31,
+        "events": 1
+      },
+      {
+        "a": "0x9c0380a3f51936371a87e507db784d7ebe2ac6f9",
+        "static": 0.309782592282688,
+        "dynamic": 0,
+        "total": 0.309782592282688,
+        "events": 1
+      },
+      {
+        "a": "0xeda4098df17f7019ef4a8b2085c2142d6976f7de",
+        "static": 0.30901646507946406,
+        "dynamic": 0,
+        "total": 0.30901646507946406,
+        "events": 1
+      },
+      {
+        "a": "0xffb869c6d7464c5a7741c89786b988a76fabd757",
+        "static": 0.3084229281199115,
+        "dynamic": 0,
+        "total": 0.3084229281199115,
+        "events": 1
+      },
+      {
         "a": "0xbbaba756d2146d47405790f0919f64e85eed432a",
         "static": 0.3083,
         "dynamic": 0,
@@ -4723,6 +5136,34 @@
         "events": 1
       },
       {
+        "a": "0x33720aa269103c49751a8f54a6da97c7cf42bb48",
+        "static": 0.30708096264890344,
+        "dynamic": 0,
+        "total": 0.30708096264890344,
+        "events": 1
+      },
+      {
+        "a": "0x12858fba5fd44acf2f5f9f1d64f431cc90f529d9",
+        "static": 0.30670630342376853,
+        "dynamic": 0,
+        "total": 0.30670630342376853,
+        "events": 1
+      },
+      {
+        "a": "0x0d5f67c4d8f9e67f1ff442b8e5b0985d178dfa36",
+        "static": 0.30660286526990016,
+        "dynamic": 0,
+        "total": 0.30660286526990016,
+        "events": 1
+      },
+      {
+        "a": "0x0aa8bda7ee475b1a4a20a694b64672d9b430aee8",
+        "static": 0.30567178547578505,
+        "dynamic": 0,
+        "total": 0.30567178547578505,
+        "events": 1
+      },
+      {
         "a": "0x15a8d803ae621a6f48d595c7e127118c4495295b",
         "static": 0.3005,
         "dynamic": 0,
@@ -4730,10 +5171,24 @@
         "events": 1
       },
       {
+        "a": "0xc63097618adfb13c7465bf4865778e9b4f67cf3a",
+        "static": 0.2999115684048864,
+        "dynamic": 0,
+        "total": 0.2999115684048864,
+        "events": 1
+      },
+      {
         "a": "0xa83b9ae72787dc61af37070b33440412f94e412d",
         "static": 0.299367750611424,
         "dynamic": 0,
         "total": 0.299367750611424,
+        "events": 1
+      },
+      {
+        "a": "0x2723cbd715527b33b869c03c770e8ac684b56055",
+        "static": 0.29914682642215684,
+        "dynamic": 0,
+        "total": 0.29914682642215684,
         "events": 1
       },
       {
@@ -4748,6 +5203,13 @@
         "static": 0.29788058391681144,
         "dynamic": 0,
         "total": 0.29788058391681144,
+        "events": 1
+      },
+      {
+        "a": "0x54587107d902e747ac4d4635976b204df7771167",
+        "static": 0.29657315875856033,
+        "dynamic": 0,
+        "total": 0.29657315875856033,
         "events": 1
       },
       {
@@ -4779,10 +5241,24 @@
         "events": 1
       },
       {
+        "a": "0xee2fb1cb3b0b74f0e5781a312b2cd144582ce577",
+        "static": 0.2911241781126053,
+        "dynamic": 0,
+        "total": 0.2911241781126053,
+        "events": 1
+      },
+      {
         "a": "0x1de951d20cca6316e89ae294aa30b0a43938cb90",
         "static": 0.28904318872873885,
         "dynamic": 0,
         "total": 0.28904318872873885,
+        "events": 1
+      },
+      {
+        "a": "0x77c80c74df65bd40defd827f426d8cdbb8b757c2",
+        "static": 0.28602900615477894,
+        "dynamic": 0,
+        "total": 0.28602900615477894,
         "events": 1
       },
       {
@@ -4797,6 +5273,13 @@
         "static": 0.28189013384860084,
         "dynamic": 0,
         "total": 0.28189013384860084,
+        "events": 1
+      },
+      {
+        "a": "0xa0eca1f20011c1986a0d07a067aef03c7ff2f4a1",
+        "static": 0.28060754595250953,
+        "dynamic": 0,
+        "total": 0.28060754595250953,
         "events": 1
       },
       {
@@ -4821,10 +5304,38 @@
         "events": 1
       },
       {
+        "a": "0x0c2500d13fe005eac930579ad86c0a6ecf0be81f",
+        "static": 0.2699245964475532,
+        "dynamic": 0,
+        "total": 0.2699245964475532,
+        "events": 1
+      },
+      {
+        "a": "0xf43466c389b4a14d3ded739f32699cb3f26e1314",
+        "static": 0.2606292684319353,
+        "dynamic": 0,
+        "total": 0.2606292684319353,
+        "events": 1
+      },
+      {
+        "a": "0x89851dae992c910d8f9f2911f79b04c2895775fe",
+        "static": 0.2590298543929274,
+        "dynamic": 0,
+        "total": 0.2590298543929274,
+        "events": 1
+      },
+      {
         "a": "0x2aabfec46e5b20fc69b842b0845330bc511ac4f3",
         "static": 0.25845572760072943,
         "dynamic": 0,
         "total": 0.25845572760072943,
+        "events": 1
+      },
+      {
+        "a": "0xf26dd21418953d936610bbf94727514fbd61dc48",
+        "static": 0.2537,
+        "dynamic": 0,
+        "total": 0.2537,
         "events": 1
       },
       {
@@ -4839,6 +5350,20 @@
         "static": 0.24778598445866998,
         "dynamic": 0,
         "total": 0.24778598445866998,
+        "events": 1
+      },
+      {
+        "a": "0x276b494d393f03889803983daf3efb72b5c99edb",
+        "static": 0.2468037057900828,
+        "dynamic": 0,
+        "total": 0.2468037057900828,
+        "events": 1
+      },
+      {
+        "a": "0xd58840853e139785147698be99de32108be98be1",
+        "static": 0.2464548133740984,
+        "dynamic": 0,
+        "total": 0.2464548133740984,
         "events": 1
       },
       {
@@ -4867,6 +5392,20 @@
         "static": 0.2443399391549393,
         "dynamic": 0,
         "total": 0.2443399391549393,
+        "events": 1
+      },
+      {
+        "a": "0x179b4d4086a2a2588122a2297f25c97919496173",
+        "static": 0.24420693009525712,
+        "dynamic": 0,
+        "total": 0.24420693009525712,
+        "events": 1
+      },
+      {
+        "a": "0xe8664463cb4232430268ca82d74ca12068d189bc",
+        "static": 0.2437,
+        "dynamic": 0,
+        "total": 0.2437,
         "events": 1
       },
       {
@@ -4905,6 +5444,13 @@
         "events": 1
       },
       {
+        "a": "0xba7b675bf57c57696f6adba7f77b7222e8166128",
+        "static": 0.237926859643064,
+        "dynamic": 0,
+        "total": 0.237926859643064,
+        "events": 1
+      },
+      {
         "a": "0x3263b704db6b2aaa2180f7adccb5cb99142912f4",
         "static": 0.23725852700684827,
         "dynamic": 0,
@@ -4919,556 +5465,10 @@
         "events": 1
       },
       {
-        "a": "0x46deb656383fc630a83e30343bff2240bd18341e",
-        "static": 0.2345065284341423,
+        "a": "0xe6c5adefd49b65791e0e2d5f86114e14111f8577",
+        "static": 0.23528833423090187,
         "dynamic": 0,
-        "total": 0.2345065284341423,
-        "events": 1
-      },
-      {
-        "a": "0xff39d20050ca58aac5c61f48196f881876ddad90",
-        "static": 0.23359712127889182,
-        "dynamic": 0,
-        "total": 0.23359712127889182,
-        "events": 1
-      },
-      {
-        "a": "0x361e5cd00d711a1182e387d53faaddab8bace706",
-        "static": 0.2327842064746951,
-        "dynamic": 0,
-        "total": 0.2327842064746951,
-        "events": 1
-      },
-      {
-        "a": "0x529ee8008877b14ffcba2b3cc2394754ea4dcf0d",
-        "static": 0.23194981737935966,
-        "dynamic": 0,
-        "total": 0.23194981737935966,
-        "events": 1
-      },
-      {
-        "a": "0xc51a90c079049a5559b64977b58f018a30b3f82f",
-        "static": 0.23130847573334254,
-        "dynamic": 0,
-        "total": 0.23130847573334254,
-        "events": 1
-      },
-      {
-        "a": "0xb8fa3bd4ce2cb5f581ba8dfb20059145cb3e9fe1",
-        "static": 0.2310443234168595,
-        "dynamic": 0,
-        "total": 0.2310443234168595,
-        "events": 1
-      },
-      {
-        "a": "0x5c52d5146dcfa1da9cac2797ca961d108e8b628a",
-        "static": 0.23104021788209664,
-        "dynamic": 0,
-        "total": 0.23104021788209664,
-        "events": 1
-      },
-      {
-        "a": "0x87284edd79402bb3e6a0a4956bbb26e8f00109cb",
-        "static": 0.23069780541299115,
-        "dynamic": 0,
-        "total": 0.23069780541299115,
-        "events": 1
-      },
-      {
-        "a": "0xf3db2637370b9506159ebfb51ae44244660cb178",
-        "static": 0.23011275107573684,
-        "dynamic": 0,
-        "total": 0.23011275107573684,
-        "events": 1
-      },
-      {
-        "a": "0x132415742dc51969a989b8f91b6b0d99b3527da5",
-        "static": 0.22910490015961338,
-        "dynamic": 0,
-        "total": 0.22910490015961338,
-        "events": 1
-      },
-      {
-        "a": "0x38488897f2674cb27a6e3840e03d20c1b639105a",
-        "static": 0.22466715526346778,
-        "dynamic": 0,
-        "total": 0.22466715526346778,
-        "events": 1
-      },
-      {
-        "a": "0xeb4665ce3e87b09560c4230e529328fc6367f95f",
-        "static": 0.22337741358568336,
-        "dynamic": 0,
-        "total": 0.22337741358568336,
-        "events": 1
-      },
-      {
-        "a": "0xf5f0457ebc5ebf917f5c59732e2a929cbb05d0d7",
-        "static": 0.22326939900212586,
-        "dynamic": 0,
-        "total": 0.22326939900212586,
-        "events": 1
-      },
-      {
-        "a": "0x7fbc6e4547c41c3df2a28a6acddfb387805922dc",
-        "static": 0.22234407088063673,
-        "dynamic": 0,
-        "total": 0.22234407088063673,
-        "events": 1
-      },
-      {
-        "a": "0x9d99ca6ddd800b6ddc55c6ee5c3438828593b420",
-        "static": 0.221771777312376,
-        "dynamic": 0,
-        "total": 0.221771777312376,
-        "events": 1
-      },
-      {
-        "a": "0x85d670887b0393ec8a24fe1eaf28f34da28add5f",
-        "static": 0.221771777312376,
-        "dynamic": 0,
-        "total": 0.221771777312376,
-        "events": 1
-      },
-      {
-        "a": "0xd0cfe54027c9481808c3387fb54818dec059af0d",
-        "static": 0.22110313208164684,
-        "dynamic": 0,
-        "total": 0.22110313208164684,
-        "events": 1
-      },
-      {
-        "a": "0x9d3ad69fac23022fa5f1216abae602cbeb1d3a44",
-        "static": 0.220923586346429,
-        "dynamic": 0,
-        "total": 0.220923586346429,
-        "events": 1
-      },
-      {
-        "a": "0xdba12dbbb09c230101ebeb5deeab54f2015f1598",
-        "static": 0.21820533661971558,
-        "dynamic": 0,
-        "total": 0.21820533661971558,
-        "events": 1
-      },
-      {
-        "a": "0xdfc2d2e31d16da0e6fcd11d56a3396927391db07",
-        "static": 0.2158,
-        "dynamic": 0,
-        "total": 0.2158,
-        "events": 1
-      },
-      {
-        "a": "0x089743b5f4746168ed8ed229bfcd2843c997d8eb",
-        "static": 0.21395004334110992,
-        "dynamic": 0,
-        "total": 0.21395004334110992,
-        "events": 1
-      },
-      {
-        "a": "0x6044b486e0a9e9c5937bc8c05e4ad5ab5f285cf4",
-        "static": 0.21323976196734662,
-        "dynamic": 0,
-        "total": 0.21323976196734662,
-        "events": 1
-      },
-      {
-        "a": "0x17e3563c87ad685b748ed1fd6391f0320afe11fb",
-        "static": 0.21235471020206,
-        "dynamic": 0,
-        "total": 0.21235471020206,
-        "events": 1
-      },
-      {
-        "a": "0x3958ab40e9e7412d1732b693c49b20806caeac58",
-        "static": 0.2110880422758656,
-        "dynamic": 0,
-        "total": 0.2110880422758656,
-        "events": 1
-      },
-      {
-        "a": "0x366c92bbf44606cbc804872ccb45cfd7c4b7147d",
-        "static": 0.2110248599386424,
-        "dynamic": 0,
-        "total": 0.2110248599386424,
-        "events": 1
-      },
-      {
-        "a": "0xed775c549107558e8c1288e38edf97d70636291b",
-        "static": 0.20772098054846255,
-        "dynamic": 0,
-        "total": 0.20772098054846255,
-        "events": 1
-      },
-      {
-        "a": "0xc949f7279244326a6c79467615bdfe9ff1553dfb",
-        "static": 0.20766332451041436,
-        "dynamic": 0,
-        "total": 0.20766332451041436,
-        "events": 1
-      },
-      {
-        "a": "0x5fa3920c3c6320e9373cd8c16387854f25231f91",
-        "static": 0.20315974184129926,
-        "dynamic": 0,
-        "total": 0.20315974184129926,
-        "events": 1
-      },
-      {
-        "a": "0xbb673acff8a426a5650bb8425920e0fd6490536d",
-        "static": 0.20278097738522305,
-        "dynamic": 0,
-        "total": 0.20278097738522305,
-        "events": 1
-      },
-      {
-        "a": "0xbd2f445d63442e808a234b2c540dc8b75c761356",
-        "static": 0.20210105955448507,
-        "dynamic": 0,
-        "total": 0.20210105955448507,
-        "events": 1
-      },
-      {
-        "a": "0x94d5401d3ddc8a06cb22fbcbdb178a8364290025",
-        "static": 0.20146208889747513,
-        "dynamic": 0,
-        "total": 0.20146208889747513,
-        "events": 1
-      },
-      {
-        "a": "0x0f3810697041f171bef0b8639afc4f90cd59ec4b",
-        "static": 0.19735007074414945,
-        "dynamic": 0,
-        "total": 0.19735007074414945,
-        "events": 1
-      },
-      {
-        "a": "0x5ab6a94f794233df70fd99b5ba1a8c79204d8d25",
-        "static": 0.19678395656183045,
-        "dynamic": 0,
-        "total": 0.19678395656183045,
-        "events": 1
-      },
-      {
-        "a": "0x2fd66d00d834697e917f8e37f7c0be7d43a3adbb",
-        "static": 0.19574271318008324,
-        "dynamic": 0,
-        "total": 0.19574271318008324,
-        "events": 1
-      },
-      {
-        "a": "0xf6a381d21355b9cf256b24d317f4bceac4c0456d",
-        "static": 0.1944787342731578,
-        "dynamic": 0,
-        "total": 0.1944787342731578,
-        "events": 1
-      },
-      {
-        "a": "0xccb7dd63b23c9f9374b5e48ca0844db992eb4983",
-        "static": 0.19392958620533995,
-        "dynamic": 0,
-        "total": 0.19392958620533995,
-        "events": 1
-      },
-      {
-        "a": "0xe1045ff142092f37ec54b3af2e0686771a1dba13",
-        "static": 0.19378524268081948,
-        "dynamic": 0,
-        "total": 0.19378524268081948,
-        "events": 1
-      },
-      {
-        "a": "0x27fa56098b85406e463e0a5223db7fad52069030",
-        "static": 0.1935464730926749,
-        "dynamic": 0,
-        "total": 0.1935464730926749,
-        "events": 1
-      },
-      {
-        "a": "0x48ef83886a7f5b6000156cd6455beb47c64eb7cc",
-        "static": 0.19246146137984066,
-        "dynamic": 0,
-        "total": 0.19246146137984066,
-        "events": 1
-      },
-      {
-        "a": "0x3e4c684d0fce63f99a825c41c332aaf28caa8ac4",
-        "static": 0.19199547603818615,
-        "dynamic": 0,
-        "total": 0.19199547603818615,
-        "events": 1
-      },
-      {
-        "a": "0xd66fceda9e43db462a8d62bbc55c80359039b803",
-        "static": 0.1919656445369717,
-        "dynamic": 0,
-        "total": 0.1919656445369717,
-        "events": 1
-      },
-      {
-        "a": "0x6ce26d68594ac01ea45bc2680f20b697c7df8a18",
-        "static": 0.19157580029007312,
-        "dynamic": 0,
-        "total": 0.19157580029007312,
-        "events": 1
-      },
-      {
-        "a": "0x698f3566be095c958b0635b031d8797c0d38cb0f",
-        "static": 0.1913312635767571,
-        "dynamic": 0,
-        "total": 0.1913312635767571,
-        "events": 1
-      },
-      {
-        "a": "0xa10a434175d3ca58f00c5273fba4793ca99260f5",
-        "static": 0.1910287064314462,
-        "dynamic": 0,
-        "total": 0.1910287064314462,
-        "events": 1
-      },
-      {
-        "a": "0xc7840dc30a58e5212aa19419e39651df314fc2f3",
-        "static": 0.19101548892193113,
-        "dynamic": 0,
-        "total": 0.19101548892193113,
-        "events": 1
-      },
-      {
-        "a": "0x67db07708da9d7f6949c777abaca6d85244d070d",
-        "static": 0.1898780281314855,
-        "dynamic": 0,
-        "total": 0.1898780281314855,
-        "events": 1
-      },
-      {
-        "a": "0xbfbf2ccc3b33f3e5161873a593589f37a61f035b",
-        "static": 0.18931524039820755,
-        "dynamic": 0,
-        "total": 0.18931524039820755,
-        "events": 1
-      },
-      {
-        "a": "0xa2bacc97989eb94b75c2c6e80f5b5955c473920d",
-        "static": 0.18826579960938758,
-        "dynamic": 0,
-        "total": 0.18826579960938758,
-        "events": 1
-      },
-      {
-        "a": "0xb7a8be84f4ccdf2e3a4d6b8a0156f84467eb6f3d",
-        "static": 0.18617536494800713,
-        "dynamic": 0,
-        "total": 0.18617536494800713,
-        "events": 1
-      },
-      {
-        "a": "0xefe2a87556e2ad6ea784eefc88397b0959dc5346",
-        "static": 0.18487232119858435,
-        "dynamic": 0,
-        "total": 0.18487232119858435,
-        "events": 1
-      },
-      {
-        "a": "0x72b23e6469c91ac10c81637ed79edf14016630b5",
-        "static": 0.1846,
-        "dynamic": 0,
-        "total": 0.1846,
-        "events": 1
-      },
-      {
-        "a": "0x12eb203b351d23f15753ba1c627e25bd9c06f94c",
-        "static": 0.18398291762726476,
-        "dynamic": 0,
-        "total": 0.18398291762726476,
-        "events": 1
-      },
-      {
-        "a": "0xc967dd5e1502b5ce68091ab1443d65ed0dd96541",
-        "static": 0.18069324566622544,
-        "dynamic": 0,
-        "total": 0.18069324566622544,
-        "events": 1
-      },
-      {
-        "a": "0xc0f0cda369c6e207a44620acda4cde43ca497751",
-        "static": 0.180288591258054,
-        "dynamic": 0,
-        "total": 0.180288591258054,
-        "events": 1
-      },
-      {
-        "a": "0x68e9d3d25c6dd0e466364d4eb287ea0290d5602e",
-        "static": 0.17962669767483191,
-        "dynamic": 0,
-        "total": 0.17962669767483191,
-        "events": 1
-      },
-      {
-        "a": "0xd2a7d4cac679b6d4c7d3beb6c3ad82e94aecc502",
-        "static": 0.178643390571928,
-        "dynamic": 0,
-        "total": 0.178643390571928,
-        "events": 1
-      },
-      {
-        "a": "0xb5e6d079e85684adcb930ea83f90ac75e87a2faa",
-        "static": 0.17855213306963902,
-        "dynamic": 0,
-        "total": 0.17855213306963902,
-        "events": 1
-      },
-      {
-        "a": "0xacb7c8166187f9b9067ef9604443950c8d6b1f5d",
-        "static": 0.17818256230759588,
-        "dynamic": 0,
-        "total": 0.17818256230759588,
-        "events": 1
-      },
-      {
-        "a": "0xee3568342a3d08bd666dcfff186402586561ba7d",
-        "static": 0.17804331548383318,
-        "dynamic": 0,
-        "total": 0.17804331548383318,
-        "events": 1
-      },
-      {
-        "a": "0x5df8b2afe58a80d9df44dddc4419c10df2eaa222",
-        "static": 0.17597571825297015,
-        "dynamic": 0,
-        "total": 0.17597571825297015,
-        "events": 1
-      },
-      {
-        "a": "0x25520750249584f3e0bfdd2564a8cb6a8da659e8",
-        "static": 0.17579555859538099,
-        "dynamic": 0,
-        "total": 0.17579555859538099,
-        "events": 1
-      },
-      {
-        "a": "0xc5e979df42a7f03fb0a1d3b78c6c55bd310b65a6",
-        "static": 0.17579555859538099,
-        "dynamic": 0,
-        "total": 0.17579555859538099,
-        "events": 1
-      },
-      {
-        "a": "0x76c76d3ca402c87f6c8195386b2f11566c9c417f",
-        "static": 0.1741991876466907,
-        "dynamic": 0,
-        "total": 0.1741991876466907,
-        "events": 1
-      },
-      {
-        "a": "0xaeb4c7cebcb7dfa3dac9ccf9d0994148d7afaeb1",
-        "static": 0.1737865381425317,
-        "dynamic": 0,
-        "total": 0.1737865381425317,
-        "events": 1
-      },
-      {
-        "a": "0x10c7f2a9e216bf422a2e23cff175182fa3c404ca",
-        "static": 0.17206621814655024,
-        "dynamic": 0,
-        "total": 0.17206621814655024,
-        "events": 1
-      },
-      {
-        "a": "0xac476ef3801d09e6c973303b87fcf3cbf58a4df5",
-        "static": 0.16790687846360774,
-        "dynamic": 0,
-        "total": 0.16790687846360774,
-        "events": 1
-      },
-      {
-        "a": "0x33dc57a5db16745adf64a24bfc31d93188f258ae",
-        "static": 0.16671761124604292,
-        "dynamic": 0,
-        "total": 0.16671761124604292,
-        "events": 1
-      },
-      {
-        "a": "0x2f728d79f64c784d2355442f53332e7fd3475af8",
-        "static": 0.16631792706149015,
-        "dynamic": 0,
-        "total": 0.16631792706149015,
-        "events": 1
-      },
-      {
-        "a": "0x1ed1733b02a52874544c0ea5b2d2877ad5eb826b",
-        "static": 0.16565145891333774,
-        "dynamic": 0,
-        "total": 0.16565145891333774,
-        "events": 1
-      },
-      {
-        "a": "0xfc81c95bc51140b9accb74eef0a307139d702cbf",
-        "static": 0.16472756473845157,
-        "dynamic": 0,
-        "total": 0.16472756473845157,
-        "events": 1
-      },
-      {
-        "a": "0xe68df711296202ec26cc5bc7864c2f4f5b2a9735",
-        "static": 0.16413841903434978,
-        "dynamic": 0,
-        "total": 0.16413841903434978,
-        "events": 1
-      },
-      {
-        "a": "0x0e1120354b4f0b2cd3607fbb6ee5fccd28408d5c",
-        "static": 0.16383432115424626,
-        "dynamic": 0,
-        "total": 0.16383432115424626,
-        "events": 1
-      },
-      {
-        "a": "0x09b4a432139dd1baa4e4a213a3132596ffa25691",
-        "static": 0.1633617511856247,
-        "dynamic": 0,
-        "total": 0.1633617511856247,
-        "events": 1
-      },
-      {
-        "a": "0xcd589bcf2983fd953d4d03fc732adbc6b1128fd7",
-        "static": 0.16251241554461351,
-        "dynamic": 0,
-        "total": 0.16251241554461351,
-        "events": 1
-      },
-      {
-        "a": "0xa7765232fd3b0252e94a96293e624dd533e95638",
-        "static": 0.16224648084798005,
-        "dynamic": 0,
-        "total": 0.16224648084798005,
-        "events": 1
-      },
-      {
-        "a": "0x214f7591b09b7e10ad9881b2d2c8edd4932a363f",
-        "static": 0.16207962031325654,
-        "dynamic": 0,
-        "total": 0.16207962031325654,
-        "events": 1
-      },
-      {
-        "a": "0xd6c802cbcabeb3ee9f950c34673f6ccfb2375d39",
-        "static": 0.16153147952358343,
-        "dynamic": 0,
-        "total": 0.16153147952358343,
-        "events": 1
-      },
-      {
-        "a": "0xbf4b5e3ef8faa5949aa5d16775b952d521b94bbf",
-        "static": 0.16151556067813316,
-        "dynamic": 0,
-        "total": 0.16151556067813316,
-        "events": 1
-      },
-      {
-        "a": "0x2118856972c05c8f6e3d509bfa239f9c3f03c819",
-        "static": 0.16126435984225992,
-        "dynamic": 0,
-        "total": 0.16126435984225992,
+        "total": 0.23528833423090187,
         "events": 1
       }
     ]
@@ -8519,12 +8519,12 @@
     ]
   },
   "powerParticipation": {
-    "checkedAt": "2026-11-11T00:38:11.487Z",
+    "checkedAt": "2026-11-11T07:12:44.468Z",
     "day": 45,
     "startTs": 1794326400,
     "startAt": "2026-11-10T16:00:00.000Z",
     "startBlock": 18791450,
-    "head": 18822508,
+    "head": 18846155,
     "yesterday": {
       "day": 44,
       "startAt": "2026-11-09T16:00:00.000Z",
@@ -8560,41 +8560,41 @@
     },
     "dai": {
       "kind": "DAI",
-      "events": 313,
-      "wallets": 307,
-      "amount": 102296.69334692282,
-      "power": 255741.73336730705,
+      "events": 966,
+      "wallets": 918,
+      "amount": 765214.755270432,
+      "power": 1913036.8881760798,
       "firstTs": 1794326404,
-      "lastTs": 1794357446,
+      "lastTs": 1794381142,
       "firstAt": "2026-11-10T16:00:04.000Z",
-      "lastAt": "2026-11-11T00:37:26.000Z",
-      "durationSec": 31042,
-      "cap": 1000000,
-      "remaining": 897703.3066530771,
-      "used": 102296.69334692287,
+      "lastAt": "2026-11-11T07:12:22.000Z",
+      "durationSec": 54738,
+      "cap": 2000000,
+      "remaining": 1234785.244729568,
+      "used": 765214.755270432,
       "soldOut": false,
-      "filledPct": 10.229669334692288
+      "filledPct": 38.260737763521604
     },
     "lgns": {
       "kind": "LGNS",
-      "events": 0,
-      "wallets": 0,
-      "amount": 0,
-      "power": 0,
-      "firstTs": null,
-      "lastTs": null,
-      "firstAt": null,
-      "lastAt": null,
-      "durationSec": 0,
+      "events": 400,
+      "wallets": 400,
+      "amount": 200000,
+      "power": 400000,
+      "firstTs": 1794369540,
+      "lastTs": 1794369541,
+      "firstAt": "2026-11-11T03:59:00.000Z",
+      "lastAt": "2026-11-11T03:59:01.000Z",
+      "durationSec": 1,
       "capPower": 399999.99999999994,
-      "remainingPower": 399999.99999999994,
-      "usedPower": 0,
+      "remainingPower": 0,
+      "usedPower": 399999.99999999994,
       "rate": 2,
       "cap": 199999.99999999997,
-      "remaining": 199999.99999999997,
-      "used": 0,
-      "soldOut": false,
-      "filledPct": 0
+      "remaining": 0,
+      "used": 199999.99999999997,
+      "soldOut": true,
+      "filledPct": 100
     }
   },
   "tree": {
@@ -9158,7 +9158,7 @@
         "boundAt": "2025-05-19T04:37:47.528Z",
         "bound": true,
         "direct": 16,
-        "team": 6029,
+        "team": 6031,
         "teamActivePower": "721895.008731572299946415",
         "latest": {
           "day": 44,
