@@ -2,78 +2,78 @@
   "mode": "chain",
   "site": {
     "name": "AiLGNS 链上观测站",
-    "generatedAt": "2026-11-24T03:27:20.870Z",
+    "generatedAt": "2026-11-24T10:23:27.170Z",
     "generator": "ailgns-monitor/collect-chain.mjs",
     "dataSource": "Anubis RPC + 原始链上日志",
     "thirdParty": false
   },
   "chain": {
-    "block": 19928978,
-    "blockTime": "2026-11-24T03:27:21.000Z",
+    "block": 19953786,
+    "blockTime": "2026-11-24T10:23:27.000Z",
     "gasPriceGwei": 12,
     "rpc": "https://rpc.anubispace.org",
-    "explorer": "https://browser.anubispace.org/block/19928978",
+    "explorer": "https://browser.anubispace.org/block/19953786",
     "chainId": 6714
   },
   "protocol": {
     "day": 58,
     "epoch": 9,
     "activePower": 278672064.3145575,
-    "recordedPower": 306268943.0836939,
+    "recordedPower": 308530587.816575,
     "powerMultiplier": 2.5,
     "dailyPayRatio": 0.2795,
-    "priceDAI": 877.2559455606926,
-    "poolPriceDAI": 874.6004822869545,
-    "poolAiLGNS": 36911.08020773026,
-    "poolDAI": 32282448.551413346,
-    "reserveDAI": 106108045.19729121,
-    "totalSupply": 209998251.27512217,
-    "emissionVault": 162419317.1515462,
+    "priceDAI": 876.9651325806027,
+    "poolPriceDAI": 874.3105546888165,
+    "poolAiLGNS": 36919.010115205645,
+    "poolDAI": 32278680.212387476,
+    "reserveDAI": 106555019.93318266,
+    "totalSupply": 209998238.58246714,
+    "emissionVault": 162419148.52297682,
     "insuranceVault": 11189563.512405183,
-    "queuedPower": 0,
-    "depositedToday": 1515529.936307,
+    "queuedPower": 750,
+    "depositedToday": 1473275.095952,
     "depositCap": 1000000,
     "buyOpen": true,
     "buyFee": "2.5%",
     "sellFee": "3.00%",
-    "queueToday": 1515529.936307,
-    "released": 831165.3,
-    "suppressed": 1343286.8888733916,
+    "queueToday": 1473275.095952,
+    "released": 0,
+    "suppressed": 0,
     "powerDAI": 278672064.3145575,
-    "powerRecordedDAI": 306268943.0836939
+    "powerRecordedDAI": 308530587.816575
   },
   "flow": {
-    "scannedToBlock": 19928979,
-    "totalWei": "102866136056374357068021627",
-    "txCount": 112932,
-    "totalDai": 102866136.056374,
+    "scannedToBlock": 19953787,
+    "totalWei": "103611093949526780775257398",
+    "txCount": 113969,
+    "totalDai": 103611093.949526,
     "totalFrom": "2026-09-28 13:00 (UTC+8) 官方算力参与开放",
-    "last24hDai": 1515529.936307,
-    "last24hTx": 2591,
+    "last24hDai": 1473275.095952,
+    "last24hTx": 2518,
     "rows": [
       {
         "name": "协议储备",
         "addr": "0x27Cb55eE75E777fF972B74B6E68782D12Bd4ec46",
         "note": "买算力的钱全部进入这里",
-        "dai": 106108659.59729122
+        "dai": 106555271.93318266
       },
       {
         "name": "AiLGNS/DAI 主池",
         "addr": "0x0a1Cce65d995C6C5100e6F5bA3c388Ef34CEcaf0",
         "note": "主池内的 DAI 储备",
-        "dai": 32277475.946491364
+        "dai": 32278685.19063341
       },
       {
         "name": "涡轮 Turbine",
         "addr": "0xE884A336550a4482Ca6A17A3F93aa30Ed4eD9BaD",
         "note": "激活排放收到的 DAI",
-        "dai": 249142.60396369535
+        "dai": 251912.2304853916
       },
       {
         "name": "手续费归集",
         "addr": "0x7088e192b9b7f41A07bB3f79378e13454D8a80D5",
         "note": "卖出费里的 1%",
-        "dai": 422405.47005346173
+        "dai": 387299.8341981357
       },
       {
         "name": "算力账本",
@@ -10365,12 +10365,12 @@
     ]
   },
   "powerParticipation": {
-    "checkedAt": "2026-11-24T03:29:57.282Z",
+    "checkedAt": "2026-11-24T10:25:17.262Z",
     "day": 58,
     "startTs": 1795449600,
     "startAt": "2026-11-23T16:00:00.000Z",
     "startBlock": 19888063,
-    "head": 19929103,
+    "head": 19953812,
     "yesterday": {
       "day": 57,
       "startAt": "2026-11-22T16:00:00.000Z",
@@ -10406,50 +10406,50 @@
     },
     "dai": {
       "kind": "DAI",
-      "events": 817,
-      "wallets": 779,
-      "amount": 217635.60115465315,
-      "power": 544089.0028866327,
+      "events": 1854,
+      "wallets": 1752,
+      "amount": 961989.4943070773,
+      "power": 2404973.735767692,
       "firstTs": 1795449604,
-      "lastTs": 1795490923,
+      "lastTs": 1795515826,
       "firstAt": "2026-11-23T16:00:04.000Z",
-      "lastAt": "2026-11-24T03:28:43.000Z",
-      "durationSec": 41319,
-      "cap": 1000000,
-      "remaining": 782364.398845347,
-      "used": 217635.601154653,
+      "lastAt": "2026-11-24T10:23:46.000Z",
+      "durationSec": 66222,
+      "cap": 2000000,
+      "remaining": 1038010.5056929231,
+      "used": 961989.4943070769,
       "soldOut": false,
-      "filledPct": 21.7635601154653
+      "filledPct": 48.09947471535384
     },
     "lgns": {
       "kind": "LGNS",
-      "events": 0,
-      "wallets": 0,
-      "amount": 0,
-      "power": 0,
-      "firstTs": null,
-      "lastTs": null,
-      "firstAt": null,
-      "lastAt": null,
+      "events": 400,
+      "wallets": 400,
+      "amount": 200000,
+      "power": 400000,
+      "firstTs": 1795492740,
+      "lastTs": 1795492740,
+      "firstAt": "2026-11-24T03:59:00.000Z",
+      "lastAt": "2026-11-24T03:59:00.000Z",
       "durationSec": 0,
       "capPower": 399999.99999999994,
-      "remainingPower": 399999.99999999994,
-      "usedPower": 0,
+      "remainingPower": 0,
+      "usedPower": 399999.99999999994,
       "rate": 2,
       "cap": 199999.99999999997,
-      "remaining": 199999.99999999997,
-      "used": 0,
-      "soldOut": false,
-      "filledPct": 0
+      "remaining": 0,
+      "used": 199999.99999999997,
+      "soldOut": true,
+      "filledPct": 100
     }
   },
   "tree": {
     "root": "0x159ec1f43d18ff1f275156a4a8b0e53503503c1b",
-    "total": 841,
+    "total": 901,
     "maxDepth": 1,
     "levels": {
       "0": 1,
-      "1": 840
+      "1": 900
     }
   },
   "watch": {
@@ -11004,7 +11004,7 @@
         "boundAt": "2025-05-19T04:37:47.528Z",
         "bound": true,
         "direct": 16,
-        "team": 6051,
+        "team": 6053,
         "teamActivePower": "859777.208731572299946415",
         "latest": {
           "day": 57,
@@ -11408,5 +11408,7 @@
       }
     }
   },
-  "errors": []
+  "errors": [
+    "explorer rewards: HTTP 500"
+  ]
 }
