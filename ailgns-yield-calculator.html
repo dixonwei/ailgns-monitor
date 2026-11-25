@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7fb">
+  <meta name="description" content="阿郎老师的 AiLGNS 收益演算器，逐日计算本金、LP 复投和年末卖出的净到账。">
+  <title>阿郎老师的 AiLGNS 收益演算器</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232757d7'/%3E%3Cpath d='M17 43 28 17h8l11 26h-8l-2-6H27l-2 6h-8Zm13-13h4l-2-6-2 6Z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <style>
+:root{--bg:#f4f7fb;--surface:#fff;--surface2:#eef3fb;--ink:#14213d;--muted:#66758c;--line:#dbe4f0;--blue:#2757d7;--blue2:#e9efff;--mint:#0eaa83;--mint2:#e5f8f2;--orange:#e4753d;--shadow:0 18px 50px rgba(35,62,108,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Manrope","Noto Sans SC","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased}button,input{font:inherit}button{color:inherit}a{color:inherit;text-decoration:none}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid rgba(39,87,215,.3);outline-offset:3px}.mono{font-family:"Geist Mono",monospace;font-variant-numeric:tabular-nums}.muted{color:var(--muted)}.skip{position:fixed;left:24px;top:24px;z-index:99;transform:translateY(-180%);padding:8px 12px;border-radius:12px;background:var(--blue);color:#fff;transition:transform .5s cubic-bezier(.22,1,.36,1)}.skip:focus{transform:none}
+.shell{width:min(1160px,calc(100% - 48px));margin:0 auto}.nav-wrap{position:fixed;z-index:50;top:20px;left:0;right:0;pointer-events:none}.nav{pointer-events:auto;width:min(980px,calc(100% - 32px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:10px 12px;background:rgba(255,255,255,.9);border:1px solid rgba(219,228,240,.9);border-radius:999px;box-shadow:0 10px 30px rgba(35,62,108,.08);backdrop-filter:blur(14px)}.brand{display:flex;align-items:center;gap:10px;font-weight:700}.brand-mark{width:34px;height:34px;border-radius:12px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700}.nav-links{display:flex;gap:26px;color:var(--muted);font-size:14px}.nav-links a:hover{color:var(--blue)}.badge{display:inline-flex;align-items:center;gap:6px;color:var(--blue);background:var(--blue2);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700}
+.hero{position:relative;padding:148px 0 96px;overflow:hidden}.hero:before,.hero:after{content:"";position:absolute;border-radius:999px;background:#e7eefc;z-index:-1}.hero:before{width:430px;height:430px;right:-120px;top:-100px}.hero:after{width:260px;height:260px;left:-100px;bottom:-100px}.hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:64px;align-items:center}.eyebrow{display:inline-flex;align-items:center;color:var(--blue);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.hero-title{font-size:64px;line-height:1.02;margin:22px 0 0;font-weight:700;letter-spacing:-.04em;max-width:680px}.hero-title em{font-style:normal;color:var(--blue)}.hero-sub{max-width:620px;color:var(--muted);font-size:17px;line-height:1.75;margin:24px 0 0}.hero-actions{margin-top:32px}.btn-primary{display:inline-flex;align-items:center;gap:9px;border:0;background:var(--blue);color:#fff;padding:13px 18px;border-radius:14px;font-weight:700;cursor:pointer;box-shadow:0 10px 22px rgba(39,87,215,.22);transition:transform .5s cubic-bezier(.22,1,.36,1),background .3s}.btn-primary:hover{transform:translateY(-2px);background:#1e49bd}.btn-primary:active{transform:scale(.98)}.trustline{display:flex;flex-wrap:wrap;gap:18px;margin-top:26px;color:var(--muted);font-size:13px}.trustline b{color:var(--ink);font-size:15px}
+.summary{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:26px;box-shadow:var(--shadow);overflow:hidden}.summary-label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}.status-dot{width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 6px var(--mint2)}.summary-main{position:relative;z-index:2;margin-top:30px}.summary-number{display:flex;align-items:flex-start;gap:4px;font-size:72px;line-height:1;font-weight:700;letter-spacing:-.06em}.summary-number b{color:var(--blue);font-weight:700}.summary-number small{font-size:32px;color:var(--blue)}.summary-caption{display:block;margin-top:8px;color:var(--muted);font-size:14px}.summary-ring{position:absolute;width:245px;height:245px;right:-34px;top:20px;border:22px solid var(--blue2);border-radius:50%;opacity:.85}.summary-ring span,.summary-ring i{position:absolute;border-radius:50%;background:var(--mint)}.summary-ring span{width:15px;height:15px;left:17px;top:10px}.summary-ring i{width:10px;height:10px;bottom:40px;right:15px;background:var(--orange)}.summary-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px;padding-top:20px;border-top:1px solid var(--line);position:relative;z-index:2}.summary-metrics span{display:block;color:var(--muted);font-size:12px}.summary-metrics strong{display:block;margin-top:6px;font-size:17px;font-weight:600}
+.section{padding:96px 0}.section.tinted{background:#eaf0fa}.section-head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:38px}.section-head h2,.faq-grid h2{font-size:42px;line-height:1.08;margin:10px 0 0;letter-spacing:-.035em}.section-head p{max-width:520px;margin:0;color:var(--muted);line-height:1.7}.kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.chart-top{display:flex;justify-content:space-between;gap:24px;padding:26px 30px 22px;border-bottom:1px solid var(--line)}.chart-day{color:var(--muted);font-size:13px;font-weight:600}.chart-value{display:flex;align-items:baseline;gap:10px;margin-top:8px}.chart-value strong{font-size:44px;line-height:1;letter-spacing:-.04em;font-weight:700}.chart-value span{color:var(--muted);font-size:13px}.chart-actions{display:flex;align-items:center;gap:18px}.legend{display:flex;gap:16px;color:var(--muted);font-size:12px}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:22px;height:3px;border-radius:99px;background:#93a2b8}.legend i.return{background:var(--mint)}.icon-btn{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;cursor:pointer;transition:transform .5s cubic-bezier(.22,1,.36,1),background .3s}.icon-btn:hover{transform:translateY(-2px);background:#dfe7f5}.chart-wrap{position:relative;padding:20px 20px 0}.chart-svg{display:block;width:100%;height:auto}.chart-grid line{stroke:#e5ebf4}.chart-axis{fill:var(--muted);font-family:"Geist Mono",monospace;font-size:11px}.chart-area{fill:rgba(14,170,131,.12)}.chart-principal{fill:none;stroke:#a7b3c5;stroke-width:1.5}.chart-return{fill:none;stroke:var(--mint);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}.chart-hover-line{stroke:var(--blue);stroke-width:1;stroke-dasharray:4 4;opacity:0}.chart-dot{fill:var(--mint);stroke:#fff;stroke-width:3;opacity:0}.chart-tooltip{position:absolute;min-width:168px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 32px rgba(35,62,108,.15);opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none;z-index:3}.chart-tooltip.show{opacity:1;transform:none}.chart-tooltip>b{display:block;margin-bottom:6px;color:var(--blue)}.chart-tooltip .row{display:flex;justify-content:space-between;gap:18px;padding:3px 0;font-size:12px;color:var(--muted)}.chart-tooltip .row b{color:var(--ink)}.chart-controls{padding:20px 30px 28px}.range{width:100%;accent-color:var(--mint);cursor:pointer}.range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.form-card,.result-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 30px rgba(35,62,108,.07)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{display:grid;gap:8px}.field>span{font-size:13px;color:var(--muted);font-weight:600}.input-wrap{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8faff;border:1px solid var(--line);border-radius:13px;transition:border .3s,box-shadow .3s}.input-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue2)}.input-wrap input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--ink);font-size:16px;font-weight:600}.input-wrap em{font-style:normal;color:var(--muted);font-size:11px}.form-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px}.btn-secondary{border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:700;transition:transform .5s cubic-bezier(.22,1,.36,1),background .3s}.btn-secondary:hover{transform:translateY(-2px);background:#dfe7f5}.hint{font-size:12px;color:var(--muted)}.error{display:none;margin-top:14px;color:#cc3d38;font-size:13px}.error.show{display:block}.result-label{font-size:13px;color:var(--muted);font-weight:600}.result-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0 22px;border-bottom:1px solid var(--line)}.result-head strong{font-size:46px;line-height:1.1;letter-spacing:-.04em}.result-badge{background:var(--mint2);color:#08745a;padding:7px 11px;border-radius:999px;font-weight:700}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}.result-grid>div{padding:17px 0;border-bottom:1px solid var(--line)}.result-grid span{display:block;font-size:12px;color:var(--muted)}.result-grid b{display:block;font-size:17px;margin-top:5px;font-weight:600}
+.math-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}.step-card,.formula-card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 12px 30px rgba(35,62,108,.07)}.step{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)}.step:first-child{padding-top:0}.step:last-child{border:0;padding-bottom:0}.step>span{width:36px;height:36px;border-radius:12px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-family:"Geist Mono",monospace;font-weight:700}.step b{font-size:16px}.step p{margin:5px 0 0;color:var(--muted);font-size:14px;line-height:1.55}.formula-label{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}.formula-main{display:grid;gap:0;margin-top:12px}.formula-main>div{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}.formula-main span{color:var(--muted);font-size:13px}.formula-main b{font-size:17px}.formula-card>p{margin:20px 0 0;color:var(--muted);font-size:13px;line-height:1.65}
+.section.compact{padding-top:40px}.faq-grid{display:grid;grid-template-columns:.65fr 1.35fr;gap:64px}.notes details{border-bottom:1px solid var(--line)}.notes summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;padding:20px 0;font-weight:700}.notes summary::-webkit-details-marker{display:none}.notes summary:after{content:"+";color:var(--blue);font-size:20px;transition:transform .5s cubic-bezier(.22,1,.36,1)}.notes details[open] summary:after{transform:rotate(45deg)}.notes p{margin:0 0 20px;color:var(--muted);line-height:1.7;font-size:14px}
+footer{background:#fff;border-top:1px solid var(--line);padding:42px 0}.footer-inner{display:flex;justify-content:space-between;gap:32px;align-items:start}.footer-inner p{max-width:720px;color:var(--muted);font-size:12px;line-height:1.7;margin:14px 0 0}.footer-links{display:flex;gap:24px;color:var(--muted);font-size:13px}.footer-links a:hover{color:var(--blue)}.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}.reveal.visible{opacity:1;transform:none}
+@media(max-width:900px){.hero-grid,.calc-grid,.math-grid,.faq-grid{grid-template-columns:1fr}.hero-title{font-size:52px}.summary{max-width:620px}.section-head{align-items:start;flex-direction:column}.chart-top{flex-direction:column}.chart-actions{justify-content:space-between}.nav-links{display:none}}
+@media(max-width:600px){.shell{width:calc(100% - 32px)}.nav{width:calc(100% - 24px);top:12px}.hero{padding:120px 0 72px}.hero-title{font-size:40px}.hero-sub{font-size:16px}.trustline{display:grid;gap:8px}.summary-number{font-size:60px}.summary-metrics,.form-grid,.result-grid{grid-template-columns:1fr}.section{padding:72px 0}.section-head h2,.faq-grid h2{font-size:34px}.chart-top,.chart-controls,.form-card,.result-card,.step-card,.formula-card{padding:20px}.chart-value strong{font-size:36px}.result-head{flex-direction:column;align-items:flex-start}.result-head strong{font-size:38px}.footer-inner{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+.milestone-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.milestone-stats span{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:#f1f5ff;color:var(--muted);font-size:12px}.milestone-stats strong{color:var(--blue);font-weight:700}#chartMilestones .milestone-line{stroke-width:1;stroke-dasharray:4 5;opacity:.65}#chartMilestones .milestone-line.be{stroke:#2757d7}#chartMilestones .milestone-line.double{stroke:#e4753d}#chartMilestones .milestone-dot{stroke:#fff;stroke-width:3}#chartMilestones .milestone-dot.be{fill:#2757d7}#chartMilestones .milestone-dot.double{fill:#e4753d}#chartMilestones .milestone-box{stroke-width:1}#chartMilestones .milestone-box.be{fill:#eef3ff;stroke:#b9cbf8}#chartMilestones .milestone-box.double{fill:#fdf0e8;stroke:#f2c2aa}#chartMilestones .milestone-text{font-family:"Manrope","Noto Sans SC",sans-serif;font-size:11px;font-weight:700}#chartMilestones .milestone-text.be{fill:#2757d7}#chartMilestones .milestone-text.double{fill:#c45a2e}
+@media(max-width:600px){.milestone-stats{gap:8px}.milestone-stats span{font-size:11px}}
+
+
+</style>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要内容</a>
+  <header class="nav-wrap"><nav class="nav" aria-label="主导航"><a class="brand" href="#top"><span class="brand-mark">A</span><span>阿郎老师 <span class="muted">/ AiLGNS 演算</span></span></a><div class="nav-links"><a href="#track">收益曲线</a><a href="#calculator">参数计算</a><a href="#math">计算明细</a></div><span class="badge"><i class="ph ph-graduation-cap" aria-hidden="true"></i>阿郎老师 · 教学版</span></nav></header>
+  <main id="main">
+    <section class="hero" id="top"><div class="shell"><div class="hero-grid">
+      <div class="hero-copy reveal"><span class="eyebrow">阿郎老师 · 一年收益演算</span><h1 class="hero-title">一年收益，<br><em>逐日算清楚。</em></h1><p class="hero-sub">从本金、每日产出、每周 LP 到年末卖出，每一步都能看见。修改参数后，曲线和最终结果立即更新。</p><div class="hero-actions"><button class="btn-primary" id="heroPlay" type="button"><i class="ph-fill ph-play" aria-hidden="true"></i>播放全年曲线</button></div><div class="trustline"><span><b class="mono" id="proofCost">17,300</b> DAI 累计投入</span><span><b class="mono" id="proofNet">228,175.66</b> DAI 净到账</span><span><b class="mono" id="proofMultiple">13.19×</b> 投产比</span></div></div>
+      <aside class="summary reveal"><div class="summary-label"><span class="status-dot"></span>收益摘要</div><div class="summary-main"><span class="summary-number"><b class="mono" id="orbitMultiple">13.19</b><small>×</small></span><span class="summary-caption">理论投产比</span></div><div class="summary-ring"><span></span><i></i></div><div class="summary-metrics"><div><span>累计投入</span><strong class="mono" id="heroCost">17,300</strong></div><div><span>年末 AiLGNS</span><strong class="mono" id="heroTokens">78.4109</strong></div><div><span>净利润</span><strong class="mono" id="heroProfit">210,875.66</strong></div></div></aside>
+    </div></div></section>
+
+    <section class="section" id="track"><div class="shell"><div class="section-head reveal"><div><span class="kicker">Return curve</span><h2>全年收益曲线</h2></div><p>条形图显示累计投入，绿色曲线显示持仓价值。拖动时间轴查看任意一天。</p></div><div class="chart-card reveal"><div class="chart-top"><div><span class="chart-day" id="chartDayLabel">第 365 天 · 年末</span><div class="chart-value"><strong class="mono" id="chartValue">228,175.66</strong><span>DAI · 扣费后估值</span></div><div class="milestone-stats"><span>回本周期<strong id="breakEvenDays">第80天</strong></span><span>翻倍周期<strong id="doubleDays">第131天</strong></span></div></div><div class="chart-actions"><div class="legend"><span><i></i>累计投入</span><span><i class="return"></i>资产价值</span></div><button class="icon-btn" id="chartPlay" type="button" aria-label="播放全年曲线"><i class="ph-fill ph-play" aria-hidden="true"></i></button></div></div><div class="chart-wrap" id="chartWrap"><svg class="chart-svg" id="growthChart" viewBox="0 0 1000 440" role="img" aria-labelledby="chartTitle chartDesc"><title id="chartTitle">AiLGNS 全年收益曲线</title><desc id="chartDesc">逐日展示累计投入和资产价值，年末展示扣费后的净到账。</desc><g class="chart-grid" id="chartGrid"></g><path class="chart-area" id="chartArea"></path><path class="chart-principal" id="principalPath"></path><path class="chart-return" id="returnPath"></path><line class="chart-hover-line" id="hoverLine" x1="0" y1="24" x2="0" y2="392"></line><circle class="chart-dot" id="chartDot" r="5" cx="0" cy="0"></circle><g id="chartMilestones"></g></svg><div class="chart-tooltip" id="chartTooltip" aria-hidden="true"><b class="mono" id="tooltipDay">第 365 天</b><div class="row"><span>AiLGNS 价格</span><b class="mono" id="tooltipPrice">3,000</b></div><div class="row"><span>累计投入</span><b class="mono" id="tooltipCost">17,300</b></div><div class="row"><span>资产价值</span><b class="mono" id="tooltipValue">228,175.66</b></div></div></div><div class="chart-controls"><input class="range" id="dayRange" type="range" min="0" max="365" value="365" step="1" aria-label="选择模拟天数"><div class="range-labels"><span>0</span><span>90</span><span>180</span><span>270</span><span>365 天</span></div></div></div></div></section>
+
+    <section class="section tinted" id="calculator"><div class="shell"><div class="section-head reveal"><div><span class="kicker">Calculator</span><h2>调整参数，重新计算</h2></div><p>当前默认值：本金 10,000 DAI、每日追加 20 DAI、算力释放 70 DAI、LP 0.5% / 天、年末 3,000 DAI。</p></div><div class="calc-grid reveal"><form class="form-card" id="controlForm"><div class="form-grid"><label class="field"><span>初始算力本金</span><div class="input-wrap"><input id="principalInput" type="number" min="1" step="100" value="10000"><em>DAI</em></div></label><label class="field"><span>每日追加买币</span><div class="input-wrap"><input id="dailyInput" type="number" min="0" step="1" value="20"><em>DAI</em></div></label><label class="field"><span>每日算力释放</span><div class="input-wrap"><input id="releaseInput" type="number" min="0" step="1" value="70"><em>DAI</em></div></label><label class="field"><span>LP 每日奖励</span><div class="input-wrap"><input id="rateInput" type="number" min="0" max="5" step="0.1" value="0.5"><em>%</em></div></label><label class="field"><span>年末 AiLGNS 价格</span><div class="input-wrap"><input id="priceInput" type="number" min="1" step="100" value="3000"><em>DAI</em></div></label><label class="field"><span>卖出费率</span><div class="input-wrap"><input id="feeInput" type="number" min="0" max="20" step="0.5" value="3"><em>%</em></div></label></div><div class="form-actions"><button class="btn-secondary" type="button" id="resetBtn">恢复默认参数</button><span class="hint">修改后即时计算</span></div><div class="error" id="formError" role="alert"></div></form><aside class="result-card" aria-live="polite"><span class="result-label">最终净到账</span><div class="result-head"><strong class="mono" id="resultNet">228,175.66</strong><span class="result-badge mono" id="resultMultiple">13.19×</span></div><div class="result-grid"><div><span>累计投入</span><b class="mono" id="resultCost">17,300</b></div><div><span>净利润</span><b class="mono" id="resultProfit">210,875.66</b></div><div><span>年末 AiLGNS</span><b class="mono" id="resultTokens">78.4109</b></div><div><span>卖出前总价值</span><b class="mono" id="resultGross">235,232.64</b></div><div><span>卖出费用</span><b class="mono" id="resultFee">7,056.98</b></div><div><span>LP 年化倍数</span><b class="mono" id="resultLpAnnual">6.17×</b></div></div></aside></div></div></section>
+
+    <section class="section" id="math"><div class="shell"><div class="section-head reveal"><div><span class="kicker">Calculation</span><h2>收益是怎么算出来的</h2></div><p>默认参数下的计算路径。每一步都单独列出来，方便课堂逐条讲解。</p></div><div class="math-grid reveal"><div class="step-card"><div class="step"><span>01</span><div><b>初始算力</b><p>10,000 DAI 形成 25,000 Power</p></div></div><div class="step"><span>02</span><div><b>每日产出</b><p>释放 70 DAI 价值，再追加买入 20 DAI</p></div></div><div class="step"><span>03</span><div><b>每周 LP</b><p>本周 AiLGNS 集中加入 LP，奖励继续复投</p></div></div><div class="step"><span>04</span><div><b>年末卖出</b><p>按 3,000 DAI 估值，扣除 3% 卖出费</p></div></div></div><div class="formula-card"><span class="formula-label">核心结果</span><div class="formula-main"><div><span>总投入</span><b class="mono">17,300 DAI</b></div><div><span>年末 AiLGNS</span><b class="mono">78.4109</b></div><div><span>卖出净到账</span><b class="mono">228,175.66</b></div><div><span>净利润</span><b class="mono">210,875.66</b></div></div><p>说明：0.5% / 天属于页面假设，不代表固定收益。未计入 LGNS 成本、无常损失、gas 和退出留存。</p></div></div></div></section>
+
+    <section class="section compact" id="faq"><div class="shell"><div class="faq-grid"><div><span class="kicker">Notes</span><h2>计算说明</h2></div><div class="notes"><details><summary>每天 90 DAI 是怎么来的</summary><p>算力释放 70 DAI 加上每日追加 20 DAI，所以模型每天新增 90 DAI 等值 AiLGNS。</p></details><details><summary>LP 奖励如何计入</summary><p>每周把 AiLGNS 加入 LP，之后按 0.5% / 天复投。这个比例是假设，不是保证。</p></details><details><summary>为什么年末币数会变化</summary><p>每日投入固定金额，价格越低碳数越多，因此价格路径会影响最终币数。</p></details><details><summary>哪些成本没有计入</summary><p>未计入 LGNS 成本、无常损失、gas、退出留存和全网算力稀释。</p></details></div></div></div></section>
+  </main>
+  <footer><div class="shell footer-inner"><div><div class="brand"><span class="brand-mark">A</span><span>阿郎老师的 AiLGNS 收益演算器</span></div><p>教学演示，不构成投资建议。页面不读取钱包，不发起交易，也不保证价格、排放或收益。</p></div><div class="footer-links"><a href="#track">曲线</a><a href="#calculator">参数</a><a href="#math">明细</a></div></div></footer>
+  <script>
+(() => {
+  const defaults={principal:10000,daily:20,release:70,rate:.5,endPrice:3000,fee:3,startPrice:566.8709448398408,days:365};
+  let state={...defaults},series=[],currentDay=state.days,playing=false,playStartedAt=0;
+  const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $=id=>document.getElementById(id);
+  const fmt=(v,d=2)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const fmt0=v=>Number(v).toLocaleString('en-US',{maximumFractionDigits:0});
+
+  function calc(input){
+    let lp=0,week=0;
+    const points=[{day:0,price:input.startPrice,tokens:0,cost:input.principal,value:input.principal,netValue:input.principal}];
+    for(let day=1;day<=input.days;day++){
+      if(day>1&&lp>0)lp*=1+input.rate/100;
+      const price=input.startPrice+(input.endPrice-input.startPrice)*day/input.days;
+      week+=(input.release+input.daily)/price;
+      if(day%7===0){lp+=week;week=0;}
+      const tokens=lp+week,cost=input.principal+input.daily*day;
+      points.push({day,price,tokens,cost,value:tokens*price,netValue:tokens*price*(1-input.fee/100)});
+    }
+    const last=points[points.length-1],gross=last.tokens*input.endPrice,feeAmount=gross*input.fee/100,net=gross-feeAmount;
+    const breakEven=points.find(p=>p.day>0&&p.netValue>=p.cost),double=points.find(p=>p.netValue>=p.cost*2);
+    return{points,tokens:last.tokens,gross,feeAmount,net,cost:last.cost,profit:net-last.cost,multiple:net/last.cost,lpAnnual:Math.pow(1+input.rate/100,input.days),breakEvenDay:breakEven?.day??null,doubleDay:double?.day??null};
+  }
+
+  function smoothPath(points,x,y){
+    if(!points.length)return'';
+    if(points.length===1)return`M ${x(points[0])} ${y(points[0])}`;
+    let d=`M ${x(points[0])} ${y(points[0])}`;
+    for(let i=0;i<points.length-1;i++){
+      const p0=points[Math.max(0,i-1)],p1=points[i],p2=points[i+1],p3=points[Math.min(points.length-1,i+2)];
+      const c1x=x(p1)+(x(p2)-x(p0))/6,c1y=y(p1)+(y(p2)-y(p0))/6,c2x=x(p2)-(x(p3)-x(p1))/6,c2y=y(p2)-(y(p3)-y(p1))/6;
+      d+=` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x(p2)} ${y(p2)}`;
+    }
+    return d;
+  }
+
+  function renderChart(){
+    const svg=$('growthChart'),width=1000,height=440,pad={left:72,right:24,top:24,bottom:48},plotW=width-pad.left-pad.right,plotH=height-pad.top-pad.bottom;
+    const maxValue=Math.max(...series.map(p=>Math.max(p.netValue,p.cost)),1),yTop=Math.ceil(maxValue/50000)*50000||50000;
+    const x=p=>pad.left+(p.day/state.days)*plotW,y=p=>pad.top+plotH-(Math.max(0,Math.min(p.netValue,yTop))/yTop)*plotH,yc=p=>pad.top+plotH-(Math.max(0,Math.min(p.cost,yTop))/yTop)*plotH;
+    let markup='';
+    for(let i=0;i<=5;i++){
+      const val=yTop/5*i,yy=pad.top+plotH-(i/5)*plotH;
+      markup+=`<line x1="${pad.left}" y1="${yy}" x2="${width-pad.right}" y2="${yy}"></line><text class="chart-axis" x="${pad.left-12}" y="${yy+4}" text-anchor="end">${val===0?'0':fmt0(val/1000)+'K'}</text>`;
+    }
+    [0,90,180,270,365].forEach(day=>{const xx=pad.left+(day/state.days)*plotW;markup+=`<text class="chart-axis" x="${xx}" y="${height-18}" text-anchor="middle">${day}</text>`;});
+    $('chartGrid').innerHTML=markup;
+    const ret=smoothPath(series,x,y),principal=series.map(p=>({...p,value:p.cost})),prin=smoothPath(principal,x,yc),last=series[series.length-1],first=series[0];
+    $('returnPath').setAttribute('d',ret);$('principalPath').setAttribute('d',prin);
+    $('chartArea').setAttribute('d',`${ret} L ${x(last)} ${pad.top+plotH} L ${x(first)} ${pad.top+plotH} Z`);
+    svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+    const milestones=$('chartMilestones');
+    if(milestones){
+      const be=series.find(p=>p.day>0&&p.netValue>=p.cost),dbl=series.find(p=>p.netValue>=p.cost*2);
+      const draw=(p,label,kind)=>{if(!p)return'';const xx=x(p),yy=y(p),lx=Math.max(86,Math.min(width-86,xx)),ly=Math.max(28,yy-42);return `<line class="milestone-line ${kind}" x1="${xx}" y1="${pad.top}" x2="${xx}" y2="${pad.top+plotH}"></line><circle class="milestone-dot ${kind}" cx="${xx}" cy="${yy}" r="5"></circle><rect class="milestone-box ${kind}" x="${lx-50}" y="${ly-16}" width="100" height="24" rx="12"></rect><text class="milestone-text ${kind}" x="${lx}" y="${ly}" text-anchor="middle">${label}</text>`;};
+      milestones.innerHTML=draw(be,'回本 · 第'+be?.day+'天','be')+draw(dbl,'翻倍 · 第'+dbl?.day+'天','double');
+    }
+    return{x,y,pad,plotW,plotH,width,height};
+  }
+
+  function updateSummary(result){
+    const main={resultNet:fmt(result.net),resultMultiple:fmt(result.multiple,2)+'×',resultCost:fmt(result.cost),resultProfit:fmt(result.profit),resultTokens:fmt(result.tokens,4),resultGross:fmt(result.gross),resultFee:fmt(result.feeAmount),resultLpAnnual:fmt(result.lpAnnual,2)+'×',proofCost:fmt(result.cost,0),proofNet:fmt(result.net),proofMultiple:fmt(result.multiple,2)+'×',heroTokens:fmt(result.tokens,4),heroProfit:fmt(result.profit),orbitMultiple:fmt(result.multiple,2),liveNet:fmt(result.net),liveCost:fmt(result.cost),liveProfit:fmt(result.profit),liveTokens:fmt(result.tokens,4),liveGross:fmt(result.gross),liveFee:fmt(result.feeAmount),liveMultiple:fmt(result.multiple,2)+'×',liveLpAnnual:fmt(result.lpAnnual,2)+'×',breakEvenDays:result.breakEvenDay?'第'+result.breakEvenDay+'天':'年内未达到',doubleDays:result.doubleDay?'第'+result.doubleDay+'天':'年内未达到'};
+    Object.entries(main).forEach(([id,value])=>{const el=$(id);if(el)el.textContent=value;});
+  }
+
+  function setDay(day,geometry){
+    currentDay=Math.max(0,Math.min(state.days,Math.round(day)));
+    const point=series[currentDay];if(!point)return;
+    const label=currentDay===state.days?`第 ${currentDay} 天 · 年末`:`第 ${currentDay} 天`;
+    $('chartDayLabel').textContent=label;$('dayRange').value=currentDay;$('chartValue').textContent=fmt(point.netValue);
+    if(geometry){
+      const xx=geometry.x(point),yy=geometry.y(point);
+      $('hoverLine').setAttribute('x1',xx);$('hoverLine').setAttribute('x2',xx);$('hoverLine').style.opacity='1';
+      $('chartDot').setAttribute('cx',xx);$('chartDot').setAttribute('cy',yy);$('chartDot').style.opacity='1';
+      $('tooltipDay').textContent=label;$('tooltipPrice').textContent=fmt(point.price,0);$('tooltipCost').textContent=fmt(point.cost,0);$('tooltipValue').textContent=fmt(point.netValue);
+      const tip=$('chartTooltip'),wrapRect=$('chartWrap').getBoundingClientRect();
+      tip.classList.add('show');tip.setAttribute('aria-hidden','false');
+      const left=Math.min(wrapRect.width-190,Math.max(16,(xx/geometry.width)*wrapRect.width+16)),top=Math.max(16,(yy/geometry.height)*(wrapRect.width*geometry.height/geometry.width)-40);
+      tip.style.left=`${left}px`;tip.style.top=`${top}px`;
+    }
+  }
+  function updateAll(){const result=calc(state);series=result.points;const geometry=renderChart();updateSummary(result);setDay(currentDay,geometry);return geometry;}
+  function readInputs(){
+    const next={...state,principal:+$('principalInput').value,daily:+$('dailyInput').value,release:+$('releaseInput').value,rate:+$('rateInput').value,endPrice:+$('priceInput').value,fee:+$('feeInput').value};
+    const vals=[next.principal,next.daily,next.release,next.rate,next.endPrice,next.fee];
+    const invalid=vals.some(v=>!Number.isFinite(v)||v<0)||next.principal<=0||next.endPrice<=0;
+    $('formError').textContent=invalid?'请输入有效的非负参数，初始本金和年末价格必须大于 0。':'';$('formError').classList.toggle('show',invalid);
+    if(invalid)return false;state=next;return true;
+  }
+  function playTimeline(){
+    if(playing)return;
+    if(reduceMotion){setDay(state.days,updateAll());return;}
+    playing=true;$('chartPlay').innerHTML='<i class="ph-fill ph-pause" aria-hidden="true"></i>';$('chartPlay').setAttribute('aria-label','暂停全年曲线');playStartedAt=performance.now();
+    const geometry=renderChart();
+    const step=now=>{
+      const progress=Math.min(1,(now-playStartedAt)/7200),eased=1-Math.pow(1-progress,3);
+      setDay(eased*state.days,geometry);
+      if(progress<1)requestAnimationFrame(step);
+      else{playing=false;$('chartPlay').innerHTML='<i class="ph-fill ph-play" aria-hidden="true"></i>';$('chartPlay').setAttribute('aria-label','重播全年曲线');}
+    };
+    requestAnimationFrame(step);
+  }
+  function reset(){
+    state={...defaults};$('principalInput').value=defaults.principal;$('dailyInput').value=defaults.daily;$('releaseInput').value=defaults.release;$('rateInput').value=defaults.rate;$('priceInput').value=defaults.endPrice;$('feeInput').value=defaults.fee;$('formError').classList.remove('show');currentDay=defaults.days;updateAll();
+  }
+  ['principalInput','dailyInput','releaseInput','rateInput','priceInput','feeInput'].forEach(id=>$(id).addEventListener('input',()=>{if(readInputs())updateAll();}));
+  $('resetBtn').addEventListener('click',reset);
+  $('dayRange').addEventListener('input',e=>{const geometry=renderChart();setDay(+e.target.value,geometry);});
+  $('chartPlay').addEventListener('click',playTimeline);
+  $('heroPlay').addEventListener('click',()=>{$('track').scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});setTimeout(playTimeline,reduceMotion?0:500);});
+  $('chartWrap').addEventListener('pointermove',e=>{
+    if(!series.length)return;const rect=$('chartWrap').getBoundingClientRect(),localX=Math.max(0,Math.min(rect.width,e.clientX-rect.left)),geometry=renderChart(),dataX=localX/rect.width*geometry.width,day=Math.round((dataX-geometry.pad.left)/geometry.plotW*state.days);setDay(day,geometry);
+  });
+  $('chartWrap').addEventListener('pointerleave',()=>{$('hoverLine').style.opacity='0';$('chartDot').style.opacity='0';$('chartTooltip').classList.remove('show');$('chartTooltip').setAttribute('aria-hidden','true');});
+  const revealObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');revealObserver.unobserve(entry.target);}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+  updateAll();
+})();
+
+
+
+
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+  
